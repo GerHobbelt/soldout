@@ -14,6 +14,12 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
+#if _WIN32
+#include "win32.h"
+#else
+#define WIN32EXPORT
+#endif
+
 #include "buffer.h"
 
 #include <string.h>
@@ -179,7 +185,8 @@ ups_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset,
 size_t
 ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
 {
-	size_t link_end, rewind;
+	size_t link_end;
+	int rewind;				// fixed: warning C4146: unary minus operator applied to unsigned type, result still unsigned
 	int nb = 0, np = 0;
 
 	for (rewind = 0; rewind < offset; ++rewind) {
@@ -228,7 +235,9 @@ ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offse
 size_t
 ups_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size)
 {
-	size_t link_end, rewind = 0, domain_len;
+	size_t link_end;
+	int rewind = 0;	// fixed: warning C4146: unary minus operator applied to unsigned type, result still unsigned
+	size_t domain_len;
 
 	if (size < 4 || data[1] != '/' || data[2] != '/')
 		return 0;

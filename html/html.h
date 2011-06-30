@@ -37,16 +37,16 @@ typedef enum {
 void
 upshtml_escape(struct buf *ob, const char *src, size_t size);
 
-extern void
+DLLEXPORT extern void
 upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
 
-extern void
+DLLEXPORT extern void
 upshtml_toc_renderer(struct mkd_renderer *renderer);
 
-extern void
+DLLEXPORT extern void
 upshtml_free_renderer(struct mkd_renderer *renderer);
 
-extern void
+DLLEXPORT extern void
 upshtml_smartypants(struct buf *ob, struct buf *text);
 
 #endif

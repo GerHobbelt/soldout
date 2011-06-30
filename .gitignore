@@ -26,13 +26,11 @@ upskirt
 smartypants
 *.exe
 mvc/ipch
+mvc/bin
+mvc/obj
 *.suo
 *.ncb
 *.sdf
 *.opensdf
 *.vcxproj.user
 *.vcproj.*
-mvc/Debug
-mvc/Release
-mvc/DebugDll
-mvc/ReleaseDll

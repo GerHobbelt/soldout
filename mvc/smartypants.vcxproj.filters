@@ -22,12 +22,6 @@
     <ClCompile Include="..\src\markdown.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="getopt.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="getopt_ex.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\src\array.h">
@@ -46,12 +40,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="win32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="getopt_ex.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="getopt.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

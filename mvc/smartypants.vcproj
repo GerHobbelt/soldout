@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="upskirt"
-	ProjectGUID="{BE47161F-589E-4725-8CB4-2FA6746F66DD}"
-	RootNamespace="upskirt"
+	Name="smartypants"
+	ProjectGUID="{2ADC3955-26A0-42D3-A82C-ED8D612913D1}"
+	RootNamespace="smartypants"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -189,7 +189,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\examples\upskirt.c"
+				RelativePath="..\examples\smartypants.c"
 				>
 			</File>
 		</Filter>

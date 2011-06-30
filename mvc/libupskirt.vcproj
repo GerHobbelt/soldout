@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName).$(PlatformName)"
+			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)\$(ConfigurationName).$(PlatformName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			>
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\mvc;..\src;..\render"
+				AdditionalIncludeDirectories="..\html;..\src;."
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -77,8 +77,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName).$(PlatformName)"
+			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)\$(ConfigurationName).$(PlatformName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -102,7 +102,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\mvc;..\src;..\render"
+				AdditionalIncludeDirectories="..\html;..\src;."
 				RuntimeLibrary="0"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -285,15 +285,19 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\autolink.c"
+				>
+			</File>
+			<File
 				RelativePath="..\src\buffer.c"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html.c"
+				RelativePath="..\html\html.c"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html_smartypants.c"
+				RelativePath="..\html\html_smartypants.c"
 				>
 			</File>
 			<File
@@ -311,11 +315,15 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\autolink.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\buffer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\render\html.h"
+				RelativePath="..\html\html.h"
 				>
 			</File>
 			<File

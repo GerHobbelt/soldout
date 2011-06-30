@@ -77,8 +77,6 @@
     <ClInclude Include="..\src\autolink.h" />
     <ClInclude Include="..\src\buffer.h" />
     <ClInclude Include="..\src\markdown.h" />
-    <ClInclude Include="getopt.h" />
-    <ClInclude Include="getopt_ex.h" />
     <ClInclude Include="win32.h" />
   </ItemGroup>
   <ItemGroup>
@@ -89,8 +87,6 @@
     <ClCompile Include="..\src\autolink.c" />
     <ClCompile Include="..\src\buffer.c" />
     <ClCompile Include="..\src\markdown.c" />
-    <ClCompile Include="getopt.c" />
-    <ClCompile Include="getopt_ex.c" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

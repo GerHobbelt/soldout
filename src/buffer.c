@@ -25,6 +25,12 @@
 #define BUFFER_STDARG
 #define BUFFER_MAX_ALLOC_SIZE (1024 * 1024 * 16) //16mb
 
+#if _WIN32
+#include "win32.h"
+#else
+#define WIN32EXPORT
+#endif
+
 #include "buffer.h"
 
 #include <stdio.h>

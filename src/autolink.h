@@ -28,6 +28,18 @@ ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offse
 extern size_t
 ups_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
 
+DLLEXPORT extern void
+upshtml_renderer(struct mkd_renderer *renderer, unsigned int render_flags);
+
+DLLEXPORT extern void
+upshtml_toc_renderer(struct mkd_renderer *renderer);
+
+DLLEXPORT extern void
+upshtml_free_renderer(struct mkd_renderer *renderer);
+
+DLLEXPORT extern void
+upshtml_smartypants(struct buf *ob, struct buf *text);
+
 #endif
 
 /* vim: set filetype=c: */

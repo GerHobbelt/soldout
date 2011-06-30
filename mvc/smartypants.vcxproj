@@ -36,14 +36,14 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)bin/$(Configuration).$(PlatformName)/</OutDir>
+    <OutDir>$(SolutionDir)bin/$(PlatformName)_MSVC2008.$(ConfigurationName)/</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <IntDir>$(SolutionDir)obj/$(ProjectName)\$(Configuration).$(PlatformName)/</IntDir>
+    <IntDir>$(SolutionDir)obj/$(ProjectName)_$(PlatformName)_MSVC2008.$(ConfigurationName)/</IntDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <IntDir>$(SolutionDir)obj/$(ProjectName)\$(Configuration).$(PlatformName)/</IntDir>
-    <OutDir>$(SolutionDir)bin/$(Configuration).$(PlatformName)/</OutDir>
+    <IntDir>$(SolutionDir)obj/$(ProjectName)_$(PlatformName)_MSVC2008.$(ConfigurationName)/</IntDir>
+    <OutDir>$(SolutionDir)bin/$(PlatformName)_MSVC2008.$(ConfigurationName)/</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

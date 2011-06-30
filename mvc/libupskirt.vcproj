@@ -17,8 +17,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName).$(PlatformName)"
-			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)\$(ConfigurationName).$(PlatformName)"
+			OutputDirectory="$(SolutionDir)bin\$(PlatformName)_MSVC2008.$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)_$(PlatformName)_MSVC2008.$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			>
@@ -77,8 +77,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)bin\$(ConfigurationName).$(PlatformName)"
-			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)\$(ConfigurationName).$(PlatformName)"
+			OutputDirectory="$(SolutionDir)bin\$(PlatformName)_MSVC2008.$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)_$(PlatformName)_MSVC2008.$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -139,8 +139,8 @@
 		</Configuration>
 		<Configuration
 			Name="DebugDll|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin\$(PlatformName)_MSVC2008.$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)_$(PlatformName)_MSVC2008.$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			>
@@ -162,7 +162,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\mvc;..\src;..\render"
+				AdditionalIncludeDirectories="..\html;..\src;."
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -205,8 +205,8 @@
 		</Configuration>
 		<Configuration
 			Name="ReleaseDll|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			OutputDirectory="$(SolutionDir)bin\$(PlatformName)_MSVC2008.$(ConfigurationName)"
+			IntermediateDirectory="$(SolutionDir)obj\$(ProjectName)_$(PlatformName)_MSVC2008.$(ConfigurationName)"
 			ConfigurationType="2"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -230,7 +230,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\mvc;..\src;..\render"
+				AdditionalIncludeDirectories="..\html;..\src;."
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"

@@ -30,7 +30,7 @@ all:		libupskirt.so upskirt smartypants
 # libraries
 
 libupskirt.so:	libupskirt.so.1
-	ln -f -s $^ $@
+	-ln -f -s $^ $@
 
 libupskirt.so.1: src/markdown.o src/array.o src/buffer.o src/autolink.o html/html.o html/html_smartypants.o
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@

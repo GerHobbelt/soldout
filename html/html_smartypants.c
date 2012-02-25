@@ -100,7 +100,7 @@ static size_t
 smartypants_cb__squote(struct buf *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
 	if (size >= 2) {
-		uint8_t t1 = tolower(text[1]);
+		uint8_t t1 = (uint8_t)tolower(text[1]);
 
 		if (t1 == '\'') {
 			if (smartypants_quotes(ob, previous_char, size >= 3 ? text[2] : 0, 'd', &smrt->in_dquote))
@@ -114,7 +114,7 @@ smartypants_cb__squote(struct buf *ob, struct smartypants_data *smrt, uint8_t pr
 		}
 
 		if (size >= 3) {
-			uint8_t t2 = tolower(text[2]);
+			uint8_t t2 = (uint8_t)tolower(text[2]);
 
 			if (((t1 == 'r' && t2 == 'e') ||
 				(t1 == 'l' && t2 == 'l') ||
@@ -137,8 +137,8 @@ static size_t
 smartypants_cb__parens(struct buf *ob, struct smartypants_data *smrt, uint8_t previous_char, const uint8_t *text, size_t size)
 {
 	if (size >= 3) {
-		uint8_t t1 = tolower(text[1]);
-		uint8_t t2 = tolower(text[2]);
+		uint8_t t1 = (uint8_t)tolower(text[1]);
+		uint8_t t2 = (uint8_t)tolower(text[2]);
 
 		if (t1 == 'c' && t2 == ')') {
 			BUFPUTSL(ob, "&copy;");

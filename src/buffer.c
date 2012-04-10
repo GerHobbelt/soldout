@@ -67,7 +67,7 @@ bufgrow(struct buf *buf, size_t neosz)
 	while (neoasz < neosz)
 		neoasz += buf->unit;
 
-	neodata = realloc(buf->data, neoasz);
+	neodata = buf->realloc(buf->data, neoasz);
 	if (!neodata)
 		return BUF_ENOMEM;
 
@@ -81,13 +81,22 @@ bufgrow(struct buf *buf, size_t neosz)
 struct buf *
 bufnew(size_t unit)
 {
+	return bufnewcb(unit, malloc, realloc, free);
+}
+
+struct buf *
+bufnewcb(size_t unit, sd_malloc_cb malloc_cb, sd_realloc_cb realloc_cb, sd_free_cb free_cb)
+{
 	struct buf *ret;
-	ret = malloc(sizeof (struct buf));
+	ret = malloc_cb(sizeof (struct buf));
 
 	if (ret) {
 		ret->data = 0;
 		ret->size = ret->asize = 0;
 		ret->unit = unit;
+
+		ret->realloc = realloc_cb;
+		ret->free = free_cb;
 	}
 	return ret;
 }
@@ -189,8 +198,8 @@ bufrelease(struct buf *buf)
 	if (!buf)
 		return;
 
-	free(buf->data);
-	free(buf);
+	buf->free(buf->data);
+	buf->free(buf);
 }
 
 
@@ -201,7 +210,7 @@ bufreset(struct buf *buf)
 	if (!buf)
 		return;
 
-	free(buf->data);
+	buf->free(buf->data);
 	buf->data = NULL;
 	buf->size = buf->asize = 0;
 }

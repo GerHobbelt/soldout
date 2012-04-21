@@ -19,12 +19,6 @@
 #ifndef UPSKIRT_MARKDOWN_H
 #define UPSKIRT_MARKDOWN_H
 
-#if defined(_MSC_VER)
-#include "win32.h"
-#else
-#define WIN32EXPORT
-#endif
-
 #include "buffer.h"
 #include "autolink.h"
 

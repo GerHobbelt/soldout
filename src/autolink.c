@@ -14,12 +14,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if _WIN32
-#include "win32.h"
-#else
-#define WIN32EXPORT
-#endif
-
 #include "buffer.h"
 #include "autolink.h"
 
@@ -27,10 +21,6 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <ctype.h>
-
-#if defined(_WIN32)
-#define strncasecmp	_strnicmp
-#endif
 
 int
 sd_autolink_issafe(const uint8_t *link, size_t link_len)

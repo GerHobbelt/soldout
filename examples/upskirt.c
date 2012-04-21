@@ -33,6 +33,8 @@ main(int argc, char **argv)
 	struct buf *ib, *ob;
 	int ret;
 	FILE *in = stdin;
+	unsigned int enabled_extensions = MKDEXT_TABLES | MKDEXT_FENCED_CODE | MKDEXT_EMAIL_FRIENDLY;
+	unsigned int render_flags = HTML_SKIP_HTML | HTML_SKIP_STYLE | HTML_HARD_WRAP;
 
 	struct sd_callbacks callbacks;
 	struct html_renderopt options;
@@ -61,9 +63,8 @@ main(int argc, char **argv)
 	/* performing markdown parsing */
 	ob = bufnew(OUTPUT_UNIT);
 
-	sdhtml_renderer(&callbacks, &options, 0);
-	markdown = sd_markdown_new(0, 16, &callbacks, &options);
-
+	sdhtml_renderer(&callbacks, &options, render_flags);
+	markdown = sd_markdown_new(enabled_extensions, 16, &callbacks, &options);
 	sd_markdown_render(ob, ib->data, ib->size, markdown);
 	sd_markdown_free(markdown);
 

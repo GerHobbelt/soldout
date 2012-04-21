@@ -53,15 +53,15 @@ struct buf {
 
 /* CONST_BUF: global buffer from a string litteral */
 #define BUF_STATIC(string) \
-	{ (uint8_t *)string, sizeof string -1, sizeof string, 0, 0 }
+	{ (uint8_t *)(string), sizeof(string) - 1, sizeof(string), 0, 0 }
 
 /* VOLATILE_BUF: macro for creating a volatile buffer on the stack */
 #define BUF_VOLATILE(strname) \
-	{ (uint8_t *)strname, strlen(strname), 0, 0, 0 }
+	{ (uint8_t *)(strname), strlen(strname), 0, 0, 0 }
 
 /* BUFPUTSL: optimized bufputs of a string litteral */
 #define BUFPUTSL(output, literal) \
-	bufput(output, literal, sizeof literal - 1)
+	bufput(output, literal, sizeof(literal) - 1)
 
 /* bufgrow: increasing the allocated size to the given value */
 SDPUBFUN int bufgrow(struct buf *, size_t);

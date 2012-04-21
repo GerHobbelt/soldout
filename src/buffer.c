@@ -187,7 +187,7 @@ bufputc(struct buf *buf, int c)
 	if (buf->size + 1 > buf->asize && bufgrow(buf, buf->size + 1) < 0)
 		return;
 
-	buf->data[buf->size] = c;
+	buf->data[buf->size] = (uint8_t)c;
 	buf->size += 1;
 }
 

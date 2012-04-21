@@ -12,13 +12,16 @@ SUNDOWN_SRC=\
 	html\houdini_html_e.obj \
 	html\houdini_href_e.obj
 
-all: sundown.dll sundown.exe
+all: sundown.dll sundown.exe smartypants.exe
 
 sundown.dll: $(SUNDOWN_SRC) sundown.def
 	$(CC) $(SUNDOWN_SRC) sundown.def /link /DLL $(LDFLAGS) /out:$@
 
 sundown.exe: examples\sundown.obj $(SUNDOWN_SRC)
 	$(CC) examples\sundown.obj $(SUNDOWN_SRC) /link $(LDFLAGS) /out:$@
+
+smartypants.exe: examples\smartypants.obj $(SUNDOWN_SRC)
+	$(CC) examples\smartypants.obj $(SUNDOWN_SRC) /link $(LDFLAGS) /out:$@
 
 # housekeeping
 clean:

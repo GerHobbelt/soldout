@@ -23,6 +23,8 @@ BuildLog.htm
 *.o
 libsundown.so*
 sundown
+libupskirt.so*
+upskirt
 smartypants
 *.exe
 mvc/ipch

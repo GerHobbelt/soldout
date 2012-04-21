@@ -34,7 +34,7 @@ main(int argc, char **argv)
 	int ret;
 	FILE *in = stdin;
 	unsigned int enabled_extensions = MKDEXT_TABLES | MKDEXT_FENCED_CODE | MKDEXT_EMAIL_FRIENDLY;
-	unsigned int render_flags = HTML_SKIP_HTML | HTML_SKIP_STYLE | HTML_HARD_WRAP;
+	unsigned int render_flags = 0; // HTML_SKIP_HTML | HTML_SKIP_STYLE | HTML_HARD_WRAP;
 
 	struct sd_callbacks callbacks;
 	struct html_renderopt options;

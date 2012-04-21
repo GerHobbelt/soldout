@@ -17,11 +17,14 @@
 DEPDIR=depends
 
 # "Machine-dependant" options
-#MFLAGS=-fPIC
+MCFLAGS=-fPIC
+MLFLAGS=
+
+MFLAGS=
 #MFLAGS=-m32 -mmacosx-version-min=10.5 --sysroot /Developer/SDKs/MacOSX10.5.sdk
 
-CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml $(FLAGS)
-LDFLAGS=-g -O3 -Wall -Werror $(FLAGS)
+CFLAGS=-c -g -O3 -Wall -Werror -Wsign-compare -Isrc -Ihtml $(MCFLAGS) $(MFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror $(MLFLAGS) $(MFLAGS)
 CC=gcc
 
 

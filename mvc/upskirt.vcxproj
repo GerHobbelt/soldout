@@ -79,7 +79,7 @@
     <ClInclude Include="..\src\markdown.h" />
     <ClInclude Include="..\src\stack.h" />
     <ClInclude Include="..\src\upskirt_dll_exports.h" />
-    <ClInclude Include="win32.h" />
+    <ClInclude Include="upskirt_win32.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\examples\upskirt.c" />

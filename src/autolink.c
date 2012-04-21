@@ -193,7 +193,7 @@ sd_autolink__email(size_t *rewind_p, struct buf *link, uint8_t *data, size_t off
 	int rewind;				// fixed: warning C4146: unary minus operator applied to unsigned type, result still unsigned
 	int nb = 0, np = 0;
 
-	for (rewind = 0; rewind < offset; ++rewind) {
+	for (rewind = 0; rewind < (int)offset; ++rewind) {
 		uint8_t c = data[-rewind - 1];
 
 		if (isalnum(c))
@@ -246,7 +246,7 @@ sd_autolink__url(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offse
 	if (size < 4 || data[1] != '/' || data[2] != '/')
 		return 0;
 
-	while (rewind < offset && isalpha(data[-rewind - 1]))
+	while (rewind < (int)offset && isalpha(data[-rewind - 1]))
 		rewind++;
 
 	if (!sd_autolink_issafe(data - rewind, size + rewind))

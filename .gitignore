@@ -21,8 +21,8 @@ BuildLog.htm
 *.diff
 *.bsc
 *.o
-libupskirt.so*
-upskirt
+libsundown.so*
+sundown
 smartypants
 *.exe
 mvc/ipch

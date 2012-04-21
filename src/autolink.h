@@ -19,14 +19,25 @@
 
 #include "buffer.h"
 
-DLLEXPORT extern size_t
-ups_autolink__www(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+DLLEXPORT extern int
+sd_autolink_issafe(const uint8_t *link, size_t link_len);
 
 DLLEXPORT extern size_t
-ups_autolink__email(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
+sd_autolink__www(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offset, size_t size);
 
 DLLEXPORT extern size_t
-ups_autolink__url(size_t *rewind_p, struct buf *link, char *data, size_t offset, size_t size);
+sd_autolink__email(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offset, size_t size);
+
+DLLEXPORT extern size_t
+sd_autolink__url(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offset, size_t size);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
 

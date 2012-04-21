@@ -26,7 +26,7 @@ smartypants.exe: examples\smartypants.obj $(SUNDOWN_SRC)
 # housekeeping
 clean:
 	del $(SUNDOWN_SRC)
-	del sundown.dll sundown.exe
+	del sundown.dll sundown.exe smartypants.exe
 	del sundown.exp sundown.lib
 
 # generic object compilations

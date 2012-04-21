@@ -29,20 +29,20 @@
 
 
 #ifdef __cplusplus
-extern "C" {
+namespace upskirt { extern "C" {
 #endif
 
 typedef enum {
-	BUF_OK = 0,
-	BUF_ENOMEM = -1,
-} buferror_t;
+	SD_BUF_OK = 0,
+	SD_BUF_ENOMEM = -1,
+} sd_buferror_t;
 
 typedef void *(*sd_malloc_cb)(size_t);
 typedef void *(*sd_realloc_cb)(void *, size_t);
 typedef void (*sd_free_cb)(void *);
 
-/* struct buf: character array buffer */
-struct buf {
+/* struct sd_buf: character array buffer */
+struct sd_buf {
 	uint8_t *data;		/* actual character data */
 	size_t size;	/* size of the string */
 	size_t asize;	/* allocated size (0 = volatile buffer) */
@@ -51,56 +51,56 @@ struct buf {
 	sd_free_cb free;
 };
 
-/* CONST_BUF: global buffer from a string litteral */
-#define BUF_STATIC(string) \
+/* SD_BUF_STATIC: global buffer from a string litteral */
+#define SD_BUF_STATIC(string) \
 	{ (uint8_t *)(string), sizeof(string) - 1, sizeof(string), 0, 0 }
 
-/* VOLATILE_BUF: macro for creating a volatile buffer on the stack */
-#define BUF_VOLATILE(strname) \
+/* SD_BUF_VOLATILE: macro for creating a volatile buffer on the stack */
+#define SD_BUF_VOLATILE(strname) \
 	{ (uint8_t *)(strname), strlen(strname), 0, 0, 0 }
 
-/* BUFPUTSL: optimized bufputs of a string litteral */
-#define BUFPUTSL(output, literal) \
-	bufput(output, literal, sizeof(literal) - 1)
+/* SD_BUFPUTSL: optimized sd_bufputs of a string litteral */
+#define SD_BUFPUTSL(output, literal) \
+	sd_bufput(output, literal, sizeof(literal) - 1)
 
-/* bufgrow: increasing the allocated size to the given value */
-SDPUBFUN int bufgrow(struct buf *, size_t);
+/* sd_bufgrow: increasing the allocated size to the given value */
+SDPUBFUN int sd_bufgrow(struct sd_buf *, size_t);
 
-/* bufnew: allocation of a new buffer; use the system default heap allocation functions */
-SDPUBFUN struct buf *bufnew(size_t) __attribute__ ((malloc));
+/* sd_bufnew: allocation of a new buffer; use the system default heap allocation functions */
+SDPUBFUN struct sd_buf *sd_bufnew(size_t) __attribute__ ((malloc));
 
-/* bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
-SDPUBFUN struct buf *bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
+/* sd_bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
+SDPUBFUN struct sd_buf *sd_bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
 
-/* bufnullterm: NUL-termination of the string array (making a C-string) */
-SDPUBFUN const char *bufcstr(struct buf *);
+/* sd_bufcstr: NUL-termination of the string array (making a C-string) */
+SDPUBFUN const char *sd_bufcstr(struct sd_buf *);
 
-/* bufprefix: compare the beginning of a buffer with a string */
-SDPUBFUN int bufprefix(const struct buf *buf, const char *prefix);
+/* sd_bufprefix: compare the beginning of a buffer with a string */
+SDPUBFUN int sd_bufprefix(const struct sd_buf *buf, const char *prefix);
 
-/* bufput: appends raw data to a buffer */
-SDPUBFUN void bufput(struct buf *, const void *, size_t);
+/* sd_bufput: appends raw data to a buffer */
+SDPUBFUN void sd_bufput(struct sd_buf *, const void *, size_t);
 
-/* bufputs: appends a NUL-terminated string to a buffer */
-SDPUBFUN void bufputs(struct buf *, const char *);
+/* sd_bufputs: appends a NUL-terminated string to a buffer */
+SDPUBFUN void sd_bufputs(struct sd_buf *, const char *);
 
-/* bufputc: appends a single char to a buffer */
-SDPUBFUN void bufputc(struct buf *, int);
+/* sd_bufputc: appends a single char to a buffer */
+SDPUBFUN void sd_bufputc(struct sd_buf *, int);
 
-/* bufrelease: decrease the reference count and free the buffer if needed */
-SDPUBFUN void bufrelease(struct buf *);
+/* sd_bufrelease: decrease the reference count and free the buffer if needed */
+SDPUBFUN void sd_bufrelease(struct sd_buf *);
 
-/* bufreset: frees internal data of the buffer */
-SDPUBFUN void bufreset(struct buf *);
+/* sd_bufreset: frees internal data of the buffer */
+SDPUBFUN void sd_bufreset(struct sd_buf *);
 
-/* bufslurp: removes a given number of bytes from the head of the array */
-SDPUBFUN void bufslurp(struct buf *, size_t);
+/* sd_bufslurp: removes a given number of bytes from the head of the array */
+SDPUBFUN void sd_bufslurp(struct sd_buf *, size_t);
 
-/* bufprintf: formatted printing to a buffer */
-SDPUBFUN void bufprintf(struct buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
+/* sd_bufprintf: formatted printing to a buffer */
+SDPUBFUN void sd_bufprintf(struct sd_buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
 
 #ifdef __cplusplus
-}
+} }
 #endif
 
 #endif

@@ -29,7 +29,7 @@
 int
 main(int argc, char **argv)
 {
-	struct buf *ib, *ob;
+	struct sd_buf *ib, *ob;
 	size_t ret;
 	FILE *in = stdin;
 
@@ -43,18 +43,18 @@ main(int argc, char **argv)
 	}
 
 	/* reading everything */
-	ib = bufnew(READ_UNIT);
-	bufgrow(ib, READ_UNIT);
+	ib = sd_bufnew(READ_UNIT);
+	sd_bufgrow(ib, READ_UNIT);
 	while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
 		ib->size += ret;
-		bufgrow(ib, ib->size + READ_UNIT);
+		sd_bufgrow(ib, ib->size + READ_UNIT);
 	}
 
 	if (in != stdin)
 		fclose(in);
 
 	/* performing markdown parsing */
-	ob = bufnew(OUTPUT_UNIT);
+	ob = sd_bufnew(OUTPUT_UNIT);
 
 	sdhtml_smartypants(ob, ib->data, ib->size);
 
@@ -62,8 +62,8 @@ main(int argc, char **argv)
 	(void)fwrite(ob->data, 1, ob->size, stdout);
 
 	/* cleanup */
-	bufrelease(ib);
-	bufrelease(ob);
+	sd_bufrelease(ib);
+	sd_bufrelease(ob);
 
 	return 0;
 }

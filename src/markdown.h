@@ -23,7 +23,7 @@
 #include "autolink.h"
 
 #ifdef __cplusplus
-extern "C" {
+namespace upskirt { extern "C" {
 #endif
 
 #define SUNDOWN_VERSION "1.16.0"
@@ -65,39 +65,39 @@ enum mkd_extensions {
 /* sd_callbacks - functions for rendering parsed data */
 struct sd_callbacks {
 	/* block level callbacks - NULL skips the block */
-	void (*blockcode)(struct buf *ob, const struct buf *text, const struct buf *lang, void *opaque);
-	void (*blockquote)(struct buf *ob, const struct buf *text, void *opaque);
-	void (*blockhtml)(struct buf *ob,const  struct buf *text, void *opaque);
-	void (*header)(struct buf *ob, const struct buf *text, int level, void *opaque);
-	void (*hrule)(struct buf *ob, void *opaque);
-	void (*list)(struct buf *ob, const struct buf *text, int flags, void *opaque);
-	void (*listitem)(struct buf *ob, const struct buf *text, int flags, void *opaque);
-	void (*paragraph)(struct buf *ob, const struct buf *text, void *opaque);
-	void (*table)(struct buf *ob, const struct buf *header, const struct buf *body, void *opaque);
-	void (*table_row)(struct buf *ob, const struct buf *text, void *opaque);
-	void (*table_cell)(struct buf *ob, const struct buf *text, int flags, void *opaque);
+	void (*blockcode)(struct sd_buf *ob, const struct sd_buf *text, const struct sd_buf *lang, void *opaque);
+	void (*blockquote)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	void (*blockhtml)(struct sd_buf *ob,const  struct sd_buf *text, void *opaque);
+	void (*header)(struct sd_buf *ob, const struct sd_buf *text, int level, void *opaque);
+	void (*hrule)(struct sd_buf *ob, void *opaque);
+	void (*list)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
+	void (*listitem)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
+	void (*paragraph)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	void (*table)(struct sd_buf *ob, const struct sd_buf *header, const struct sd_buf *body, void *opaque);
+	void (*table_row)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	void (*table_cell)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
 
 
 	/* span level callbacks - NULL or return 0 prints the span verbatim */
-	int (*autolink)(struct buf *ob, const struct buf *link, enum mkd_autolink type, void *opaque);
-	int (*codespan)(struct buf *ob, const struct buf *text, void *opaque);
-	int (*double_emphasis)(struct buf *ob, const struct buf *text, void *opaque);
-	int (*emphasis)(struct buf *ob, const struct buf *text, void *opaque);
-	int (*image)(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *alt, void *opaque);
-	int (*linebreak)(struct buf *ob, void *opaque);
-	int (*link)(struct buf *ob, const struct buf *link, const struct buf *title, const struct buf *content, void *opaque);
-	int (*raw_html_tag)(struct buf *ob, const struct buf *tag, void *opaque);
-	int (*triple_emphasis)(struct buf *ob, const struct buf *text, void *opaque);
-	int (*strikethrough)(struct buf *ob, const struct buf *text, void *opaque);
-	int (*superscript)(struct buf *ob, const struct buf *text, void *opaque);
+	int (*autolink)(struct sd_buf *ob, const struct sd_buf *link, enum mkd_autolink type, void *opaque);
+	int (*codespan)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	int (*double_emphasis)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	int (*emphasis)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	int (*image)(struct sd_buf *ob, const struct sd_buf *link, const struct sd_buf *title, const struct sd_buf *alt, void *opaque);
+	int (*linebreak)(struct sd_buf *ob, void *opaque);
+	int (*link)(struct sd_buf *ob, const struct sd_buf *link, const struct sd_buf *title, const struct sd_buf *content, void *opaque);
+	int (*raw_html_tag)(struct sd_buf *ob, const struct sd_buf *tag, void *opaque);
+	int (*triple_emphasis)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	int (*strikethrough)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
+	int (*superscript)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
 
 	/* low level callbacks - NULL copies input directly into the output */
-	void (*entity)(struct buf *ob, const struct buf *entity, void *opaque);
-	void (*normal_text)(struct buf *ob, const struct buf *text, void *opaque);
+	void (*entity)(struct sd_buf *ob, const struct sd_buf *entity, void *opaque);
+	void (*normal_text)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
 
 	/* header and footer */
-	void (*doc_header)(struct buf *ob, void *opaque);
-	void (*doc_footer)(struct buf *ob, void *opaque);
+	void (*doc_header)(struct sd_buf *ob, void *opaque);
+	void (*doc_footer)(struct sd_buf *ob, void *opaque);
 };
 
 struct sd_markdown;
@@ -122,7 +122,7 @@ sd_markdown_new(
 	void *opaque);
 
 SDPUBFUN void
-sd_markdown_render(struct buf *ob, const uint8_t *document, size_t doc_size, struct sd_markdown *md);
+sd_markdown_render(struct sd_buf *ob, const uint8_t *document, size_t doc_size, struct sd_markdown *md);
 
 SDPUBFUN void
 sd_markdown_free(struct sd_markdown *md);
@@ -131,7 +131,7 @@ SDPUBFUN void
 sd_version(int *major, int *minor, int *revision);
 
 #ifdef __cplusplus
-}
+} }
 #endif
 
 #endif

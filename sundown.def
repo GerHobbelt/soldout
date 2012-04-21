@@ -3,18 +3,18 @@ EXPORTS
 	sdhtml_renderer
 	sdhtml_toc_renderer
 	sdhtml_smartypants
-	bufgrow
-	bufnew
-	bufnewcb
-	bufcstr
-	bufprefix
-	bufput 
-	bufputs
-	bufputc
-	bufrelease
-	bufreset
-	bufslurp
-	bufprintf
+	sd_bufgrow
+	sd_bufnew
+	sd_bufnewcb
+	sd_bufcstr
+	sd_bufprefix
+	sd_bufput 
+	sd_bufputs
+	sd_bufputc
+	sd_bufrelease
+	sd_bufreset
+	sd_bufslurp
+	sd_bufprintf
 	sd_markdown_new
 	sd_markdown_render
 	sd_markdown_free

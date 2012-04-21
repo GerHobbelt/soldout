@@ -22,7 +22,7 @@
 #include <stdlib.h>
 
 #ifdef __cplusplus
-extern "C" {
+namespace upskirt { extern "C" {
 #endif
 
 struct html_renderopt {
@@ -35,7 +35,7 @@ struct html_renderopt {
 	unsigned int flags;
 
 	/* extra callbacks */
-	void (*link_attributes)(struct buf *ob, const struct buf *url, void *self);
+	void (*link_attributes)(struct sd_buf *ob, const struct sd_buf *url, void *self);
 };
 
 typedef enum {
@@ -67,10 +67,10 @@ SDPUBFUN void
 sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options_ptr);
 
 SDPUBFUN void
-sdhtml_smartypants(struct buf *ob, const uint8_t *text, size_t size);
+sdhtml_smartypants(struct sd_buf *ob, const uint8_t *text, size_t size);
 
 #ifdef __cplusplus
-}
+} }
 #endif
 
 #endif

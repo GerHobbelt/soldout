@@ -147,7 +147,7 @@ check_domain(uint8_t *data, size_t size)
 }
 
 size_t
-sd_autolink__www(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offset, size_t size)
+sd_autolink__www(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size)
 {
 	size_t link_end;
 
@@ -170,14 +170,14 @@ sd_autolink__www(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offse
 	if (link_end == 0)
 		return 0;
 
-	bufput(link, data, link_end);
+	sd_bufput(link, data, link_end);
 	*rewind_p = 0;
 
 	return (int)link_end;
 }
 
 size_t
-sd_autolink__email(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offset, size_t size)
+sd_autolink__email(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size)
 {
 	size_t link_end;
 	int rewind;				// fixed: warning C4146: unary minus operator applied to unsigned type, result still unsigned
@@ -220,14 +220,14 @@ sd_autolink__email(size_t *rewind_p, struct buf *link, uint8_t *data, size_t off
 	if (link_end == 0)
 		return 0;
 
-	bufput(link, data - rewind, link_end + rewind);
+	sd_bufput(link, data - rewind, link_end + rewind);
 	*rewind_p = rewind;
 
 	return link_end;
 }
 
 size_t
-sd_autolink__url(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offset, size_t size)
+sd_autolink__url(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size)
 {
 	size_t link_end;
 	int rewind = 0;	// fixed: warning C4146: unary minus operator applied to unsigned type, result still unsigned
@@ -256,7 +256,7 @@ sd_autolink__url(size_t *rewind_p, struct buf *link, uint8_t *data, size_t offse
 	if (link_end == 0)
 		return 0;
 
-	bufput(link, data - rewind, link_end + rewind);
+	sd_bufput(link, data - rewind, link_end + rewind);
 	*rewind_p = rewind;
 
 	return link_end;

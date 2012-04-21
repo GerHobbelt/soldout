@@ -2379,7 +2379,7 @@ static void expand_tabs(struct buf *ob, const uint8_t *line, size_t size)
 		size_t org = i;
 
 		while (i < size && line[i] != '\t') {
-			i++; // tab++;
+			i++; tab++;
 		}
 
 		if (i > org)

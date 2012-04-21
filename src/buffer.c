@@ -83,13 +83,14 @@ bufgrow(struct buf *buf, size_t neosz)
 }
 
 
-/* bufnew: allocation of a new buffer */
+/* bufnew: allocation of a new buffer; use the system default heap allocation functions */
 struct buf *
 bufnew(size_t unit)
 {
 	return bufnewcb(unit, malloc, realloc, free);
 }
 
+/* bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
 struct buf *
 bufnewcb(size_t unit, sd_malloc_cb malloc_cb, sd_realloc_cb realloc_cb, sd_free_cb free_cb)
 {

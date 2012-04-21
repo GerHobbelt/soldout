@@ -22,22 +22,6 @@
       <Platform>Win32</Platform>
     </ProjectConfiguration>
   </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\html\html.c" />
-    <ClCompile Include="..\html\html_smartypants.c" />
-    <ClCompile Include="..\src\array.c" />
-    <ClCompile Include="..\src\autolink.c" />
-    <ClCompile Include="..\src\buffer.c" />
-    <ClCompile Include="..\src\markdown.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\html\html.h" />
-    <ClInclude Include="..\src\array.h" />
-    <ClInclude Include="..\src\autolink.h" />
-    <ClInclude Include="..\src\buffer.h" />
-    <ClInclude Include="..\src\markdown.h" />
-    <ClInclude Include="win32.h" />
-  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{BEF78878-99B5-47FC-AE1B-210EDF9643F8}</ProjectGuid>
     <RootNamespace>libupskirt-mvc</RootNamespace>
@@ -186,6 +170,34 @@
       <AssemblyDebug>false</AssemblyDebug>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClInclude Include="..\html\houdini.h" />
+    <ClInclude Include="..\html\html.h" />
+    <ClInclude Include="..\src\autolink.h" />
+    <ClInclude Include="..\src\buffer.h" />
+    <ClInclude Include="..\src\html_blocks.h" />
+    <ClInclude Include="..\src\markdown.h" />
+    <ClInclude Include="..\src\stack.h" />
+    <ClInclude Include="..\src\upskirt_dll_exports.h" />
+    <ClInclude Include="win32.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\html\houdini_href_e.c" />
+    <ClCompile Include="..\html\houdini_html_e.c" />
+    <ClCompile Include="..\html\html.c" />
+    <ClCompile Include="..\html\html_smartypants.c" />
+    <ClCompile Include="..\src\autolink.c" />
+    <ClCompile Include="..\src\buffer.c" />
+    <ClCompile Include="..\src\markdown.c" />
+    <ClCompile Include="..\src\stack.c" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\html_block_names.txt" />
+    <None Include="..\Makefile" />
+    <None Include="..\Makefile.win" />
+    <None Include="..\README.markdown" />
+    <None Include="..\sundown.def" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

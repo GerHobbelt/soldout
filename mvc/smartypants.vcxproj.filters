@@ -1,16 +1,21 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClCompile Include="..\examples\smartypants.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\array.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\src\autolink.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4c509580-e7e6-41aa-856c-b581f5fb3967}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{3c47722b-98ce-43d3-acf0-0c8b33439ef4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Extra">
+      <UniqueIdentifier>{85421aa8-c0a2-4772-9362-8ba3e101b2ae}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
     <ClCompile Include="..\src\buffer.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\markdown.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\html\html.c">
@@ -19,36 +24,57 @@
     <ClCompile Include="..\html\html_smartypants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\markdown.c">
+    <ClCompile Include="..\src\autolink.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\stack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\html\houdini_html_e.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\html\houdini_href_e.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\examples\smartypants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\array.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\autolink.h">
+    <ClInclude Include="win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\html\html.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\src\markdown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="win32.h">
+    <ClInclude Include="..\html\html.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\autolink.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\html_blocks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\html\houdini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\upskirt_dll_exports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Header Files">
-      <UniqueIdentifier>{1d91f17d-a95d-4dfe-b18e-71b3ea239c10}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files">
-      <UniqueIdentifier>{a055c5b0-213f-4634-ad91-f121eecf566e}</UniqueIdentifier>
-    </Filter>
+    <None Include="..\html_block_names.txt">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\README.markdown">
+      <Filter>Extra</Filter>
+    </None>
   </ItemGroup>
 </Project>

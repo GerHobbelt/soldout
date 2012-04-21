@@ -7,11 +7,11 @@
     <Filter Include="Header Files">
       <UniqueIdentifier>{3c47722b-98ce-43d3-acf0-0c8b33439ef4}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Extra">
+      <UniqueIdentifier>{85421aa8-c0a2-4772-9362-8ba3e101b2ae}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\array.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\buffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -27,12 +27,18 @@
     <ClCompile Include="..\src\autolink.c">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\src\stack.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\html\houdini_html_e.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\html\houdini_href_e.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="win32.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\src\array.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\src\buffer.h">
@@ -47,5 +53,34 @@
     <ClInclude Include="..\src\autolink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\html_blocks.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\stack.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\html\houdini.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\src\upskirt_dll_exports.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\html_block_names.txt">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\Makefile">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\Makefile.win">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\README.markdown">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\sundown.def">
+      <Filter>Extra</Filter>
+    </None>
   </ItemGroup>
 </Project>

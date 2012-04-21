@@ -57,16 +57,16 @@ typedef enum {
 	HTML_TAG_CLOSE,
 } html_tag;
 
-DLLEXPORT extern int
+SDPUBFUN int
 sdhtml_is_tag(const uint8_t *tag_data, size_t tag_size, const char *tagname);
 
-DLLEXPORT extern void
+SDPUBFUN void
 sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options_ptr, unsigned int render_flags);
 
-DLLEXPORT extern void
+SDPUBFUN void
 sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options_ptr);
 
-DLLEXPORT extern void
+SDPUBFUN void
 sdhtml_smartypants(struct buf *ob, const uint8_t *text, size_t size);
 
 #ifdef __cplusplus

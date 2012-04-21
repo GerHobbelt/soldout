@@ -30,13 +30,6 @@
 #include <string.h>
 #include <assert.h>
 
-/* MSVC compat */
-#if defined(_MSC_VER)
-#	define _buf_vsnprintf _vsnprintf
-#else
-#	define _buf_vsnprintf vsnprintf
-#endif
-
 int
 bufprefix(const struct buf *buf, const char *prefix)
 {
@@ -138,7 +131,7 @@ bufprintf(struct buf *buf, const char *fmt, ...)
 		return;
 	
 	va_start(ap, fmt);
-	n = _buf_vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
+	n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
 	va_end(ap);
 
 	if (n < 0) {
@@ -154,7 +147,7 @@ bufprintf(struct buf *buf, const char *fmt, ...)
 			return;
 
 		va_start(ap, fmt);
-		n = _buf_vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
+		n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
 		va_end(ap);
 	}
 

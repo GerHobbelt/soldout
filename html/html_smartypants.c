@@ -14,12 +14,6 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#if _WIN32
-#include "win32.h"
-#else
-#define WIN32EXPORT
-#endif
-
 #include "buffer.h"
 #include "html.h"
 
@@ -28,9 +22,6 @@
 #include <stdio.h>
 #include <ctype.h>
 
-#if defined(_WIN32)
-#define snprintf	_snprintf		
-#endif
 
 struct smartypants_data {
 	int in_squote;

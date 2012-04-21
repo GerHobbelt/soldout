@@ -15,26 +15,21 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef BUFFER_H__
-#define BUFFER_H__
+#ifndef UPSKIRT_BUFFER_H__
+#define UPSKIRT_BUFFER_H__
 
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdint.h>
 
+#include "upskirt_dll_exports.h"
+#if defined(_WIN32) 
+  #include "win32.h"
+#endif
+
+
 #ifdef __cplusplus
 extern "C" {
-#endif
-
-#if _MSC_VER
-#include "win32.h"
-#else
-#define DLLEXPORT
-#endif
-
-#if defined(_MSC_VER)
-#define __attribute__(x)
-#define inline
 #endif
 
 typedef enum {
@@ -69,40 +64,40 @@ struct buf {
 	bufput(output, literal, sizeof literal - 1)
 
 /* bufgrow: increasing the allocated size to the given value */
-DLLEXPORT extern int bufgrow(struct buf *, size_t);
+SDPUBFUN int bufgrow(struct buf *, size_t);
 
 /* bufnew: allocation of a new buffer; use the system default heap allocation functions */
-DLLEXPORT extern struct buf *bufnew(size_t) __attribute__ ((malloc));
+SDPUBFUN struct buf *bufnew(size_t) __attribute__ ((malloc));
 
 /* bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
-DLLEXPORT extern struct buf *bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
+SDPUBFUN struct buf *bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
 
 /* bufnullterm: NUL-termination of the string array (making a C-string) */
-DLLEXPORT extern const char *bufcstr(struct buf *);
+SDPUBFUN const char *bufcstr(struct buf *);
 
 /* bufprefix: compare the beginning of a buffer with a string */
-DLLEXPORT extern int bufprefix(const struct buf *buf, const char *prefix);
+SDPUBFUN int bufprefix(const struct buf *buf, const char *prefix);
 
 /* bufput: appends raw data to a buffer */
-DLLEXPORT extern void bufput(struct buf *, const void *, size_t);
+SDPUBFUN void bufput(struct buf *, const void *, size_t);
 
 /* bufputs: appends a NUL-terminated string to a buffer */
-DLLEXPORT extern void bufputs(struct buf *, const char *);
+SDPUBFUN void bufputs(struct buf *, const char *);
 
 /* bufputc: appends a single char to a buffer */
-DLLEXPORT extern void bufputc(struct buf *, int);
+SDPUBFUN void bufputc(struct buf *, int);
 
 /* bufrelease: decrease the reference count and free the buffer if needed */
-DLLEXPORT extern void bufrelease(struct buf *);
+SDPUBFUN void bufrelease(struct buf *);
 
 /* bufreset: frees internal data of the buffer */
-DLLEXPORT extern void bufreset(struct buf *);
+SDPUBFUN void bufreset(struct buf *);
 
 /* bufslurp: removes a given number of bytes from the head of the array */
-DLLEXPORT extern void bufslurp(struct buf *, size_t);
+SDPUBFUN void bufslurp(struct buf *, size_t);
 
 /* bufprintf: formatted printing to a buffer */
-DLLEXPORT extern void bufprintf(struct buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
+SDPUBFUN void bufprintf(struct buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
 
 #ifdef __cplusplus
 }

@@ -79,7 +79,7 @@
     <None Include="..\README.markdown">
       <Filter>Extra</Filter>
     </None>
-    <None Include="..\sundown.def">
+    <None Include="..\upskirt.def">
       <Filter>Extra</Filter>
     </None>
   </ItemGroup>

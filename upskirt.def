@@ -1,4 +1,4 @@
-LIBRARY SUNDOWN
+LIBRARY UPSKIRT
 EXPORTS
 	sdhtml_renderer
 	sdhtml_toc_renderer

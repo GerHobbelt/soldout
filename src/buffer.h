@@ -42,12 +42,18 @@ typedef enum {
 	BUF_ENOMEM = -1,
 } buferror_t;
 
+typedef void *(*sd_malloc_cb)(size_t);
+typedef void *(*sd_realloc_cb)(void *, size_t);
+typedef void (*sd_free_cb)(void *);
+
 /* struct buf: character array buffer */
 struct buf {
 	uint8_t *data;		/* actual character data */
 	size_t size;	/* size of the string */
 	size_t asize;	/* allocated size (0 = volatile buffer) */
 	size_t unit;	/* reallocation unit size (0 = read-only buffer) */
+	sd_realloc_cb realloc;
+	sd_free_cb free;
 };
 
 /* CONST_BUF: global buffer from a string litteral */
@@ -65,8 +71,11 @@ struct buf {
 /* bufgrow: increasing the allocated size to the given value */
 DLLEXPORT extern int bufgrow(struct buf *, size_t);
 
-/* bufnew: allocation of a new buffer */
+/* bufnew: allocation of a new buffer; use the system default heap allocation functions */
 DLLEXPORT extern struct buf *bufnew(size_t) __attribute__ ((malloc));
+
+/* bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
+DLLEXPORT extern struct buf *bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
 
 /* bufnullterm: NUL-termination of the string array (making a C-string) */
 DLLEXPORT extern const char *bufcstr(struct buf *);

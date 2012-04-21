@@ -13,7 +13,7 @@
 	#define va_copy(dst, src) ((void)((dst) = (src)))
 	#define __attribute__(x)
 
-	#pragma warning( disable : 4996 )
+	#pragma warning( disable : 4996 4100 4204 )
 #endif
 
 /* Windows platform with Borland compiler */

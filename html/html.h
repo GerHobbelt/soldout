@@ -17,8 +17,8 @@
 #ifndef UPSKIRT_HTML_H
 #define UPSKIRT_HTML_H
 
-#include "markdown.h"
-#include "buffer.h"
+#include "../src/markdown.h"
+#include "../src/buffer.h"
 #include <stdlib.h>
 
 #ifdef __cplusplus

@@ -24,7 +24,7 @@
 
 #include "upskirt_dll_exports.h"
 #if defined(_WIN32) 
-  #include "upskirt_win32.h"
+  #include "../mvc/upskirt_win32.h"
 #endif
 
 

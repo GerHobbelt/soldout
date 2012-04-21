@@ -5,6 +5,7 @@ EXPORTS
 	sdhtml_smartypants
 	bufgrow
 	bufnew
+	bufnewcb
 	bufcstr
 	bufprefix
 	bufput 

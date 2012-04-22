@@ -45,7 +45,7 @@ all:		libupskirt.so upskirt smartypants html_blocks
 # libraries
 
 libupskirt.so:	libupskirt.so.1
-	ln -f -s $^ $@
+	-ln -f -s $^ $@
 
 libupskirt.so.1: $(UPSKIRT_SRC)
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@

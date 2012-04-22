@@ -45,7 +45,7 @@ all:		libupskirt.so upskirt smartypants html_blocks
 # libraries
 
 libupskirt.so:	libupskirt.so.1
-	ln -f -s $^ $@
+	-ln -f -s $^ $@
 
 libupskirt.so.1: $(UPSKIRT_SRC)
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
@@ -62,7 +62,10 @@ smartypants: examples/smartypants.o $(UPSKIRT_SRC)
 html_blocks: src/html_blocks.h
 
 src/html_blocks.h: html_block_names.txt
-	gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case $^ > $@
+	-todos -a -d html_block_names.txt
+	gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case -L ANSI-C $^ > $@
+
+src/markdown.o: src/markdown.c src/html_blocks.h
 
 
 # housekeeping
@@ -71,6 +74,9 @@ clean:
 	rm -f libupskirt.so libupskirt.so.1 upskirt smartypants
 	rm -f upskirt.exe smartypants.exe
 	rm -rf $(DEPDIR)
+
+superclean: clean
+	rm -f src/html_blocks.h
 
 
 # dependencies

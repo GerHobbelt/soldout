@@ -130,7 +130,9 @@ sd_bufprintf(struct sd_buf *buf, const char *fmt, ...)
 
 	if (n < 0) {
 #ifdef _MSC_VER
+		va_start(ap, fmt);
 		n = _vscprintf(fmt, ap);
+		va_end(ap);
 #else
 		return;
 #endif

@@ -46,6 +46,9 @@ libsundown.so:	libsundown.so.1
 libsundown.so.1: $(SUNDOWN_SRC)
 	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
 
+libsundown.dylib: $(SUNDOWN_SRC)
+	$(CC) $(LDFLAGS) -dynamiclib -Wl $^ -o $@
+
 # executables
 
 sundown:	examples/sundown.o $(SUNDOWN_SRC)

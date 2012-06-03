@@ -29,43 +29,43 @@
 int
 main(int argc, char **argv)
 {
-	struct sd_buf *ib, *ob;
-	size_t ret;
-	FILE *in = stdin;
+    struct sd_buf *ib, *ob;
+    size_t ret;
+    FILE *in = stdin;
 
-	/* opening the file if given from the command line */
-	if (argc > 1) {
-		in = fopen(argv[1], "r");
-		if (!in) {
-			fprintf(stderr, "Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
-			return 1;
-		}
-	}
+    /* opening the file if given from the command line */
+    if (argc > 1) {
+        in = fopen(argv[1], "r");
+        if (!in) {
+            fprintf(stderr, "Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
+            return 1;
+        }
+    }
 
-	/* reading everything */
-	ib = sd_bufnew(READ_UNIT);
-	sd_bufgrow(ib, READ_UNIT);
-	while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
-		ib->size += ret;
-		sd_bufgrow(ib, ib->size + READ_UNIT);
-	}
+    /* reading everything */
+    ib = sd_bufnew(READ_UNIT);
+    sd_bufgrow(ib, READ_UNIT);
+    while ((ret = fread(ib->data + ib->size, 1, ib->asize - ib->size, in)) > 0) {
+        ib->size += ret;
+        sd_bufgrow(ib, ib->size + READ_UNIT);
+    }
 
-	if (in != stdin)
-		fclose(in);
+    if (in != stdin)
+        fclose(in);
 
-	/* performing markdown parsing */
-	ob = sd_bufnew(OUTPUT_UNIT);
+    /* performing markdown parsing */
+    ob = sd_bufnew(OUTPUT_UNIT);
 
-	sdhtml_smartypants(ob, ib->data, ib->size);
+    sdhtml_smartypants(ob, ib->data, ib->size);
 
-	/* writing the result to stdout */
-	(void)fwrite(ob->data, 1, ob->size, stdout);
+    /* writing the result to stdout */
+    (void)fwrite(ob->data, 1, ob->size, stdout);
 
-	/* cleanup */
-	sd_bufrelease(ib);
-	sd_bufrelease(ob);
+    /* cleanup */
+    sd_bufrelease(ib);
+    sd_bufrelease(ob);
 
-	return 0;
+    return 0;
 }
 
 /* vim: set filetype=c: */

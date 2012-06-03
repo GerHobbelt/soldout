@@ -9,17 +9,17 @@
 /*
  * The following characters will not be escaped:
  *
- *		-_.+!*'(),%#@?=;:/,+&$ alphanum
+ *      -_.+!*'(),%#@?=;:/,+&$ alphanum
  *
  * Note that this character set is the addition of:
  *
- *	- The characters which are safe to be in an URL
- *	- The characters which are *not* safe to be in
- *	an URL because they are RESERVED characters.
+ *  - The characters which are safe to be in an URL
+ *  - The characters which are *not* safe to be in
+ *  an URL because they are RESERVED characters.
  *
  * We asume (lazily) that any RESERVED char that
  * appears inside an URL is actually meant to
- * have its native function (i.e. as an URL 
+ * have its native function (i.e. as an URL
  * component/separator) and hence needs no escaping.
  *
  * There are two exceptions: the chacters & (amp)
@@ -32,77 +32,77 @@
  *
  */
 static const char HREF_SAFE[] = {
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1, 
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1, 
-	0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 
-	1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 
-	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 0, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 1,
+    0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+    1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+    0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 };
 
 void
 houdini_escape_href(struct sd_buf *ob, const uint8_t *src, size_t size)
 {
-	static const char hex_chars[] = "0123456789ABCDEF";
-	size_t  i = 0, org;
-	char hex_str[3];
+    static const char hex_chars[] = "0123456789ABCDEF";
+    size_t  i = 0, org;
+    char hex_str[3];
 
-	sd_bufgrow(ob, ESCAPE_GROW_FACTOR(size));
-	hex_str[0] = '%';
+    sd_bufgrow(ob, ESCAPE_GROW_FACTOR(size));
+    hex_str[0] = '%';
 
-	while (i < size) {
-		org = i;
-		while (i < size && HREF_SAFE[src[i]] != 0)
-			i++;
+    while (i < size) {
+        org = i;
+        while (i < size && HREF_SAFE[src[i]] != 0)
+            i++;
 
-		if (i > org)
-			sd_bufput(ob, src + org, i - org);
+        if (i > org)
+            sd_bufput(ob, src + org, i - org);
 
-		/* escaping */
-		if (i >= size)
-			break;
+        /* escaping */
+        if (i >= size)
+            break;
 
-		switch (src[i]) {
-		/* amp appears all the time in URLs, but needs
-		 * HTML-entity escaping to be inside an href */
-		case '&': 
-			SD_BUFPUTSL(ob, "&amp;");
-			break;
+        switch (src[i]) {
+        /* amp appears all the time in URLs, but needs
+         * HTML-entity escaping to be inside an href */
+        case '&':
+            SD_BUFPUTSL(ob, "&amp;");
+            break;
 
-		/* the single quote is a valid URL character
-		 * according to the standard; it needs HTML
-		 * entity escaping too */
-		case '\'':
-			SD_BUFPUTSL(ob, "&#x27;");
-			break;
-		
-		/* the space can be escaped to %20 or a plus
-		 * sign. we're going with the generic escape
-		 * for now. the plus thing is more commonly seen
-		 * when building GET strings */
+        /* the single quote is a valid URL character
+         * according to the standard; it needs HTML
+         * entity escaping too */
+        case '\'':
+            SD_BUFPUTSL(ob, "&#x27;");
+            break;
+        
+        /* the space can be escaped to %20 or a plus
+         * sign. we're going with the generic escape
+         * for now. the plus thing is more commonly seen
+         * when building GET strings */
 #if 0
-		case ' ':
-			sd_bufputc(ob, '+');
-			break;
+        case ' ':
+            sd_bufputc(ob, '+');
+            break;
 #endif
 
-		/* every other character goes with a %XX escaping */
-		default:
-			hex_str[1] = hex_chars[(src[i] >> 4) & 0xF];
-			hex_str[2] = hex_chars[src[i] & 0xF];
-			sd_bufput(ob, hex_str, 3);
-		}
+        /* every other character goes with a %XX escaping */
+        default:
+            hex_str[1] = hex_chars[(src[i] >> 4) & 0xF];
+            hex_str[2] = hex_chars[src[i] & 0xF];
+            sd_bufput(ob, hex_str, 3);
+        }
 
-		i++;
-	}
+        i++;
+    }
 }

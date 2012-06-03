@@ -8,9 +8,9 @@ namespace upskirt { extern "C" {
 #endif
 
 struct stack {
-	void **item;
-	size_t size;
-	size_t asize;
+    void **item;
+    size_t size;
+    size_t asize;
 };
 
 void stack_free(struct stack *);

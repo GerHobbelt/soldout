@@ -23,7 +23,7 @@
 #include <stdint.h>
 
 #include "upskirt_dll_exports.h"
-#if defined(_WIN32) 
+#if defined(_WIN32)
   #include "../mvc/upskirt_win32.h"
 #endif
 
@@ -33,8 +33,8 @@ namespace upskirt { extern "C" {
 #endif
 
 typedef enum {
-	SD_BUF_OK = 0,
-	SD_BUF_ENOMEM = -1,
+    SD_BUF_OK = 0,
+    SD_BUF_ENOMEM = -1,
 } sd_buferror_t;
 
 typedef void *(*sd_malloc_cb)(size_t);
@@ -43,25 +43,25 @@ typedef void (*sd_free_cb)(void *);
 
 /* struct sd_buf: character array buffer */
 struct sd_buf {
-	uint8_t *data;		/* actual character data */
-	size_t size;	/* size of the string */
-	size_t asize;	/* allocated size (0 = volatile buffer) */
-	size_t unit;	/* reallocation unit size (0 = read-only buffer) */
-	sd_realloc_cb realloc;
-	sd_free_cb free;
+    uint8_t *data;      /* actual character data */
+    size_t size;    /* size of the string */
+    size_t asize;   /* allocated size (0 = volatile buffer) */
+    size_t unit;    /* reallocation unit size (0 = read-only buffer) */
+    sd_realloc_cb realloc;
+    sd_free_cb free;
 };
 
 /* SD_BUF_STATIC: global buffer from a string litteral */
 #define SD_BUF_STATIC(string) \
-	{ (uint8_t *)(string), sizeof(string) - 1, sizeof(string), 0, 0 }
+    { (uint8_t *)(string), sizeof(string) - 1, sizeof(string), 0, 0 }
 
 /* SD_BUF_VOLATILE: macro for creating a volatile buffer on the stack */
 #define SD_BUF_VOLATILE(strname) \
-	{ (uint8_t *)(strname), strlen(strname), 0, 0, 0 }
+    { (uint8_t *)(strname), strlen(strname), 0, 0, 0 }
 
 /* SD_BUFPUTSL: optimized sd_bufputs of a string litteral */
 #define SD_BUFPUTSL(output, literal) \
-	sd_bufput(output, literal, sizeof(literal) - 1)
+    sd_bufput(output, literal, sizeof(literal) - 1)
 
 /* sd_bufgrow: increasing the allocated size to the given value */
 SDPUBFUN int sd_bufgrow(struct sd_buf *, size_t);

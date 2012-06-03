@@ -38,11 +38,11 @@
 
 /** DOC_DISABLE */
 
-/* 
+/*
  * Notes:
  *
- * The default behaviour is to assume a static library is being built. 
- * You MUST #define LIBUPSKIRT_DYNAMIC in your code/project/makefile to 
+ * The default behaviour is to assume a static library is being built.
+ * You MUST #define LIBUPSKIRT_DYNAMIC in your code/project/makefile to
  * receive the incantations for libupskirt as a DLL/SO module.
  */
 

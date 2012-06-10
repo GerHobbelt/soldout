@@ -59,6 +59,7 @@ enum mkd_extensions {
 	MKDEXT_SPACE_HEADERS = (1 << 6),
 	MKDEXT_SUPERSCRIPT = (1 << 7),
 	MKDEXT_LAX_SPACING = (1 << 8),
+	MKDEXT_LIST_ALPHA_ROMAN = (1 << 9),
 };
 
 /* sd_callbacks - functions for rendering parsed data */
@@ -108,6 +109,8 @@ struct sd_markdown;
 /* list/listitem flags */
 #define MKD_LIST_ORDERED	1
 #define MKD_LI_BLOCK		2  /* <li> containing block data */
+#define MKD_LIST_ALPHA		3
+#define MKD_LIST_ROMAN		4
 
 /**********************
  * EXPORTED FUNCTIONS *

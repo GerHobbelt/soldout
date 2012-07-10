@@ -122,7 +122,7 @@ rndr_blockcode(struct buf *ob, const struct buf *text, const struct buf *lang, v
 
 	if (lang && lang->size) {
 		size_t i, cls;
-		BUFPUTSL(ob, "<pre><code class=\"");
+		BUFPUTSL(ob, "<pre><code class=\"lang-");
 
 		for (i = 0, cls = 0; i < lang->size; ++i, ++cls) {
 			while (i < lang->size && isspace(lang->data[i]))

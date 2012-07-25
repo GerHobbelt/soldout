@@ -23,6 +23,10 @@
 namespace upskirt { extern "C" {
 #endif
 
+enum {
+	SD_AUTOLINK_SHORT_DOMAINS = (1 << 0),
+};
+
 SDPUBFUN int
 sd_autolink_issafe(const uint8_t *link, size_t link_len);
 

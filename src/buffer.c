@@ -123,7 +123,7 @@ sd_bufprintf(struct sd_buf *buf, const char *fmt, ...)
 
     if (buf->size >= buf->asize && sd_bufgrow(buf, buf->size + 1) < 0)
         return;
-    
+
     va_start(ap, fmt);
     n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
     va_end(ap);
@@ -172,7 +172,7 @@ sd_bufputs(struct sd_buf *buf, const char *str)
 {
     if (!str)
         return;
-        
+
     sd_bufput(buf, str, strlen(str));
 }
 

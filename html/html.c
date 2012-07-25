@@ -123,7 +123,7 @@ rndr_blockcode(struct sd_buf *ob, const struct sd_buf *text, const struct sd_buf
 
     if (lang && lang->size) {
         size_t i, cls;
-		SD_BUFPUTSL(ob, "<pre><code class=\"lang-");
+        SD_BUFPUTSL(ob, "<pre><code class=\"lang-");
 
         for (i = 0, cls = 0; i < lang->size; ++i, ++cls) {
             while (i < lang->size && isspace(lang->data[i]))
@@ -173,13 +173,13 @@ rndr_codespan(struct sd_buf *ob, const struct sd_buf *text, void *opaque)
 static int
 rndr_ins(struct sd_buf *ob, const struct sd_buf *text, void *opaque)
 {
-	if (!text || !text->size)
-		return 0;
+    if (!text || !text->size)
+        return 0;
 
-	SD_BUFPUTSL(ob, "<ins>");
-	sd_bufput(ob, text->data, text->size);
-	SD_BUFPUTSL(ob, "</ins>");
-	return 1;
+    SD_BUFPUTSL(ob, "<ins>");
+    sd_bufput(ob, text->data, text->size);
+    SD_BUFPUTSL(ob, "</ins>");
+    return 1;
 }
 
 static int
@@ -227,13 +227,13 @@ rndr_linebreak(struct sd_buf *ob, void *opaque)
 
 static void
 rndr_header(struct sd_buf *ob, const struct sd_buf *text, int level, void *opaque)
-{   
+{
     struct html_renderopt *options = opaque;
 
     if (ob->size)
         sd_bufputc(ob, '\n');
-        
-    if (options->flags & HTML_OUTLINE) 
+
+    if (options->flags & HTML_OUTLINE)
     {
         if(options->outline_data.current_level >= level)
         {
@@ -516,7 +516,7 @@ rndr_finalize(struct sd_buf *ob, void *opaque)
 {
     struct html_renderopt *options = opaque;
     int i;
-        
+
     if (options->flags & HTML_OUTLINE) {
         for(i = 0; i < options->outline_data.open_section_count; i++)
         {
@@ -604,7 +604,7 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
         toc_link,
         NULL,
         rndr_triple_emphasis,
-		rndr_ins,
+        rndr_ins,
         rndr_strikethrough,
         rndr_superscript,
 
@@ -614,7 +614,7 @@ sdhtml_toc_renderer(struct sd_callbacks *callbacks, struct html_renderopt *optio
         NULL,
         toc_finalize,
 
-		NULL,
+        NULL,
     };
 
     memset(options, 0x0, sizeof(struct html_renderopt));
@@ -648,7 +648,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
         rndr_link,
         rndr_raw_html,
         rndr_triple_emphasis,
-		rndr_ins,
+        rndr_ins,
         rndr_strikethrough,
         rndr_superscript,
 
@@ -658,7 +658,7 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
         NULL,
         NULL,
 
-		NULL, //rndr_finalize,
+        NULL, //rndr_finalize,
     };
 
     /* Prepare the options pointer */
@@ -668,9 +668,9 @@ sdhtml_renderer(struct sd_callbacks *callbacks, struct html_renderopt *options, 
     /* Prepare the callbacks */
     memcpy(callbacks, &cb_default, sizeof(struct sd_callbacks));
 
-	if (render_flags & HTML_OUTLINE)
+    if (render_flags & HTML_OUTLINE)
     {
-		callbacks->outline = rndr_finalize;
+        callbacks->outline = rndr_finalize;
 
         options->outline_data.open_section_count = 0;
         options->outline_data.current_level = 0;

@@ -15,82 +15,92 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef BUFFER_H__
-#define BUFFER_H__
+#ifndef UPSKIRT_BUFFER_H__
+#define UPSKIRT_BUFFER_H__
 
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdint.h>
 
-#ifdef __cplusplus
-extern "C" {
+#include "upskirt_dll_exports.h"
+#if defined(_WIN32)
+  #include "../mvc/upskirt_win32.h"
 #endif
 
-#if defined(_MSC_VER)
-#define __attribute__(x)
-#define inline
+
+#ifdef __cplusplus
+namespace upskirt { extern "C" {
 #endif
 
 typedef enum {
-	BUF_OK = 0,
-	BUF_ENOMEM = -1,
-} buferror_t;
+    SD_BUF_OK = 0,
+    SD_BUF_ENOMEM = -1,
+} sd_buferror_t;
 
-/* struct buf: character array buffer */
-struct buf {
-	uint8_t *data;		/* actual character data */
-	size_t size;	/* size of the string */
-	size_t asize;	/* allocated size (0 = volatile buffer) */
-	size_t unit;	/* reallocation unit size (0 = read-only buffer) */
+typedef void *(*sd_malloc_cb)(size_t);
+typedef void *(*sd_realloc_cb)(void *, size_t);
+typedef void (*sd_free_cb)(void *);
+
+/* struct sd_buf: character array buffer */
+struct sd_buf {
+    uint8_t *data;      /* actual character data */
+    size_t size;    /* size of the string */
+    size_t asize;   /* allocated size (0 = volatile buffer) */
+    size_t unit;    /* reallocation unit size (0 = read-only buffer) */
+    sd_realloc_cb realloc;
+    sd_free_cb free;
 };
 
-/* CONST_BUF: global buffer from a string litteral */
-#define BUF_STATIC(string) \
-	{ (uint8_t *)string, sizeof string -1, sizeof string, 0, 0 }
+/* SD_BUF_STATIC: global buffer from a string litteral */
+#define SD_BUF_STATIC(string) \
+    { (uint8_t *)(string), sizeof(string) - 1, sizeof(string), 0, 0 }
 
-/* VOLATILE_BUF: macro for creating a volatile buffer on the stack */
-#define BUF_VOLATILE(strname) \
-	{ (uint8_t *)strname, strlen(strname), 0, 0, 0 }
+/* SD_BUF_VOLATILE: macro for creating a volatile buffer on the stack */
+#define SD_BUF_VOLATILE(strname) \
+    { (uint8_t *)(strname), strlen(strname), 0, 0, 0 }
 
-/* BUFPUTSL: optimized bufputs of a string litteral */
-#define BUFPUTSL(output, literal) \
-	bufput(output, literal, sizeof literal - 1)
+/* SD_BUFPUTSL: optimized sd_bufputs of a string litteral */
+#define SD_BUFPUTSL(output, literal) \
+    sd_bufput(output, literal, sizeof(literal) - 1)
 
-/* bufgrow: increasing the allocated size to the given value */
-int bufgrow(struct buf *, size_t);
+/* sd_bufgrow: increasing the allocated size to the given value */
+SDPUBFUN int sd_bufgrow(struct sd_buf *, size_t);
 
-/* bufnew: allocation of a new buffer */
-struct buf *bufnew(size_t) __attribute__ ((malloc));
+/* sd_bufnew: allocation of a new buffer; use the system default heap allocation functions */
+SDPUBFUN struct sd_buf *sd_bufnew(size_t) __attribute__ ((malloc));
 
-/* bufnullterm: NUL-termination of the string array (making a C-string) */
-const char *bufcstr(struct buf *);
+/* sd_bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
+SDPUBFUN struct sd_buf *sd_bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
 
-/* bufprefix: compare the beginning of a buffer with a string */
-int bufprefix(const struct buf *buf, const char *prefix);
+/* sd_bufcstr: NUL-termination of the string array (making a C-string) */
+SDPUBFUN const char *sd_bufcstr(struct sd_buf *);
 
-/* bufput: appends raw data to a buffer */
-void bufput(struct buf *, const void *, size_t);
+/* sd_bufprefix: compare the beginning of a buffer with a string */
+SDPUBFUN int sd_bufprefix(const struct sd_buf *buf, const char *prefix);
 
-/* bufputs: appends a NUL-terminated string to a buffer */
-void bufputs(struct buf *, const char *);
+/* sd_bufput: appends raw data to a buffer */
+SDPUBFUN void sd_bufput(struct sd_buf *, const void *, size_t);
 
-/* bufputc: appends a single char to a buffer */
-void bufputc(struct buf *, int);
+/* sd_bufputs: appends a NUL-terminated string to a buffer */
+SDPUBFUN void sd_bufputs(struct sd_buf *, const char *);
 
-/* bufrelease: decrease the reference count and free the buffer if needed */
-void bufrelease(struct buf *);
+/* sd_bufputc: appends a single char to a buffer */
+SDPUBFUN void sd_bufputc(struct sd_buf *, int);
 
-/* bufreset: frees internal data of the buffer */
-void bufreset(struct buf *);
+/* sd_bufrelease: decrease the reference count and free the buffer if needed */
+SDPUBFUN void sd_bufrelease(struct sd_buf *);
 
-/* bufslurp: removes a given number of bytes from the head of the array */
-void bufslurp(struct buf *, size_t);
+/* sd_bufreset: frees internal data of the buffer */
+SDPUBFUN void sd_bufreset(struct sd_buf *);
 
-/* bufprintf: formatted printing to a buffer */
-void bufprintf(struct buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
+/* sd_bufslurp: removes a given number of bytes from the head of the array */
+SDPUBFUN void sd_bufslurp(struct sd_buf *, size_t);
+
+/* sd_bufprintf: formatted printing to a buffer */
+SDPUBFUN void sd_bufprintf(struct sd_buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
 
 #ifdef __cplusplus
-}
+} }
 #endif
 
 #endif

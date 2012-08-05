@@ -26,18 +26,25 @@
 #define READ_UNIT 1024
 #define OUTPUT_UNIT 64
 
+/* main • main function, interfacing STDIO with the parser */
 int
 main(int argc, char **argv)
 {
     struct sd_buf *ib, *ob;
-    size_t ret;
+    int ret;
     FILE *in = stdin;
+    unsigned int enabled_extensions = MKDEXT_TABLES | MKDEXT_FENCED_CODE | MKDEXT_EMAIL_FRIENDLY;
+    unsigned int render_flags = 0; // HTML_SKIP_HTML | HTML_SKIP_STYLE | HTML_HARD_WRAP;
+
+    struct sd_callbacks callbacks;
+    struct html_renderopt options;
+    struct sd_markdown *markdown;
 
     /* opening the file if given from the command line */
     if (argc > 1) {
         in = fopen(argv[1], "r");
         if (!in) {
-            fprintf(stderr, "Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
+            fprintf(stderr,"Unable to open input file \"%s\": %s\n", argv[1], strerror(errno));
             return 1;
         }
     }
@@ -56,16 +63,19 @@ main(int argc, char **argv)
     /* performing markdown parsing */
     ob = sd_bufnew(OUTPUT_UNIT);
 
-    sdhtml_smartypants(ob, ib->data, ib->size);
+    sdhtml_renderer(&callbacks, &options, render_flags);
+    markdown = sd_markdown_new(enabled_extensions, 16, &callbacks, &options);
+    sd_markdown_render(ob, ib->data, ib->size, markdown);
+    sd_markdown_free(markdown);
 
     /* writing the result to stdout */
-    (void)fwrite(ob->data, 1, ob->size, stdout);
+    ret = fwrite(ob->data, 1, ob->size, stdout);
 
     /* cleanup */
     sd_bufrelease(ib);
     sd_bufrelease(ob);
 
-    return 0;
+    return (ret < 0) ? -1 : 0;
 }
 
 /* vim: set filetype=c: */

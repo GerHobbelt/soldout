@@ -4,13 +4,13 @@
 #include <stdlib.h>
 
 #ifdef __cplusplus
-extern "C" {
+namespace upskirt { extern "C" {
 #endif
 
 struct stack {
-	void **item;
-	size_t size;
-	size_t asize;
+    void **item;
+    size_t size;
+    size_t asize;
 };
 
 void stack_free(struct stack *);
@@ -23,7 +23,7 @@ void *stack_pop(struct stack *);
 void *stack_top(struct stack *);
 
 #ifdef __cplusplus
-}
+} }
 #endif
 
 #endif

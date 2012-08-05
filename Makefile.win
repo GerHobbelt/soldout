@@ -2,7 +2,7 @@
 CFLAGS=/O2 /EHsc /I"src/" /I"examples"/ /I"html"/
 CC=cl
 
-SUNDOWN_SRC=\
+UPSKIRT_SRC=\
 	src\markdown.obj \
 	src\stack.obj \
 	src\buffer.obj \
@@ -12,19 +12,22 @@ SUNDOWN_SRC=\
 	html\houdini_html_e.obj \
 	html\houdini_href_e.obj
 
-all: sundown.dll sundown.exe
+all: upskirt.dll upskirt.exe smartypants.exe
 
-sundown.dll: $(SUNDOWN_SRC) sundown.def
-	$(CC) $(SUNDOWN_SRC) sundown.def /link /DLL $(LDFLAGS) /out:$@
+upskirt.dll: $(UPSKIRT_SRC) upskirt.def
+	$(CC) $(UPSKIRT_SRC) upskirt.def /link /DLL $(LDFLAGS) /out:$@
 
-sundown.exe: examples\sundown.obj $(SUNDOWN_SRC)
-	$(CC) examples\sundown.obj $(SUNDOWN_SRC) /link $(LDFLAGS) /out:$@
+upskirt.exe: examples\upskirt.obj $(UPSKIRT_SRC)
+	$(CC) examples\upskirt.obj $(UPSKIRT_SRC) /link $(LDFLAGS) /out:$@
+
+smartypants.exe: examples\smartypants.obj $(UPSKIRT_SRC)
+	$(CC) examples\smartypants.obj $(UPSKIRT_SRC) /link $(LDFLAGS) /out:$@
 
 # housekeeping
 clean:
-	del $(SUNDOWN_SRC)
-	del sundown.dll sundown.exe
-	del sundown.exp sundown.lib
+	del $(UPSKIRT_SRC)
+	del upskirt.dll upskirt.exe smartypants.exe
+	del upskirt.exp upskirt.lib
 
 # generic object compilations
 

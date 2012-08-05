@@ -17,14 +17,18 @@
 DEPDIR=depends
 
 # "Machine-dependant" options
-#MFLAGS=-fPIC
+MCFLAGS=-fPIC
+MLFLAGS=
 
-CFLAGS=-c -g -O3 -fPIC -Wall -Werror -Wsign-compare -Isrc -Ihtml
-LDFLAGS=-g -O3 -Wall -Werror 
+MFLAGS=
+#MFLAGS=-m32 -mmacosx-version-min=10.5 --sysroot /Developer/SDKs/MacOSX10.5.sdk
+
+CFLAGS=-c -g -O3 -Wall -Werror -Wsign-compare -Isrc -Ihtml $(MCFLAGS) $(MFLAGS)
+LDFLAGS=-g -O3 -Wall -Werror $(MLFLAGS) $(MFLAGS)
 CC=gcc
 
 
-SUNDOWN_SRC=\
+UPSKIRT_SRC=\
 	src/markdown.o \
 	src/stack.o \
 	src/buffer.o \
@@ -34,39 +38,45 @@ SUNDOWN_SRC=\
 	html/houdini_html_e.o \
 	html/houdini_href_e.o
 
-all:		libsundown.so sundown smartypants html_blocks
+all:		libupskirt.so upskirt smartypants html_blocks
 
 .PHONY:		all clean
 
 # libraries
 
-libsundown.so:	libsundown.so.1
-	ln -f -s $^ $@
+libupskirt.so:	libupskirt.so.1
+	-ln -f -s $^ $@
 
-libsundown.so.1: $(SUNDOWN_SRC)
-	$(CC) $(LDFLAGS) -shared -Wl $^ -o $@
+libupskirt.so.1: $(UPSKIRT_SRC)
+	$(CC) $(LDFLAGS) -shared $^ -o $@
 
 # executables
 
-sundown:	examples/sundown.o $(SUNDOWN_SRC)
+upskirt:	examples/upskirt.o $(UPSKIRT_SRC)
 	$(CC) $(LDFLAGS) $^ -o $@
 
-smartypants: examples/smartypants.o $(SUNDOWN_SRC)
+smartypants: examples/smartypants.o $(UPSKIRT_SRC)
 	$(CC) $(LDFLAGS) $^ -o $@
 
 # perfect hashing
 html_blocks: src/html_blocks.h
 
 src/html_blocks.h: html_block_names.txt
-	gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case $^ > $@
+	-todos -a -d html_block_names.txt
+	gperf -N find_block_tag -H hash_block_tag -C -c -E --ignore-case -L ANSI-C $^ > $@
+
+src/markdown.o: src/markdown.c src/html_blocks.h
 
 
 # housekeeping
 clean:
 	rm -f src/*.o html/*.o examples/*.o
-	rm -f libsundown.so libsundown.so.1 sundown smartypants
-	rm -f sundown.exe smartypants.exe
+	rm -f libupskirt.so libupskirt.so.1 upskirt smartypants
+	rm -f upskirt.exe smartypants.exe
 	rm -rf $(DEPDIR)
+
+superclean: clean
+	rm -f src/html_blocks.h
 
 
 # dependencies

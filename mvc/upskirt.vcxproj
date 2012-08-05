@@ -231,7 +231,6 @@
     <ClCompile Include="..\html\houdini_href_e.c" />
     <ClCompile Include="..\html\houdini_html_e.c" />
     <ClCompile Include="..\html\html.c" />
-    <ClCompile Include="..\html\html_smartypants.c" />
     <ClCompile Include="..\src\autolink.c" />
     <ClCompile Include="..\src\buffer.c" />
     <ClCompile Include="..\src\markdown.c" />

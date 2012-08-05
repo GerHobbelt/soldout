@@ -21,9 +21,6 @@
     <ClCompile Include="..\html\html.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\html\html_smartypants.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\src\autolink.c">
       <Filter>Source Files</Filter>
     </ClCompile>

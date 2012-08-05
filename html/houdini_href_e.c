@@ -85,7 +85,7 @@ houdini_escape_href(struct sd_buf *ob, const uint8_t *src, size_t size)
         case '\'':
             SD_BUFPUTSL(ob, "&#x27;");
             break;
-        
+
         /* the space can be escaped to %20 or a plus
          * sign. we're going with the generic escape
          * for now. the plus thing is more commonly seen

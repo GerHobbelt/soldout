@@ -28,6 +28,7 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <RootNamespace>smartypants</RootNamespace>
+    <ProjectGuid>{B682A9FC-8C10-CE85-1083-3C42CA82502D}</ProjectGuid>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -122,7 +123,7 @@
     <ClCompile>
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\mvc;..\html;..\src;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\;..\..\src;..\..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
@@ -221,30 +222,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\html\houdini.h" />
-    <ClInclude Include="..\html\html.h" />
-    <ClInclude Include="..\src\autolink.h" />
-    <ClInclude Include="..\src\buffer.h" />
-    <ClInclude Include="..\src\html_blocks.h" />
-    <ClInclude Include="..\src\markdown.h" />
-    <ClInclude Include="..\src\stack.h" />
-    <ClInclude Include="..\src\upskirt_dll_exports.h" />
-    <ClInclude Include="upskirt_win32.h" />
+    <ClInclude Include="..\..\html\houdini.h" />
+    <ClInclude Include="..\..\html\html.h" />
+    <ClInclude Include="..\..\src\autolink.h" />
+    <ClInclude Include="..\..\src\buffer.h" />
+    <ClInclude Include="..\..\src\html_blocks.h" />
+    <ClInclude Include="..\..\src\markdown.h" />
+    <ClInclude Include="..\..\src\stack.h" />
+    <ClInclude Include="..\..\src\upskirt_dll_exports.h" />
+    <ClInclude Include="..\upskirt_win32.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\examples\smartypants.c" />
-    <ClCompile Include="..\html\houdini_href_e.c" />
-    <ClCompile Include="..\html\houdini_html_e.c" />
-    <ClCompile Include="..\html\html.c" />
-    <ClCompile Include="..\html\html_smartypants.c" />
-    <ClCompile Include="..\src\autolink.c" />
-    <ClCompile Include="..\src\buffer.c" />
-    <ClCompile Include="..\src\markdown.c" />
-    <ClCompile Include="..\src\stack.c" />
+    <ClCompile Include="..\..\examples\smartypants.c" />
+    <ClCompile Include="..\..\html\houdini_href_e.c" />
+    <ClCompile Include="..\..\html\houdini_html_e.c" />
+    <ClCompile Include="..\..\html\html.c" />
+    <ClCompile Include="..\..\html\html_smartypants.c" />
+    <ClCompile Include="..\..\src\autolink.c" />
+    <ClCompile Include="..\..\src\buffer.c" />
+    <ClCompile Include="..\..\src\markdown.c" />
+    <ClCompile Include="..\..\src\stack.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\html_block_names.txt" />
-    <None Include="..\README.markdown" />
+    <None Include="..\..\html_block_names.txt" />
+    <None Include="..\..\README.markdown" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

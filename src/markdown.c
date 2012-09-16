@@ -769,7 +769,7 @@ char_autolink_www(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, si
 
     link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-    if ((link_len = sd_autolink__www(&rewind, link, data, offset, size, 0)) > 0) {
+    if ((link_len = sd_autolink__www(&rewind, link, data, offset, size)) > 0) {
         link_url = rndr_newbuf(rndr, BUFFER_SPAN);
         SD_BUFPUTSL(link_url, "http://");
         sd_bufput(link_url, link->data, link->size);
@@ -801,7 +801,7 @@ char_autolink_email(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, 
 
     link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-    if ((link_len = sd_autolink__email(&rewind, link, data, offset, size, 0)) > 0) {
+    if ((link_len = sd_autolink__email(&rewind, link, data, offset, size)) > 0) {
         ob->size -= rewind;
         rndr->cb.autolink(ob, link, MKDA_EMAIL, rndr->opaque);
     }
@@ -821,7 +821,7 @@ char_autolink_url(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, si
 
     link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-    if ((link_len = sd_autolink__url(&rewind, link, data, offset, size, 0)) > 0) {
+    if ((link_len = sd_autolink__url(&rewind, link, data, offset, size)) > 0) {
         ob->size -= rewind;
         rndr->cb.autolink(ob, link, MKDA_NORMAL, rndr->opaque);
     }

@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="smartypants"
-	ProjectGUID="{2ADC3955-26A0-42D3-A82C-ED8D612913D1}"
-	RootNamespace="smartypants"
+	Name="upskirt"
+	ProjectGUID="{BE47161F-589E-4725-8CB4-2FA6746F66DD}"
+	RootNamespace="upskirt"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\html;..\src;."
+				AdditionalIncludeDirectories="..\..\html;..\..\src;."
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -111,7 +111,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="..\html;..\src;."
+				AdditionalIncludeDirectories="..\..\html;..\..\src;."
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"
@@ -165,31 +165,39 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\src\array.c"
+				RelativePath="..\..\src\autolink.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\autolink.c"
+				RelativePath="..\..\src\buffer.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\buffer.c"
+				RelativePath="..\..\html\houdini_href_e.c"
 				>
 			</File>
 			<File
-				RelativePath="..\html\html.c"
+				RelativePath="..\..\html\houdini_html_e.c"
 				>
 			</File>
 			<File
-				RelativePath="..\html\html_smartypants.c"
+				RelativePath="..\..\html\html.c"
 				>
 			</File>
 			<File
-				RelativePath="..\src\markdown.c"
+				RelativePath="..\..\html\html_smartypants.c"
 				>
 			</File>
 			<File
-				RelativePath="..\examples\smartypants.c"
+				RelativePath="..\..\src\markdown.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\stack.c"
+				>
+			</File>
+			<File
+				RelativePath="..\..\examples\upskirt.c"
 				>
 			</File>
 		</Filter>
@@ -199,27 +207,39 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath="..\src\array.h"
+				RelativePath="..\..\src\autolink.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src\autolink.h"
+				RelativePath="..\..\src\buffer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src\buffer.h"
+				RelativePath="..\..\html\houdini.h"
 				>
 			</File>
 			<File
-				RelativePath="..\html\html.h"
+				RelativePath="..\..\html\html.h"
 				>
 			</File>
 			<File
-				RelativePath="..\src\markdown.h"
+				RelativePath="..\..\src\html_blocks.h"
 				>
 			</File>
 			<File
-				RelativePath=".\win32.h"
+				RelativePath="..\..\src\markdown.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\stack.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\src\upskirt_dll_exports.h"
+				>
+			</File>
+			<File
+				RelativePath="..\upskirt_win32.h"
 				>
 			</File>
 		</Filter>

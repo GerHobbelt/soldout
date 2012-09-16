@@ -295,9 +295,18 @@ rndr_list(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque)
 }
 
 static void
-rndr_listitem(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque)
+rndr_listitem(struct sd_buf *ob, const struct sd_buf *text, size_t number, int flags, void *opaque)
 {
-    SD_BUFPUTSL(ob, "<li>");
+    if(flags & MKD_LIST_ORDERED && flags & MKD_LIST_FIXED) {
+        char buffer[100];
+        BUFPUTSL(ob, "<li value=");
+        snprintf(buffer, sizeof(buffer), "%lu", number);
+        bufput(ob, buffer, strlen(buffer));
+        BUFPUTSL(ob, ">");
+    } else {
+        SD_BUFPUTSL(ob, "<li>");
+    }
+        
     if (text) {
         size_t size = text->size;
         while (size && text->data[size - 1] == '\n')

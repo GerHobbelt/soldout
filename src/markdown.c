@@ -1328,7 +1328,7 @@ prefix_code(uint8_t *data, size_t size)
 
 /* prefix_oli • returns ordered list item prefix */
 static size_t
-prefix_oli(uint8_t *data, size_t size)
+prefix_oli_number(uint8_t *data, size_t size, size_t* number)
 {
     size_t i = 0;
 
@@ -1339,8 +1339,11 @@ prefix_oli(uint8_t *data, size_t size)
     if (i >= size || data[i] < '0' || data[i] > '9')
         return 0;
 
-    while (i < size && data[i] >= '0' && data[i] <= '9')
+    *number = 0;
+    while (i < size && data[i] >= '0' && data[i] <= '9') {
+        *number = 10 * (*number) + (data[i] - '0');
         i++;
+    }
 
     if (i + 1 >= size || data[i] != '.' || data[i + 1] != ' ')
         return 0;
@@ -1349,6 +1352,13 @@ prefix_oli(uint8_t *data, size_t size)
         return 0;
 
     return i + 2;
+}
+
+static size_t
+prefix_oli(uint8_t *data, size_t size)
+{
+    size_t number;
+    return prefix_oli_number(data, size, &number);
 }
 
 /* prefix_uli • returns ordered list item prefix */
@@ -1638,6 +1648,7 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
     struct sd_buf *work = 0, *inter = 0;
     size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
     int in_empty = 0, has_inside_empty = 0, in_fence = 0;
+    size_t number;
 
     /* keeping track of the first indentation prefix */
     while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
@@ -1645,7 +1656,7 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 
     beg = prefix_uli(data, size);
     if (!beg)
-        beg = prefix_oli(data, size);
+        beg = prefix_oli_number(data, size, &number);
 
     if (!beg)
         return 0;
@@ -1760,7 +1771,7 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 
     /* render of li itself */
     if (rndr->cb.listitem)
-        rndr->cb.listitem(ob, inter, *flags, rndr->opaque);
+        rndr->cb.listitem(ob, inter, number, (rndr->ext_flags & MKDEXT_EMAIL_FRIENDLY) ? *flags | MKD_LIST_FIXED : *flags, rndr->opaque);
 
     rndr_popbuf(rndr, BUFFER_SPAN);
     rndr_popbuf(rndr, BUFFER_SPAN);

@@ -9,7 +9,9 @@
     #define ssize_t int
     #define inline __inline
     #define snprintf _snprintf
+#if _MSC_VER < 1500
     #define vsnprintf _vsnprintf
+#endif
     #define va_copy(dst, src) ((void)((dst) = (src)))
     #define __attribute__(x)
 

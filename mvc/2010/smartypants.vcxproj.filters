@@ -12,74 +12,68 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\src\buffer.c">
+    <ClCompile Include="..\..\src\buffer.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\markdown.c">
+    <ClCompile Include="..\..\src\markdown.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\html\html.c">
+    <ClCompile Include="..\..\html\html.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\html\html_smartypants.c">
+    <ClCompile Include="..\..\html\html_smartypants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\autolink.c">
+    <ClCompile Include="..\..\src\autolink.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\src\stack.c">
+    <ClCompile Include="..\..\src\stack.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\html\houdini_html_e.c">
+    <ClCompile Include="..\..\html\houdini_html_e.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\html\houdini_href_e.c">
+    <ClCompile Include="..\..\html\houdini_href_e.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\examples\smartypants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\src\buffer.h">
+    <ClInclude Include="..\..\src\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\markdown.h">
+    <ClInclude Include="..\..\src\markdown.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\html\html.h">
+    <ClInclude Include="..\..\html\html.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\autolink.h">
+    <ClInclude Include="..\..\src\autolink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\html_blocks.h">
+    <ClInclude Include="..\..\src\html_blocks.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\stack.h">
+    <ClInclude Include="..\..\src\stack.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\html\houdini.h">
+    <ClInclude Include="..\..\html\houdini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\src\upskirt_dll_exports.h">
+    <ClInclude Include="..\..\src\upskirt_dll_exports.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="upskirt_win32.h">
+    <ClInclude Include="..\upskirt_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\html_block_names.txt">
+    <None Include="..\..\html_block_names.txt">
       <Filter>Extra</Filter>
     </None>
-    <None Include="..\Makefile">
-      <Filter>Extra</Filter>
-    </None>
-    <None Include="..\Makefile.win">
-      <Filter>Extra</Filter>
-    </None>
-    <None Include="..\README.markdown">
-      <Filter>Extra</Filter>
-    </None>
-    <None Include="..\upskirt.def">
+    <None Include="..\..\README.markdown">
       <Filter>Extra</Filter>
     </None>
   </ItemGroup>

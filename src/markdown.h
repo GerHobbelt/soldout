@@ -72,7 +72,7 @@ struct sd_callbacks {
     void (*header)(struct sd_buf *ob, const struct sd_buf *text, int level, void *opaque);
     void (*hrule)(struct sd_buf *ob, void *opaque);
     void (*list)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
-    void (*listitem)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
+    void (*listitem)(struct sd_buf *ob, const struct sd_buf *text, size_t number, int flags, void *opaque);
     void (*paragraph)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
     void (*table)(struct sd_buf *ob, const struct sd_buf *header, const struct sd_buf *body, void *opaque);
     void (*table_row)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
@@ -113,7 +113,8 @@ struct sd_markdown;
 
 /* list/listitem flags */
 #define MKD_LIST_ORDERED    1
-#define MKD_LI_BLOCK        2  /* <li> containing block data */
+#define MKD_LIST_FIXED      2
+#define MKD_LI_BLOCK        4  /* <li> containing block data */
 
 /**********************
  * EXPORTED FUNCTIONS *

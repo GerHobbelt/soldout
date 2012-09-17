@@ -179,14 +179,14 @@ sd_bufputs(struct sd_buf *buf, const char *str)
 
 /* sd_bufputc: appends a single uint8_t to a buffer */
 void
-sd_bufputc(struct sd_buf *buf, int c)
+sd_bufputc(struct sd_buf *buf, uint8_t c)
 {
     assert(buf && buf->unit);
 
     if (buf->size + 1 > buf->asize && sd_bufgrow(buf, buf->size + 1) < 0)
         return;
 
-    buf->data[buf->size] = (uint8_t)c;
+    buf->data[buf->size] = c;
     buf->size += 1;
 }
 

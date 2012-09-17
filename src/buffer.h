@@ -85,7 +85,7 @@ SDPUBFUN void sd_bufput(struct sd_buf *, const void *, size_t);
 SDPUBFUN void sd_bufputs(struct sd_buf *, const char *);
 
 /* sd_bufputc: appends a single char to a buffer */
-SDPUBFUN void sd_bufputc(struct sd_buf *, int);
+SDPUBFUN void sd_bufputc(struct sd_buf *, uint8_t);
 
 /* sd_bufrelease: decrease the reference count and free the buffer if needed */
 SDPUBFUN void sd_bufrelease(struct sd_buf *);

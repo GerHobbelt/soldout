@@ -61,6 +61,7 @@ enum mkd_extensions {
     MKDEXT_SUPERSCRIPT = (1 << 7),
     MKDEXT_LAX_SPACING = (1 << 8),
     MKDEXT_EMAIL_FRIENDLY = (1 << 9),
+	MKDEXT_LIST_ALPHA_ROMAN = (1 << 10),
 };
 
 /* sd_callbacks - functions for rendering parsed data */
@@ -112,9 +113,11 @@ struct sd_markdown;
  *********/
 
 /* list/listitem flags */
-#define MKD_LIST_ORDERED    1
-#define MKD_LIST_FIXED      2
-#define MKD_LI_BLOCK        4  /* <li> containing block data */
+#define MKD_LIST_ORDERED    0x01
+#define MKD_LIST_FIXED      0x02
+#define MKD_LIST_ALPHA		0x04
+#define MKD_LIST_ROMAN		0x08
+#define MKD_LI_BLOCK        0x10  /* <li> containing block data */
 
 /**********************
  * EXPORTED FUNCTIONS *

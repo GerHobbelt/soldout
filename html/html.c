@@ -289,6 +289,7 @@ static void
 rndr_list(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque)
 {
     if (ob->size) sd_bufputc(ob, '\n');
+	/* TODO: alpha/roman lists */
     sd_bufput(ob, flags & MKD_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
     if (text) sd_bufput(ob, text->data, text->size);
     sd_bufput(ob, flags & MKD_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);

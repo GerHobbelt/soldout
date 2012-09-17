@@ -478,15 +478,15 @@ rndr_tablecell(struct sd_buf *ob, const struct sd_buf *text, int flags, void *op
 
     switch (flags & MKD_TABLE_ALIGNMASK) {
     case MKD_TABLE_ALIGN_CENTER:
-        SD_BUFPUTSL(ob, " align=\"center\">");
+		SD_BUFPUTSL(ob, " style=\"text-align: center\">");
         break;
 
     case MKD_TABLE_ALIGN_L:
-        SD_BUFPUTSL(ob, " align=\"left\">");
+		SD_BUFPUTSL(ob, " style=\"text-align: left\">");
         break;
 
     case MKD_TABLE_ALIGN_R:
-        SD_BUFPUTSL(ob, " align=\"right\">");
+		SD_BUFPUTSL(ob, " style=\"text-align: right\">");
         break;
 
     default:

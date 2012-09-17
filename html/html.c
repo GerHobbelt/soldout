@@ -25,6 +25,7 @@
 
 #include "houdini.h"
 
+
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
 
@@ -300,10 +301,8 @@ rndr_listitem(struct sd_buf *ob, const struct sd_buf *text, size_t number, int f
 {
     if(flags & MKD_LIST_ORDERED && flags & MKD_LIST_FIXED) {
         char buffer[100];
-        BUFPUTSL(ob, "<li value=");
-        snprintf(buffer, sizeof(buffer), "%lu", number);
-        bufput(ob, buffer, strlen(buffer));
-        BUFPUTSL(ob, ">");
+        snprintf(buffer, sizeof(buffer), "<li value=%lu>", number);
+        sd_bufput(ob, buffer, strlen(buffer));
     } else {
         SD_BUFPUTSL(ob, "<li>");
     }

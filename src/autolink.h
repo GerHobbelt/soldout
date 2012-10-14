@@ -14,8 +14,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef UPSKIRT_AUTOLINK_H
-#define UPSKIRT_AUTOLINK_H
+#ifndef SUNDOWN_AUTOLINK_H
+#define SUNDOWN_AUTOLINK_H
 
 #include "buffer.h"
 
@@ -23,21 +23,17 @@
 namespace upskirt { extern "C" {
 #endif
 
-enum {
-    SD_AUTOLINK_SHORT_DOMAINS = (1 << 0),
-};
-
 SDPUBFUN int
 sd_autolink_issafe(const uint8_t *link, size_t link_len);
 
 SDPUBFUN size_t
-sd_autolink__www(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size, unsigned int flags);
+sd_autolink__www(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size);
 
 SDPUBFUN size_t
-sd_autolink__email(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size, unsigned int flags);
+sd_autolink__email(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size);
 
 SDPUBFUN size_t
-sd_autolink__url(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size, unsigned int flags);
+sd_autolink__url(size_t *rewind_p, struct sd_buf *link, uint8_t *data, size_t offset, size_t size);
 
 #ifdef __cplusplus
 } }

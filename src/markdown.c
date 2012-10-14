@@ -769,7 +769,7 @@ char_autolink_www(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, si
 
     link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-    if ((link_len = sd_autolink__www(&rewind, link, data, offset, size, 0)) > 0) {
+    if ((link_len = sd_autolink__www(&rewind, link, data, offset, size)) > 0) {
         link_url = rndr_newbuf(rndr, BUFFER_SPAN);
         SD_BUFPUTSL(link_url, "http://");
         sd_bufput(link_url, link->data, link->size);
@@ -801,7 +801,7 @@ char_autolink_email(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, 
 
     link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-    if ((link_len = sd_autolink__email(&rewind, link, data, offset, size, 0)) > 0) {
+    if ((link_len = sd_autolink__email(&rewind, link, data, offset, size)) > 0) {
         ob->size -= rewind;
         rndr->cb.autolink(ob, link, MKDA_EMAIL, rndr->opaque);
     }
@@ -821,7 +821,7 @@ char_autolink_url(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, si
 
     link = rndr_newbuf(rndr, BUFFER_SPAN);
 
-    if ((link_len = sd_autolink__url(&rewind, link, data, offset, size, 0)) > 0) {
+    if ((link_len = sd_autolink__url(&rewind, link, data, offset, size)) > 0) {
         ob->size -= rewind;
         rndr->cb.autolink(ob, link, MKDA_NORMAL, rndr->opaque);
     }
@@ -1328,7 +1328,7 @@ prefix_code(uint8_t *data, size_t size)
 
 /* prefix_oli • returns ordered list item prefix */
 static size_t
-prefix_oli(uint8_t *data, size_t size)
+prefix_oli_number(uint8_t *data, size_t size, size_t* number)
 {
     size_t i = 0;
 
@@ -1339,8 +1339,11 @@ prefix_oli(uint8_t *data, size_t size)
     if (i >= size || data[i] < '0' || data[i] > '9')
         return 0;
 
-    while (i < size && data[i] >= '0' && data[i] <= '9')
+    *number = 0;
+    while (i < size && data[i] >= '0' && data[i] <= '9') {
+        *number = 10 * (*number) + (data[i] - '0');
         i++;
+    }
 
     if (i + 1 >= size || data[i] != '.' || data[i + 1] != ' ')
         return 0;
@@ -1349,6 +1352,13 @@ prefix_oli(uint8_t *data, size_t size)
         return 0;
 
     return i + 2;
+}
+
+static size_t
+prefix_oli(uint8_t *data, size_t size)
+{
+    size_t number;
+    return prefix_oli_number(data, size, &number);
 }
 
 /* prefix_uli • returns ordered list item prefix */
@@ -1372,6 +1382,48 @@ prefix_uli(uint8_t *data, size_t size)
     return i + 2;
 }
 
+/* prefix_ali • returns alpha ordered list item prefix */
+static size_t
+prefix_ali(uint8_t *data, size_t size)
+{
+	size_t i = 0;
+
+	if (i < size && data[i] == ' ') i++;
+	if (i < size && data[i] == ' ') i++;
+	if (i < size && data[i] == ' ') i++;
+
+	if (i + 1 >= size || !isalpha(data[i]) ||
+		(data[i + 1] != '.'  || data[i + 1] != ')') ||
+		data[i + 2] != ' ')
+		return 0;
+
+	if (is_next_headerline(data + i, size - i))
+		return 0;
+
+	return i + 3;
+}
+
+/* prefix_rli • returns roman numerals ordered list item prefix */
+static size_t
+prefix_rli(uint8_t *data, size_t size)
+{
+	size_t i = 0;
+
+	if (i < size && data[i] == ' ') i++;
+	if (i < size && data[i] == ' ') i++;
+	if (i < size && data[i] == ' ') i++;
+
+	/* TODO */
+	if (i + 1 >= size || !isalpha(data[i]) ||
+		(data[i + 1] != '.'  || data[i + 1] != ')') ||
+		data[i + 2] != ' ')
+		return 0;
+
+	if (is_next_headerline(data + i, size - i))
+		return 0;
+
+	return i + 3;
+}
 
 /* parse_block • parsing of one block, returning next uint8_t to parse */
 static void parse_block(struct sd_buf *ob, struct sd_markdown *rndr,
@@ -1637,7 +1689,8 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 {
     struct sd_buf *work = 0, *inter = 0;
     size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
-    int in_empty = 0, has_inside_empty = 0, in_fence = 0;
+	int in_empty = 0, has_inside_empty = 0, in_fence = 0, has_switched = 0;
+    size_t number = 0;
 
     /* keeping track of the first indentation prefix */
     while (orgpre < 3 && orgpre < size && data[orgpre] == ' ')
@@ -1645,7 +1698,7 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 
     beg = prefix_uli(data, size);
     if (!beg)
-        beg = prefix_oli(data, size);
+        beg = prefix_oli_number(data, size, &number);
 
     if (!beg)
         return 0;
@@ -1665,7 +1718,8 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 
     /* process the following lines */
     while (beg < size) {
-        size_t has_next_uli = 0, has_next_oli = 0;
+		size_t has_next_uli = 0, has_next_oli = 0,
+		       has_next_ali = 0, has_next_rli = 0;
 
         end++;
 
@@ -1696,18 +1750,37 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
         if (!in_fence) {
             has_next_uli = prefix_uli(data + beg + i, end - beg - i);
             has_next_oli = prefix_oli(data + beg + i, end - beg - i);
+			if (rndr->ext_flags & MKDEXT_LIST_ALPHA_ROMAN) {
+				has_next_ali = prefix_ali(data + beg + i, end - beg - i);
+				has_next_rli = prefix_rli(data + beg + i, end - beg - i);
+			} else  has_next_ali = has_next_rli = 0;
         }
 
         /* checking for ul/ol switch */
-        if (in_empty && (
-            ((*flags & MKD_LIST_ORDERED) && has_next_uli) ||
-            (!(*flags & MKD_LIST_ORDERED) && has_next_oli))){
-            *flags |= MKD_LI_END;
-            break; /* the following item must have same list type */
+		if (in_empty) {
+			has_switched =
+				(*flags & MKD_LIST_ORDERED) ? has_next_uli : has_next_oli;
+
+			if (!has_switched && rndr->ext_flags & MKDEXT_LIST_ALPHA_ROMAN) {
+				if (*flags & MKD_LIST_ORDERED)
+					has_switched = has_next_ali;
+				else if (*flags & MKD_LIST_ALPHA)
+					has_switched = has_next_uli || has_next_oli || has_next_rli;
+				else if (*flags & MKD_LIST_ROMAN)
+					has_switched = has_next_uli || has_next_oli || has_next_ali;
+				else
+					has_switched = has_next_oli || has_next_ali || has_next_rli;
+			}
+
+			if (has_switched) {
+				*flags |= MKD_LI_END;
+				break; /* the following item must have same list type */
+			}
         }
 
         /* checking for a new item */
-        if ((has_next_uli && !is_hrule(data + beg + i, end - beg - i)) || has_next_oli) {
+		if ((has_next_uli && !is_hrule(data + beg + i, end - beg - i)) ||
+		    has_next_oli || has_next_ali || has_next_rli) {
             if (in_empty)
                 has_inside_empty = 1;
 
@@ -1760,7 +1833,7 @@ parse_listitem(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_
 
     /* render of li itself */
     if (rndr->cb.listitem)
-        rndr->cb.listitem(ob, inter, *flags, rndr->opaque);
+        rndr->cb.listitem(ob, inter, number, (rndr->ext_flags & MKDEXT_EMAIL_FRIENDLY) ? *flags | MKD_LIST_FIXED : *flags, rndr->opaque);
 
     rndr_popbuf(rndr, BUFFER_SPAN);
     rndr_popbuf(rndr, BUFFER_SPAN);
@@ -2245,6 +2318,13 @@ parse_block(struct sd_buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t s
 
         else if (prefix_oli(txt_data, end))
             beg += parse_list(ob, rndr, txt_data, end, MKD_LIST_ORDERED);
+
+		else if (rndr->ext_flags & MKDEXT_LIST_ALPHA_ROMAN) {
+			if (prefix_ali(txt_data, end))
+				beg += parse_list(ob, rndr, txt_data, end, MKD_LIST_ALPHA);
+			else if (prefix_rli(txt_data, end))
+				beg += parse_list(ob, rndr, txt_data, end, MKD_LIST_ROMAN);
+		}
 
         else
             beg += parse_paragraph(ob, rndr, txt_data, end);

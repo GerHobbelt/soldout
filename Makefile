@@ -17,11 +17,35 @@
 DEPDIR=depends
 
 # "Machine-dependant" options
-MCFLAGS=-fPIC
-MLFLAGS=
+OS := $(shell uname -s | sed -e 's/[-.0-9]//g')
+$(info  building for host platform '$(OS)' )
+ifeq "$(OS)" "MINGW_NT"
 
+ifndef MCFLAGS
+MCFLAGS=
+endif
+ifndef MLFLAGS
+MLFLAGS=
+endif
+ifndef MFLAGS
+MFLAGS=
+endif
+
+else 
+
+ifndef MCFLAGS
+MCFLAGS=-fPIC
+endif
+ifndef MLFLAGS
+MLFLAGS=
+endif
+ifndef MFLAGS
 MFLAGS=
 #MFLAGS=-m32 -mmacosx-version-min=10.5 --sysroot /Developer/SDKs/MacOSX10.5.sdk
+endif
+
+endif
+
 
 CFLAGS=-c -g -O3 -Wall -Werror -Wsign-compare -Isrc -Ihtml $(MCFLAGS) $(MFLAGS)
 LDFLAGS=-g -O3 -Wall -Werror $(MLFLAGS) $(MFLAGS)

@@ -25,6 +25,7 @@
 
 #include "houdini.h"
 
+
 #define USE_XHTML(opt) (opt->flags & HTML_USE_XHTML)
 
 
@@ -289,15 +290,23 @@ static void
 rndr_list(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque)
 {
     if (ob->size) sd_bufputc(ob, '\n');
+	/* TODO: alpha/roman lists */
     sd_bufput(ob, flags & MKD_LIST_ORDERED ? "<ol>\n" : "<ul>\n", 5);
     if (text) sd_bufput(ob, text->data, text->size);
     sd_bufput(ob, flags & MKD_LIST_ORDERED ? "</ol>\n" : "</ul>\n", 6);
 }
 
 static void
-rndr_listitem(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque)
+rndr_listitem(struct sd_buf *ob, const struct sd_buf *text, size_t number, int flags, void *opaque)
 {
-    SD_BUFPUTSL(ob, "<li>");
+    if(flags & MKD_LIST_ORDERED && flags & MKD_LIST_FIXED) {
+        char buffer[100];
+        snprintf(buffer, sizeof(buffer), "<li value=%lu>", number);
+        sd_bufput(ob, buffer, strlen(buffer));
+    } else {
+        SD_BUFPUTSL(ob, "<li>");
+    }
+        
     if (text) {
         size_t size = text->size;
         while (size && text->data[size - 1] == '\n')
@@ -469,15 +478,15 @@ rndr_tablecell(struct sd_buf *ob, const struct sd_buf *text, int flags, void *op
 
     switch (flags & MKD_TABLE_ALIGNMASK) {
     case MKD_TABLE_ALIGN_CENTER:
-        SD_BUFPUTSL(ob, " align=\"center\">");
+		SD_BUFPUTSL(ob, " style=\"text-align: center\">");
         break;
 
     case MKD_TABLE_ALIGN_L:
-        SD_BUFPUTSL(ob, " align=\"left\">");
+		SD_BUFPUTSL(ob, " style=\"text-align: left\">");
         break;
 
     case MKD_TABLE_ALIGN_R:
-        SD_BUFPUTSL(ob, " align=\"right\">");
+		SD_BUFPUTSL(ob, " style=\"text-align: right\">");
         break;
 
     default:

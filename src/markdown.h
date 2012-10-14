@@ -16,8 +16,8 @@
  * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
  */
 
-#ifndef UPSKIRT_MARKDOWN_H
-#define UPSKIRT_MARKDOWN_H
+#ifndef SUNDOWN_MARKDOWN_H
+#define SUNDOWN_MARKDOWN_H
 
 #include "buffer.h"
 #include "autolink.h"
@@ -61,6 +61,7 @@ enum mkd_extensions {
     MKDEXT_SUPERSCRIPT = (1 << 7),
     MKDEXT_LAX_SPACING = (1 << 8),
     MKDEXT_EMAIL_FRIENDLY = (1 << 9),
+	MKDEXT_LIST_ALPHA_ROMAN = (1 << 10),
 };
 
 /* sd_callbacks - functions for rendering parsed data */
@@ -72,7 +73,7 @@ struct sd_callbacks {
     void (*header)(struct sd_buf *ob, const struct sd_buf *text, int level, void *opaque);
     void (*hrule)(struct sd_buf *ob, void *opaque);
     void (*list)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
-    void (*listitem)(struct sd_buf *ob, const struct sd_buf *text, int flags, void *opaque);
+    void (*listitem)(struct sd_buf *ob, const struct sd_buf *text, size_t number, int flags, void *opaque);
     void (*paragraph)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
     void (*table)(struct sd_buf *ob, const struct sd_buf *header, const struct sd_buf *body, void *opaque);
     void (*table_row)(struct sd_buf *ob, const struct sd_buf *text, void *opaque);
@@ -112,8 +113,11 @@ struct sd_markdown;
  *********/
 
 /* list/listitem flags */
-#define MKD_LIST_ORDERED    1
-#define MKD_LI_BLOCK        2  /* <li> containing block data */
+#define MKD_LIST_ORDERED    0x01
+#define MKD_LIST_FIXED      0x02
+#define MKD_LIST_ALPHA		0x04
+#define MKD_LIST_ROMAN		0x08
+#define MKD_LI_BLOCK        0x10  /* <li> containing block data */
 
 /**********************
  * EXPORTED FUNCTIONS *

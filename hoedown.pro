@@ -28,10 +28,14 @@ HEADERS += \
     src/stack.h
 
 unix:!symbian {
+    # install header files
+    header_files.files = $$HEADERS
+    header_files.path = /usr/include/hoedown
+
     maemo5 {
         target.path = /opt/usr/lib
     } else {
         target.path = /usr/lib
     }
-    INSTALLS += target
+    INSTALLS += target header_files
 }

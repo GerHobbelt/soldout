@@ -8,6 +8,7 @@ QT       -= core gui
 TARGET = hoedown
 
 TEMPLATE = lib
+DEF_FILE = hoedown.def
 
 SOURCES += \
     src/autolink.c \

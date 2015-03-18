@@ -12,8 +12,10 @@
 #if _MSC_VER < 1500
     #define vsnprintf _vsnprintf
 #endif
-    #define va_copy(dst, src) ((void)((dst) = (src)))
-    #define __attribute__(x)
+#if _MSC_VER < 1700
+	#define va_copy(dst, src) ((void)((dst) = (src)))
+#endif
+	#define __attribute__(x)
 
     #pragma warning( disable : 4996 4100 4204 )
 #endif

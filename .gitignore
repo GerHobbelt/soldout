@@ -11,6 +11,9 @@
 *.dll
 *.exp
 BuildLog.htm
+*.log
+*.tlog
+*.lastbuildstate
 .deps
 .libs
 *.user

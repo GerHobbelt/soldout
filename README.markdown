@@ -1,6 +1,9 @@
 Redcarpet is written with sugar, spice and everything nice
 ============================================================
 
+**Note**: This CrowdFlower fork unreverts a change to make inline comments behave properly at the
+cost of a slight deviation from the Markdown standards (?)
+
 [![Build Status](https://travis-ci.org/vmg/redcarpet.svg?branch=master)](https://travis-ci.org/vmg/redcarpet)
 
 Redcarpet is a Ruby library for Markdown processing that smells like

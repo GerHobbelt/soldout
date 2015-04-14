@@ -6,7 +6,7 @@ Paragraph one.
 	This is another comment.
 -->
 
-Paragraph two.
+Paragraph two.<!-- An inline comment -->
 
 <!-- one comment block -- -- with two comments -->
 

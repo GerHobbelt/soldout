@@ -72,6 +72,11 @@ smartypants_SOURCES	= bin/smartypants.c bin/common.h
 smartypants_CPPFLAGS	= $(hoedown_bin_cppflags)
 smartypants_LDADD	= $(hoedown_bin_ldadd)
 
+# Perfect hashing
+
+src/html_blocks.c: html_block_names.gperf
+	gperf -L ANSI-C -N hoedown_find_block_tag -c -C -E -S 1 --ignore-case -m100 $^ > $@
+
 #page
 #### tests
 
@@ -92,5 +97,15 @@ test_test_buffer_LDADD		= $(hoedown_test_ldadd)
 
 installcheck-local: $(TESTS)
 	@for f in $(TESTS); do $(builddir)/$$f; done
+
+## --------------------------------------------------------------------
+## custom tests
+
+test: hoedown
+	python $(srcdir)/test/runner.py
+
+test-pl: hoedown
+	perl $(srcdir)/test/MarkdownTest_1.0.3/MarkdownTest.pl \
+		--script=./hoedown --testdir=$(srcdir)/test/MarkdownTest_1.0.3/Tests --tidy
 
 ### end of file

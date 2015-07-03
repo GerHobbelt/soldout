@@ -60,19 +60,19 @@ libhoedown_la_SOURCES	= \
 #### tests
 
 check_PROGRAMS	= \
-	test/version		\
-	test/buffers
+	test/test-version		\
+	test/test-buffer
 
 TESTS				= $(check_PROGRAMS)
 
 hoedown_test_cppflags		= -I$(srcdir)/src
 hoedown_test_ldadd		= libhoedown.la
 
-test_version_CPPFLAGS		= $(hoedown_test_cppflags)
-test_version_LDADD		= $(hoedown_test_ldadd)
+test_test_version_CPPFLAGS	= $(hoedown_test_cppflags)
+test_test_version_LDADD		= $(hoedown_test_ldadd)
 
-test_buffers_CPPFLAGS		= $(hoedown_test_cppflags)
-test_buffers_LDADD		= $(hoedown_test_ldadd)
+test_test_buffer_CPPFLAGS	= $(hoedown_test_cppflags)
+test_test_buffer_LDADD		= $(hoedown_test_ldadd)
 
 installcheck-local: $(TESTS)
 	@for f in $(TESTS); do $(builddir)/$$f; done

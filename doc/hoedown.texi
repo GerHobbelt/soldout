@@ -245,6 +245,10 @@ Integers representing version number components.
 @menu
 * buffers memory::              Memory handling in data buffers.
 * buffers struct::              Data buffer structure.
+* buffers append::              Appending data to buffers.
+* buffers set::                 Setting data in buffers.
+* buffers compar::              Comparing data in buffers.
+* buffers misc::                Miscellaneous functions.
 @end menu
 
 @c page
@@ -347,11 +351,13 @@ hoedown_buffer_free(B);
 @end deftp
 
 
-@deftypefun void hoedown_buffer_init (hoedown_buffer * @var{buffer}, size_t @var{unit}, hoedown_realloc_callback @var{data_realloc}, hoedown_free_callback @var{data_free}, hoedown_free_callback @var{buffer_free})
+@deftypefun void hoedown_buffer_init (hoedown_buffer * @var{buffer}, size_t @var{reallocation-unit}, hoedown_realloc_callback @var{data_realloc}, hoedown_free_callback @var{data_free}, hoedown_free_callback @var{buffer_free})
 Initialise a buffer with custom memory allocators.
 
 @var{buffer} must be a pointer referencing an already allocated data
-structure.  @var{unit} is something.
+structure.  When the internal data area is reallocated to make it
+bigger: @var{reallocation-unit} is the minimum increase in the area
+size, measured in number of bytes.
 
 @var{data_realloc} must reference a function used to allocate and/or
 reallocate a memory block.  @var{data_free} must reference a function
@@ -368,7 +374,7 @@ The memory block referenced by @var{buf} is @strong{not} released.
 @end deftypefun
 
 
-@deftypefun {hoedown_buffer *} hoedown_buffer_new (size_t @var{unit})
+@deftypefun {hoedown_buffer *} hoedown_buffer_new (size_t @var{reallocation-unit})
 Convenience function that allocates a new @objtype{hoedown_buffer}
 structure and initialises it with default memory handlers; internally it
 makes use of @cfunc{hoedown_buffer_init}.  Return a pointer to the newly
@@ -392,6 +398,284 @@ registered memory handlers.
 @deftypefun void hoedown_buffer_reset (hoedown_buffer * @var{buf})
 Reset to empty the given buffer structure.  Release the internal data
 area using the registered memory handlers.
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_grow (hoedown_buffer * @var{buf}, size_t @var{neosz})
+Increase the allocated data area size to the given value.  Memory for
+the data area is allocated and reallocated with the registered memory
+handlers.
+
+@example
+hoedown_buffer              B;
+hoedown_buffer_init(&B, 1, realloc, free, free);
+@{
+  hoedown_buffer_grow(&B, 4096);
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+@c page
+@node buffers append
+@section Appending data to buffers
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/buffer.h}.
+
+
+@deftypefun void hoedown_buffer_put (hoedown_buffer * @var{buf}, const uint8_t * @var{data}, size_t @var{size})
+Append raw data to a buffer.  The internal data area is resized as
+needed and octets referenced by @var{data} are copied into it.
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_put(&B, (const uint8_t*)str, strlen(str));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_puts (hoedown_buffer * @var{buf}, const char * @var{str})
+Append a NUL--terminated string to a buffer.
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str);
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void HOEDOWN_BUFPUTSL (hoedown_buffer * @var{buf}, const char * @var{str})
+Optimized @cfunc{hoedown_buffer_put} of a string literal.  It is meant
+to be used when @var{str} references a literal string, as in:
+
+@example
+hoedown_buffer              B;
+static const char *         str  = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  HOEDOWN_BUFPUTSL(&B, "Hello ");
+  HOEDOWN_BUFPUTSL(&B, "World!");
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefn
+
+
+@deftypefun void hoedown_buffer_putc (hoedown_buffer * @var{buf}, uint8_t @var{c})
+Append a single char to a buffer.
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  for (int i=0; i<strlen(str); ++i) @{
+    hoedown_buffer_putc(&B, str[i]);
+  @}
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefun int hoedown_buffer_putf (hoedown_buffer * @var{buf}, FILE * @var{file})
+Read from a file and append to a buffer, until EOF or error.
+
+@example
+hoedown_buffer              B;
+FILE *                      M;
+char                        str[32];
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+M = fopen("file.ext", "r");
+@{
+  hoedown_buffer_putf(&B, M);
+@}
+fclose(M);
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+@c page
+@node buffers set
+@section Setting data in buffers
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/buffer.h}.
+
+
+@deftypefun void hoedown_buffer_set (hoedown_buffer * @var{buf}, const uint8_t * @var{data}, size_t @var{size})
+Replace the buffer's contents with raw data.
+
+@example
+hoedown_buffer              B;
+static const char *         str1 = "Hello World!";
+static const char *         str2 = "Ciao Mondo!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_put(&B, (const uint8_t*)str1, strlen(str1));
+  hoedown_buffer_set(&B, (const uint8_t*)str2, strlen(str2));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_sets (hoedown_buffer * @var{buf}, const char * @var{str})
+Replace the buffer's contents with a NUL-terminated string.
+
+@example
+hoedown_buffer              B;
+static const char *         str1 = "Hello World!";
+static const char *         str2 = "Ciao Mondo!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str1);
+  assert(0 == memcmp(str1, B.data, B.size));
+  hoedown_buffer_sets(&B, str2);
+  assert(0 == memcmp(str2, B.data, B.size));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} void HOEDOWN_BUFSETSL (hoedown_buffer * @var{buf}, const char * @var{str})
+Optimized @cfunc{hoedown_buffer_sets} of a string literal.  It is meant
+to be used when @var{str} references a literal string, as in:
+
+@example
+hoedown_buffer              B;
+static const char *         str1 = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str1);
+  HOEDOWN_BUFSETSL(&B, "Ciao Mondo!");
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefn
+
+@c page
+@node buffers compar
+@section Comparing data in buffers
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/buffer.h}.
+
+
+@deftypefun int hoedown_buffer_eq (const hoedown_buffer * @var{buf}, const uint8_t * @var{data}, size_t @var{size})
+Compare a buffer's data with other data for equality: return true
+(non--zero) if the octets are equal, return false (zero) otherwise.
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str);
+  assert(0 != hoedown_buffer_eq(&B,
+                (const uint8_t*)str, strlen(str)));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefun int hoedown_buffer_eqs (const hoedown_buffer * @var{buf}, const char * @var{str})
+Compare a buffer's data with a NUL--terminated string for equality:
+return true (non--zero) if the octets are equal, return false (zero)
+otherwise.
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str);
+  assert(0 != hoedown_buffer_eqs(&B, str));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefn {Preprocessor Macro} int HOEDOWN_BUFEQSL (hoedown_buffer * @var{buf}, const char * @var{str})
+Optimized @cfunc{hoedown_buffer_eqs} of a string literal.  It is meant
+to be used when @var{str} references a literal string, as in:
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str);
+  assert(0 != HOEDOWN_BUFEQSL(&B, "Hello World!"));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefn
+
+
+@deftypefun int hoedown_buffer_prefix (const hoedown_buffer * @var{buf}, const char * @var{prefix})
+Compare the beginning of a buffer with a string: return zero if the
+octets are equal; return greater than zero if an octet in @var{buf} is
+found to be greater than the octet in @var{prefix}; return less than
+zero if an octet in @var{buf} is found to be less than the octet in
+@var{prefix}.
+
+@example
+hoedown_buffer              B;
+static const char *         str1 = "Hello World!";
+static const char *         str2 = "Hello";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str1);
+  assert(0 == hoedown_buffer_prefix(&B, str2));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+@c page
+@node buffers misc
+@section Miscellaneous functions
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/buffer.h}.
+
+
+@deftypefun void hoedown_buffer_slurp (hoedown_buffer * @var{buf}, size_t @var{size})
+Remove a given number of bytes from the head of the buffer.
+@end deftypefun
+
+
+@deftypefun {const char *} hoedown_buffer_cstr (hoedown_buffer * @var{buf})
+NUL-termination of the string array (making a C-string).
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_printf (hoedown_buffer * @var{buf}, const char * @var{fmt}, ...)
+Formatted printing to a buffer.
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_put_utf8 (hoedown_buffer * @var{buf}, unsigned int @var{codepoint})
+Put a Unicode character encoded as @utf{}-8.
 @end deftypefun
 
 @c page

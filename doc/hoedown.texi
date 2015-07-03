@@ -69,8 +69,8 @@ and as backup at:
 @center @value{BITBUCKET_URL}
 
 @noindent
-Copyright @copyright{} 2008, Natacha Porte
-Copyright @copyright{} 2011, Vicent Marti
+Copyright @copyright{} 2008, Natacha Porte@*
+Copyright @copyright{} 2011, Vicent Marti@*
 Copyright @copyright{} 2014, Xavier Mendez, Devin Torres and the Hoedown authors
 
 @quotation
@@ -186,7 +186,7 @@ m4_include(meta/autoconf/pkg.m4)
 Just add the following macro use to @file{configure.ac}:
 
 @example
-PKG_CHECK_MODULES([HOEDOWN],[hoedown >= 0.1])
+PKG_CHECK_MODULES([HOEDOWN],[hoedown >= 3.0.3])
 @end example
 
 @noindent
@@ -197,9 +197,9 @@ which will set the variables @code{HOEDOWN_LIBS} and
 Alternatively we can use the raw @gnu{} Autoconf macros:
 
 @example
-AC_CHECK_LIB([hoedown],[cct_version_string],,
+AC_CHECK_LIB([hoedown],[hoedown_version],,
   [AC_MSG_FAILURE([test for Hoedown library failed])])
-AC_CHECK_HEADERS([hoedown.h],,
+AC_CHECK_HEADERS([hoedown/version.h],,
   [AC_MSG_FAILURE([test for Hoedown header failed])])
 @end example
 
@@ -208,32 +208,30 @@ AC_CHECK_HEADERS([hoedown.h],,
 @chapter Version functions
 
 
+@ignore
 The installed libraries follow version numbering as established by the
 @gnu{} Autotools.  For an explanation of interface numbers as managed by
 @gnu{} Libtool @xref{Libtool versioning, interface, Libtool's versioning
 system, libtool, Shared library support for @gnu{}}.
+@end ignore
 
 
-@deftypefun {const char *} cct_version_string (void)
-Return a pointer to a statically allocated @asciiz{} string representing
-the interface version number.
+@deftypefun void hoedown_version (int * @var{major}, int * @var{minor}, int * @var{revision})
+Retrieve version numbers, storing them in the referenced @code{int}
+locations.
 @end deftypefun
 
 
-@deftypefun int cct_version_interface_current (void)
-Return an integer representing the library interface current number.
-@end deftypefun
+@defvr {Preprocessor Constant} HOEDOWN_VERSION
+A string representing the full version number.
+@end defvr
 
 
-@deftypefun int cct_version_interface_revision (void)
-Return an integer representing the library interface current revision
-number.
-@end deftypefun
-
-
-@deftypefun int cct_version_interface_age (void)
-Return an integer representing the library interface current age.
-@end deftypefun
+@defvr {Preprocessor Constant} HOEDOWN_MAJOR
+@defvrx {Preprocessor Constant} HOEDOWN_MINOR
+@defvrx {Preprocessor Constant} HOEDOWN_REVISION
+Integers representing version number components.
+@end defvr
 
 @c page
 @node references
@@ -251,7 +249,7 @@ the original package development takes place at:
 @center @value{ORIGINAL_URL}
 
 @noindent
-development takes place at:
+development of the repackaging takes place at:
 
 @center @value{GITHUB_URL}
 

@@ -19,10 +19,10 @@ sysconfdir=@sysconfdir@
 ## ------------------------------------------------------------
 
 Name: @PACKAGE_NAME@
-Description: template C library
-Version: @CCTEMPLATE_PKG_CONFIG_VERSION@
-Libs: -L${libdir} -lcctemplate
-Cflags: -I${includedir}
+Description: Hoedown Markdown parser library
+Version: @HOEDOWN_PKG_CONFIG_VERSION@
+Libs: -L${libdir} -lhoedown
+Cflags: -I${includedir}/hoedown
 
 ### end of file
 # Local Variables:

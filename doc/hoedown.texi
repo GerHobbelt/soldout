@@ -129,6 +129,7 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 * overview::                    Overview of the package.
 * version::                     Version functions.
 * buffers::                     Data buffers.
+* stacks::                      Stack containers.
 
 Appendices
 
@@ -715,6 +716,84 @@ hoedown_buffer_init(&B, 1024, realloc, free, free);
 @}
 hoedown_buffer_uninit(&B);
 @end example
+@end deftypefun
+
+@c page
+@node stacks
+@chapter Stack containers
+
+
+@menu
+* stacks struct::               Stack structures.
+* stacks ops::                  Operations on stack structures.
+@end menu
+
+@c page
+@node stacks struct
+@section Stack structures
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/stack.h}.
+
+
+@deftp {Struct Typedef} hoedown_stack
+Type of structures representing stacks of pointers.  Instances of this
+type must be initialised by @cfunc{hoedown_stack_init} and finalised by
+@cfunc{hoedown_stack_uninit}.
+
+Basic allocation, initialisation and finalisation can be performed as:
+
+@example
+hoedown_stack          B;
+
+hoedown_stack_init(&B, 123);
+hoedown_stack_uninit(&B);
+@end example
+
+The data area of stack structures is allocated and reallocated with
+@cfunc{hoedown_realloc} and released with C Language Standard
+@cfunc{free}.
+@end deftp
+
+
+@deftypefun void hoedown_stack_init (hoedown_stack * @var{st}, size_t @var{initial_size})
+Initialize an already allocated stack structures.
+@end deftypefun
+
+
+@deftypefun void hoedown_stack_uninit (hoedown_stack * @var{st})
+Free internal data of the stack.
+@end deftypefun
+
+
+@deftypefun void hoedown_stack_grow (hoedown_stack * @var{st}, size_t @var{neosz})
+Increase the allocated size to the given value.
+@end deftypefun
+
+@c page
+@node stacks ops
+@section Operations on stack structures
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/stack.h}.
+
+
+@deftypefun void hoedown_stack_push (hoedown_stack * @var{st}, void * @var{item})
+Push an item to the top of the stack.
+@end deftypefun
+
+
+@deftypefun {void *} hoedown_stack_pop (hoedown_stack * @var{st})
+Retrieve and remove the item at the top of the stack.  If the stack is
+empty: return @cnull{}.
+@end deftypefun
+
+
+@deftypefun {void *} hoedown_stack_top (const hoedown_stack * @var{st})
+Retrieve the item at the top of the stack.  If the stack is empty:
+return @cnull{}.
 @end deftypefun
 
 @c page

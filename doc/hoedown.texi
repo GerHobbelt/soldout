@@ -130,6 +130,7 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 * version::                     Version functions.
 * buffers::                     Data buffers.
 * stacks::                      Stack containers.
+* escape::                      Escaping text elements.
 
 Appendices
 
@@ -733,7 +734,7 @@ hoedown_buffer_uninit(&B);
 @section Stack structures
 
 
-The definitions of the buffers @api{} are in the header file
+The definitions of the stacks @api{} are in the header file
 @file{hoedown/stack.h}.
 
 
@@ -776,7 +777,7 @@ Increase the allocated size to the given value.
 @section Operations on stack structures
 
 
-The definitions of the buffers @api{} are in the header file
+The definitions of the stacks @api{} are in the header file
 @file{hoedown/stack.h}.
 
 
@@ -794,6 +795,53 @@ empty: return @cnull{}.
 @deftypefun {void *} hoedown_stack_top (const hoedown_stack * @var{st})
 Retrieve the item at the top of the stack.  If the stack is empty:
 return @cnull{}.
+@end deftypefun
+
+@c page
+@node escape
+@chapter Escaping text elements
+
+
+The definitions of the escaping @api{} are in the header file
+@file{hoedown/escape.h}.
+
+
+@deftypefun void hoedown_escape_href (hoedown_buffer * @var{ob}, const uint8_t * @var{data}, size_t @var{size})
+Escape (part of) a @acronym{URL} inside @acronym{HTML}.  Escape all the
+characters in the @var{data} memory block that cannot appear in a
+@acronym{URL}; append the result to the buffer @var{ob}.
+
+@example
+hoedown_buffer      B;
+const char *        str1 = "Father & Son";
+const char *        str2 = "Father%20&amp;%20Son";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_escape_href(&B, (const uint8_t *)str1, strlen(str1));
+  print_buffer(&B);
+  assert(0 != hoedown_buffer_eqs(&B, str2));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+
+@deftypefun void hoedown_escape_html (hoedown_buffer * @var{ob}, const uint8_t * @var{data}, size_t @var{size}, int @var{secure})
+Escape @acronym{HTML} text from @var{data} and write the result in the
+buffer @var{ob}.
+
+@example
+hoedown_buffer      B;
+const char *        str1 = "Father & Son";
+const char *        str2 = "Father &amp; Son";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_escape_html(&B, (const uint8_t *)str1, strlen(str1), 1);
+  print_buffer(&B);
+  assert(0 != hoedown_buffer_eqs(&B, str2));
+@}
+hoedown_buffer_uninit(&B);
+@end example
 @end deftypefun
 
 @c page

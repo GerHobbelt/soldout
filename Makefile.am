@@ -85,7 +85,8 @@ smartypants_LDADD	= $(hoedown_bin_ldadd)
 check_PROGRAMS	= \
 	test/test-version		\
 	test/test-buffer		\
-	test/test-stack
+	test/test-stack			\
+	test/test-escape
 
 TESTS				= $(check_PROGRAMS)
 
@@ -100,6 +101,9 @@ test_test_buffer_LDADD		= $(hoedown_test_ldadd)
 
 test_test_stack_CPPFLAGS	= $(hoedown_test_cppflags)
 test_test_stack_LDADD		= $(hoedown_test_ldadd)
+
+test_test_escape_CPPFLAGS	= $(hoedown_test_cppflags)
+test_test_escape_LDADD		= $(hoedown_test_ldadd)
 
 installcheck-local: $(TESTS)
 	@for f in $(TESTS); do $(builddir)/$$f; done

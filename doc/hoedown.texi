@@ -128,6 +128,7 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 @menu
 * overview::                    Overview of the package.
 * version::                     Version functions.
+* buffers::                     Data buffers.
 
 Appendices
 
@@ -215,6 +216,9 @@ The installed libraries follow version numbering as established by the
 system, libtool, Shared library support for @gnu{}}.
 @end ignore
 
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/version.h}.
+
 
 @deftypefun void hoedown_version (int * @var{major}, int * @var{minor}, int * @var{revision})
 Retrieve version numbers, storing them in the referenced @code{int}
@@ -232,6 +236,163 @@ A string representing the full version number.
 @defvrx {Preprocessor Constant} HOEDOWN_REVISION
 Integers representing version number components.
 @end defvr
+
+@c page
+@node buffers
+@chapter Data buffers
+
+
+@menu
+* buffers memory::              Memory handling in data buffers.
+* buffers struct::              Data buffer structure.
+@end menu
+
+@c page
+@node buffers memory
+@section Memory handling in data buffers
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/buffer.h}.
+
+
+@deftp {Function Pointer Typedef} hoedown_realloc_callback
+Type definition for function pointers implementing a memory reallocation
+callback.  It is meant to be used as follows:
+
+@example
+void *
+realloc_callback (void * ptr, size_t len)
+@{
+  ...
+@}
+
+hoedown_realloc_callback R = realloc_callback;
+@end example
+
+This function pointer type is meant to match the one of the C Language
+Standard function @cfunc{realloc}.
+@end deftp
+
+
+@deftp {Function Pointer Typedef} hoedown_free_callback
+Type definition for function pointers implementing a memory release
+callback.  It is meant to be used as follows:
+
+@example
+void
+free_callback (void * ptr)
+@{
+  ...
+@}
+
+hoedown_free_callback F = free_callback;
+@end example
+
+This function pointer type is meant to match the one of the C Language
+Standard function @cfunc{free}.
+@end deftp
+
+
+@deftypefun {void *} hoedown_malloc (size_t @var{size})
+Wrapper for the C Language Standard @cfunc{malloc}.  If memory
+allocation fails: abort the process by calling @cfunc{abort}.
+@end deftypefun
+
+
+@deftypefun {void *} hoedown_calloc (size_t @var{nmemb}, size_t @var{size})
+Wrapper for the C Language Standard @cfunc{calloc}.  If memory
+allocation fails: abort the process by calling @cfunc{abort}.
+@end deftypefun
+
+
+@deftypefun {void *} hoedown_realloc (void * @var{ptr}, size_t @var{size})
+Wrapper for the C Language Standard @cfunc{realloc}.  If memory
+reallocation fails: abort the process by calling @cfunc{abort}.
+@end deftypefun
+
+
+@c page
+@node buffers struct
+@section Data buffer structure
+
+
+The definitions of the buffers @api{} are in the header file
+@file{hoedown/buffer.h}.
+
+
+@deftp {Struct Typedef} hoedown_buffer
+Type of structures representing data buffers.  Instances of this type
+must be initialised by @cfunc{hoedown_buffer_init} and finalised by
+@cfunc{hoedown_buffer_uninit}.
+
+Basic allocation, initialisation and finalisation can be performed as:
+
+@example
+hoedown_buffer          B;
+
+hoedown_buffer_init(&B, 1, realloc, free, free);
+hoedown_buffer_uninit(&B);
+@end example
+
+@noindent
+or as:
+
+@example
+hoedown_buffer *        B;
+
+B = hoedown_buffer_new(1);
+hoedown_buffer_free(B);
+@end example
+@end deftp
+
+
+@deftypefun void hoedown_buffer_init (hoedown_buffer * @var{buffer}, size_t @var{unit}, hoedown_realloc_callback @var{data_realloc}, hoedown_free_callback @var{data_free}, hoedown_free_callback @var{buffer_free})
+Initialise a buffer with custom memory allocators.
+
+@var{buffer} must be a pointer referencing an already allocated data
+structure.  @var{unit} is something.
+
+@var{data_realloc} must reference a function used to allocate and/or
+reallocate a memory block.  @var{data_free} must reference a function
+used to release the data area of the buffer.  @var{buffer_free} must
+reference a function used to release the @objtype{hoedown_buffer}
+structure itself.
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_uninit (hoedown_buffer * @var{buf})
+Finalise the given buffer structure.  Memory allocated for the internal
+data area is released using the registered @var{data_free} function.
+The memory block referenced by @var{buf} is @strong{not} released.
+@end deftypefun
+
+
+@deftypefun {hoedown_buffer *} hoedown_buffer_new (size_t @var{unit})
+Convenience function that allocates a new @objtype{hoedown_buffer}
+structure and initialises it with default memory handlers; internally it
+makes use of @cfunc{hoedown_buffer_init}.  Return a pointer to the newly
+allocated structure.
+
+The structure memory block is allocated with the C Language Standard
+@cfunc{malloc}.  @cfunc{hoedown_realloc} is registered as
+@var{data_realloc} function.  The C Language Standard @cfunc{free} is
+registered as both @var{data_free} and @var{buffer_free} function.
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_free (hoedown_buffer * @var{buf})
+Convenience function that finalises and releases the given buffer
+structure; internally it is similar to @cfunc{hoedown_buffer_uninit}.
+Release both the data area memory and the structure memory using the
+registered memory handlers.
+@end deftypefun
+
+
+@deftypefun void hoedown_buffer_reset (hoedown_buffer * @var{buf})
+Reset to empty the given buffer structure.  Release the internal data
+area using the registered memory handlers.
+@end deftypefun
 
 @c page
 @node references

@@ -57,6 +57,22 @@ libhoedown_la_SOURCES	= \
 	src/version.h
 
 #page
+#### programs
+
+bin_PROGRAMS		= hoedown smartypants
+
+hoedown_bin_cppflags	= -I $(srcdir)/src -I $(srcdir)/bin
+hoedown_bin_ldadd	= libhoedown.la
+
+hoedown_SOURCES		= bin/hoedown.c bin/common.h
+hoedown_CPPFLAGS	= $(hoedown_bin_cppflags)
+hoedown_LDADD		= $(hoedown_bin_ldadd)
+
+smartypants_SOURCES	= bin/smartypants.c bin/common.h
+smartypants_CPPFLAGS	= $(hoedown_bin_cppflags)
+smartypants_LDADD	= $(hoedown_bin_ldadd)
+
+#page
 #### tests
 
 check_PROGRAMS	= \

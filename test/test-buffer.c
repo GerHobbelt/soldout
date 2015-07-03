@@ -18,12 +18,19 @@
 #include <assert.h>
 #include "buffer.h"
 
-void *
+void
+print_buffer (hoedown_buffer * B)
+{
+  fwrite(B->data, B->size, 1, stderr);
+  fprintf(stderr, "\n");
+}
+
+static void *
 realloc_callback (void * ptr, size_t len)
 {
   return realloc(ptr, len);
 }
-void
+static void
 free_callback (void * ptr)
 {
   free(ptr);
@@ -199,6 +206,62 @@ main (int argc, const char *const argv[])
     fclose(M);
     hoedown_buffer_uninit(&B);
   }
+  /* Putting Unicode code point. */
+  {
+    hoedown_buffer		B;
+    uint32_t			cp    = 0x10;
+    uint8_t			buf[] = { 16 };
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_put_utf8(&B, cp);
+      assert(0 == memcmp(buf, B.data, B.size));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+  {
+    hoedown_buffer		B;
+    uint32_t			cp    = 0x80;
+    uint8_t			buf[] = { 194, 128 };
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_put_utf8(&B, cp);
+      assert(0 == memcmp(buf, B.data, B.size));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+  {
+    hoedown_buffer		B;
+    uint32_t			cp    = 0xD7FF;
+    uint8_t			buf[] = { 237, 159, 191 };
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_put_utf8(&B, cp);
+      assert(0 == memcmp(buf, B.data, B.size));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+  {
+    hoedown_buffer		B;
+    uint32_t			cp    = 0xE000;
+    uint8_t			buf[] = { 238, 128, 128 };
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_put_utf8(&B, cp);
+      assert(0 == memcmp(buf, B.data, B.size));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+  {
+    hoedown_buffer		B;
+    uint32_t			cp    = 0x10FFFF;
+    uint8_t			buf[] = { 244, 143, 191, 191 };
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_put_utf8(&B, cp);
+      assert(0 == memcmp(buf, B.data, B.size));
+    }
+    hoedown_buffer_uninit(&B);
+  }
 
 /* ------------------------------------------------------------------ */
 
@@ -331,6 +394,44 @@ main (int argc, const char *const argv[])
     {
       hoedown_buffer_puts(&B, str1);
       assert(0 != hoedown_buffer_prefix(&B, str2));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+
+/* ------------------------------------------------------------------ */
+
+  /* Removing octets from the beginning of the data area. */
+  {
+    hoedown_buffer		B;
+    static const char *		str = "Hello World!";
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_puts(&B, str);
+      hoedown_buffer_slurp(&B, strlen("Hello "));
+      assert(0 != hoedown_buffer_eqs(&B, "World!"));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+  /* C string representation of the data area. */
+  {
+    hoedown_buffer		B;
+    static const char *		str = "Hello World!";
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_puts(&B, str);
+      assert(0 == strcmp(hoedown_buffer_cstr(&B), str));
+    }
+    hoedown_buffer_uninit(&B);
+  }
+  /* Formatted output into a buffer. */
+  {
+    hoedown_buffer		B;
+    static const char *		str1 = "Hello";
+    static const char *		str2 = "World";
+    hoedown_buffer_init(&B, 1024, realloc, free, free);
+    {
+      hoedown_buffer_printf(&B, "%s %s!", str1, str2);
+      assert(0 != hoedown_buffer_eqs(&B, "Hello World!"));
     }
     hoedown_buffer_uninit(&B);
   }

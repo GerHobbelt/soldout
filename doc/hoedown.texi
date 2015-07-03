@@ -507,6 +507,25 @@ hoedown_buffer_uninit(&B);
 @end example
 @end deftypefun
 
+
+@deftypefun void hoedown_buffer_put_utf8 (hoedown_buffer * @var{buf}, unsigned int @var{codepoint})
+Put a Unicode character encoded as @utf{}-8.
+
+@example
+hoedown_buffer              B;
+uint32_t                    cp    = 0x10FFFF;
+uint8_t                     buf[] = @{
+  244, 143, 191, 191
+@};
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_put_utf8(&B, cp);
+  assert(0 == memcmp(buf, B.data, B.size));
+@}
+hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
 @c page
 @node buffers set
 @section Setting data in buffers
@@ -661,21 +680,41 @@ The definitions of the buffers @api{} are in the header file
 
 @deftypefun void hoedown_buffer_slurp (hoedown_buffer * @var{buf}, size_t @var{size})
 Remove a given number of bytes from the head of the buffer.
+
+@example
+hoedown_buffer              B;
+static const char *         str = "Hello World!";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_puts(&B, str);
+  hoedown_buffer_slurp(&B, strlen("Hello "));
+  assert(0 != hoedown_buffer_eqs(&B, "World!"));
+@}
+hoedown_buffer_uninit(&B);
+@end example
 @end deftypefun
 
 
 @deftypefun {const char *} hoedown_buffer_cstr (hoedown_buffer * @var{buf})
-NUL-termination of the string array (making a C-string).
+Mutate the internal data area so that it valid as NUL-terminated C
+string.  Return a pointer to the data area.
 @end deftypefun
 
 
 @deftypefun void hoedown_buffer_printf (hoedown_buffer * @var{buf}, const char * @var{fmt}, ...)
 Formatted printing to a buffer.
-@end deftypefun
 
-
-@deftypefun void hoedown_buffer_put_utf8 (hoedown_buffer * @var{buf}, unsigned int @var{codepoint})
-Put a Unicode character encoded as @utf{}-8.
+@example
+hoedown_buffer              B;
+static const char *         str1 = "Hello";
+static const char *         str2 = "World";
+hoedown_buffer_init(&B, 1024, realloc, free, free);
+@{
+  hoedown_buffer_printf(&B, "%s %s!", str1, str2);
+  assert(0 != hoedown_buffer_eqs(&B, "Hello World!"));
+@}
+hoedown_buffer_uninit(&B);
+@end example
 @end deftypefun
 
 @c page

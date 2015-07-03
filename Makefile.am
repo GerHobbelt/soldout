@@ -56,6 +56,13 @@ libhoedown_la_SOURCES	= \
 	src/version.c		\
 	src/version.h
 
+EXTRA_DIST		+= html_block_names.gperf
+
+# Perfect hashing
+
+src/html_blocks.c: html_block_names.gperf
+	gperf -L ANSI-C -N hoedown_find_block_tag -c -C -E -S 1 --ignore-case -m100 $^ > $@
+
 #page
 #### programs
 
@@ -71,11 +78,6 @@ hoedown_LDADD		= $(hoedown_bin_ldadd)
 smartypants_SOURCES	= bin/smartypants.c bin/common.h
 smartypants_CPPFLAGS	= $(hoedown_bin_cppflags)
 smartypants_LDADD	= $(hoedown_bin_ldadd)
-
-# Perfect hashing
-
-src/html_blocks.c: html_block_names.gperf
-	gperf -L ANSI-C -N hoedown_find_block_tag -c -C -E -S 1 --ignore-case -m100 $^ > $@
 
 #page
 #### tests

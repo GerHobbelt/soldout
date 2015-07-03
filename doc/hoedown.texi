@@ -1,0 +1,288 @@
+\input texinfo.tex
+@c %**start of header
+@setfilename hoedown.info
+@settitle Hoedown
+@c %**end of header
+
+@include version.texi
+@include macros.texi
+
+@c page
+@c ------------------------------------------------------------
+@c Values.
+@c ------------------------------------------------------------
+
+@set TITLE                      Hoedown
+
+@c To be used as @value{PACKAGE} whenever we need to include the full
+@c name of this package.
+@set PACKAGE                    Hoedown
+
+@c To be used as @value{PACKAGE} whenever we need to include the
+@c nickname of the project: the name that is used to compose the
+@c distribution tarball or the web address.
+@set PACKAGE_NICKNAME           hoedown
+
+@c To be used as @value{COPYRIGHT_YEARS} whenever we need to include the
+@c list of copyright years.
+@set COPYRIGHT_YEARS            2008, 2011, 2014, 2015
+
+@c ------------------------------------------------------------
+
+@set ORIGINAL_URL               @url{http:/@//@/github.com/@/hoedown/@/@value{PACKAGE_NICKNAME}}
+@set GITHUB_URL                 @url{http:/@//@/github.com/@/marcomaggi/@/@value{PACKAGE_NICKNAME}}
+@set BITBUCKET_URL              @url{https:/@//@/bitbucket.org/@/marcomaggi/@/@value{PACKAGE_NICKNAME}}
+@set DOWNLOAD_URL               @url{https:/@//@/bitbucket.org/@/marcomaggi/@/@value{PACKAGE_NICKNAME}/@/downloads}
+
+@c page
+@c ------------------------------------------------------------
+@c Copyright notice.
+@c ------------------------------------------------------------
+
+@copying
+This document describes version @value{VERSION} of @value{PACKAGE}, a C
+language library implementing a template library.  This distribution is
+an repackaging of the original @value{PACKAGE} package, using the @gnu{}
+Autotools.
+
+The package is distributed under the terms of the @gnu{} General Public
+License (@gpl{}).
+
+The latest release of the repackaged @value{PACKAGE} can be downloaded
+from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+the original package development takes place at:
+
+@center @value{ORIGINAL_URL}
+
+@noindent
+development takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+and as backup at:
+
+@center @value{BITBUCKET_URL}
+
+@noindent
+Copyright @copyright{} 2008, Natacha Porte
+Copyright @copyright{} 2011, Vicent Marti
+Copyright @copyright{} 2014, Xavier Mendez, Devin Torres and the Hoedown authors
+
+@quotation
+Permission to use, copy, modify, and distribute this software for any
+purpose with or without fee is hereby granted, provided that the above
+copyright notice and this permission notice appear in all copies.
+
+THE SOFTWARE IS PROVIDED ``AS IS'' AND THE AUTHOR DISCLAIMS ALL
+WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES
+OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE
+FOR ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY
+DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER
+IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING
+OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+@end quotation
+@end copying
+
+@c page
+@c ------------------------------------------------------------
+@c Headers.
+@c ------------------------------------------------------------
+
+@titlepage
+@title @value{TITLE}
+@subtitle Revision @value{VERSION}
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c ------------------------------------------------------------
+
+@ifinfo
+@dircategory Development
+@direntry
+* hoedown: (hoedown).       Hoedown a Markdown parser library.
+@end direntry
+@end ifinfo
+
+@c ------------------------------------------------------------
+
+@ignore
+@syncodeindex tp cp
+@syncodeindex vr cp
+@syncodeindex fn cp
+@end ignore
+
+@c page
+@ifnottex
+@node Top
+@top @value{TITLE}
+
+@insertcopying
+
+@menu
+* overview::                    Overview of the package.
+* version::                     Version functions.
+
+Appendices
+
+* references::                  Bibliography and references.
+
+Indexes
+
+* concept index::               An entry for each concept.
+* function index::              An entry for each function.
+* variable index::              An entry for each variable.
+* type index::                  An entry for each type.
+@end menu
+@end ifnottex
+
+@c page
+@node overview
+@chapter Overview of the package
+
+
+This document describes version @value{VERSION} of @value{PACKAGE}, a C
+language library implementing a Markdown parser.  This distribution is
+an repackaging of the original @value{PACKAGE} package, using the @gnu{}
+Autotools.
+
+@value{PACKAGE} installs multiple header files under the directory
+@code{$(prefix)/hoedown/}.  All the function names in the @api{} are
+prefixed with @code{hoedown_}; all the constant names are prefixed with
+@code{HOEDOWN_}; all the type names are prefixed with @code{hoedown_}.
+
+@menu
+* overview linking::            Linking code with the library.
+@end menu
+
+@c page
+@node overview linking
+@section Linking code with the library
+
+
+This package installs a data file for @command{pkg-config}, so when
+searching for the installed library with the @gnu{} Autotools, we can:
+
+@itemize
+@item
+Install the file @file{pkg.m4} from @file{/usr/share/aclocal} into the
+source tree of the package, for example under @file{meta/autoconf/}.
+
+@item
+Include @file{pkg.m4} in the template by adding the following line to
+@file{acinclude.m4}:
+
+@example
+m4_include(meta/autoconf/pkg.m4)
+@end example
+
+@item
+Just add the following macro use to @file{configure.ac}:
+
+@example
+PKG_CHECK_MODULES([HOEDOWN],[hoedown >= 0.1])
+@end example
+
+@noindent
+which will set the variables @code{HOEDOWN_LIBS} and
+@code{HOEDOWN_CFLAGS}.
+@end itemize
+
+Alternatively we can use the raw @gnu{} Autoconf macros:
+
+@example
+AC_CHECK_LIB([hoedown],[cct_version_string],,
+  [AC_MSG_FAILURE([test for Hoedown library failed])])
+AC_CHECK_HEADERS([hoedown.h],,
+  [AC_MSG_FAILURE([test for Hoedown header failed])])
+@end example
+
+@c page
+@node version
+@chapter Version functions
+
+
+The installed libraries follow version numbering as established by the
+@gnu{} Autotools.  For an explanation of interface numbers as managed by
+@gnu{} Libtool @xref{Libtool versioning, interface, Libtool's versioning
+system, libtool, Shared library support for @gnu{}}.
+
+
+@deftypefun {const char *} cct_version_string (void)
+Return a pointer to a statically allocated @asciiz{} string representing
+the interface version number.
+@end deftypefun
+
+
+@deftypefun int cct_version_interface_current (void)
+Return an integer representing the library interface current number.
+@end deftypefun
+
+
+@deftypefun int cct_version_interface_revision (void)
+Return an integer representing the library interface current revision
+number.
+@end deftypefun
+
+
+@deftypefun int cct_version_interface_age (void)
+Return an integer representing the library interface current age.
+@end deftypefun
+
+@c page
+@node references
+@appendix Bibliography and references
+
+
+The latest release of the repackaged @value{PACKAGE} can be downloaded
+from:
+
+@center @value{DOWNLOAD_URL}
+
+@noindent
+the original package development takes place at:
+
+@center @value{ORIGINAL_URL}
+
+@noindent
+development takes place at:
+
+@center @value{GITHUB_URL}
+
+@noindent
+and as backup at:
+
+@center @value{BITBUCKET_URL}
+
+@c page
+@node concept index
+@appendix An entry for each concept
+
+@printindex cp
+
+@node function index
+@appendix An entry for each function.
+
+@printindex fn
+
+@node variable index
+@appendix An entry for each variable.
+
+@printindex vr
+
+@node type index
+@appendix An entry for each type.
+
+@printindex tp
+
+@contents
+@bye
+
+@c end of file
+

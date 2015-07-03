@@ -1,11 +1,11 @@
 /*
   Part of: Hoedown
-  Contents: test for version functions
+  Contents: test for stack functions
   Date: Fri Jul  3, 2015
 
   Abstract
 
-	Test file for version functions.
+	Test file for stack functions.
 
   Copyright (C) 2015 Marco Maggi <marco.maggi-ipsu@poste.it>
 

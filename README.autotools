@@ -56,6 +56,14 @@ to inspect the available configuration options:
 which,  on  a  4-core  CPU,   should  speed  up  building  and  checking
 significantly.
 
+  Additional tests are available if Perl is installed:
+
+   $ make test-pl
+
+and if Python is installed:
+
+   $ make test-py
+
   The  Makefile supports  the  DESTDIR environment  variable to  install
 files in a temporary location, example: to see what will happen:
 

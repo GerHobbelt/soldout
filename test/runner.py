@@ -7,10 +7,16 @@ import os
 import re
 import subprocess
 import unittest
+import sys
 
-TEST_ROOT = os.path.dirname(__file__)
+#TEST_ROOT = os.path.dirname(__file__)
+#HOEDOWN = [os.path.abspath(os.path.join(PROJECT_ROOT, 'hoedown'))]
+TEST_ROOT = sys.argv[1]
+HOEDOWN   = sys.argv[2]
+print TEST_ROOT
+print HOEDOWN
+
 PROJECT_ROOT = os.path.dirname(TEST_ROOT)
-HOEDOWN = [os.path.abspath(os.path.join(PROJECT_ROOT, 'hoedown'))]
 TIDY = ['tidy', '--show-body-only', '1', '--show-warnings', '0',
         '--quiet', '1']
 CONFIG_PATH = os.path.join(TEST_ROOT, 'config.json')

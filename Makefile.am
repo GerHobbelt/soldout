@@ -115,8 +115,8 @@ installcheck-local: $(TESTS)
 ## --------------------------------------------------------------------
 ## custom tests
 
-test: hoedown
-	python $(srcdir)/test/runner.py
+test-py: hoedown
+	python $(srcdir)/test/runner.py $(srcdir)/test ./hoedown
 
 test-pl: hoedown
 	perl $(srcdir)/test/MarkdownTest_1.0.3/MarkdownTest.pl \

@@ -351,6 +351,14 @@ hoedown_buffer *        B;
 B = hoedown_buffer_new(1);
 hoedown_buffer_free(B);
 @end example
+
+Public fields in the data structure:
+
+@table @code
+@item size
+The number of octets used in the internal data area.  It is the length
+in octets of the contained data.
+@end table
 @end deftp
 
 

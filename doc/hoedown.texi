@@ -131,6 +131,7 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 * buffers::                     Data buffers.
 * stacks::                      Stack containers.
 * escape::                      Escaping text elements.
+* autolink::                    Autolink helpers.
 
 Appendices
 
@@ -841,6 +842,385 @@ hoedown_buffer_init(&B, 1024, realloc, free, free);
   assert(0 != hoedown_buffer_eqs(&B, str2));
 @}
 hoedown_buffer_uninit(&B);
+@end example
+@end deftypefun
+
+@c page
+@node autolink
+@chapter Autolink helpers
+
+
+The definitions of the autolink @api{} are in the header file
+@file{hoedown/autolink.h}.
+
+
+@deftp {Enum Typedef} hoedown_autolink_flags
+Type of constants used to configure the behaviour of the autolink helper
+functions.  The following constants are defined:
+
+@table @code
+@item HOEDOWN_AUTOLINK_SHORT_DOMAINS
+@cindex @code{HOEDOWN_AUTOLINK_SHORT_DOMAINS}, enum constant
+@cindex Enum constant @code{HOEDOWN_AUTOLINK_SHORT_DOMAINS}
+@end table
+@end deftp
+
+
+@deftypefun int hoedown_autolink_is_safe (const uint8_t * @var{data}, size_t @var{size})
+Verify that a @acronym{URL} has a safe protocol.  Assume @var{data}
+references a memory block holding a string of @utf{}-8 encoded
+characters.  Return true (non--zero) if the prefix of the string matches
+one among:
+
+@example
+http://
+https://
+/
+#
+ftp://
+mailto:
+@end example
+
+@noindent
+case insensitively, and the first octet after the prefix represents an
+alphanumeric character; otherwise return false (zero).
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@deftypefun size_t hoedown_autolink__www (size_t * @var{rewind_p}, hoedown_buffer * @var{link},	uint8_t * @var{w_ptr}, size_t @var{input_offset}, size_t @var{input_len}, hoedown_autolink_flags @var{flags})
+Find the limits of a WWW link in the input Markdown buffer.
+
+This function assumes that:
+
+@itemize
+@item
+The input text is stored in a memory block as array of octets in
+@utf{}-8 encoding; the block is @var{input_len} octets wide.
+
+@item
+The pointer @var{w_ptr} references an octet in the input text at
+@var{input_offset} octets from the beginning.
+
+@item
+The pointer @var{w_ptr} references an octet representing the character
+@code{w} in @utf{}-8 encoding:
+
+@example
+'w' == w_ptr[0]
+@end example
+
+@item
+If @var{input_offset} is not zero (that is: @var{w_ptr} is not at the
+beginning of the input text): the octet @code{w_ptr[-1]} represents a
+space or a punctuation character according to the C Standard Library
+functions @cfunc{ispunct} and @cfunc{isspace}:
+
+@example
+ispunct(w_ptr[-1]) || isspace(w_ptr[-1])
+@end example
+@end itemize
+
+This function scans the input text starting at @var{w_ptr} looking for a
+sequence of octets representing, in @utf{}-8 encoding, a web link.  The
+sequence must begin with the prefix @samp{www.} (of which
+@code{w_ptr[0]} is the first @samp{w}) followed by a string of octets
+representing:
+
+@itemize
+@item
+Alphanumeric characters according to the C Standard Library function
+@cfunc{isalnum}.
+
+@item
+Colon characters @samp{:}.
+
+@item
+Dot characters @samp{.}.
+
+@item
+Dash characters @samp{-}.
+@end itemize
+
+@noindent
+the string after @samp{www.} must contain at least one dot or one colon
+to be considered a valid web link.
+
+If a valid web link is found:
+
+@itemize
+@item
+The string representing the link is appended to the buffer referenced by
+@var{link}, which must be already initialised.
+
+@item
+The number of octets to the left of @var{w_ptr} which are part of the
+web link, is stored in the location referenced by @var{rewind_p}.  For
+this function: this value is always @samp{0}, because @var{w_ptr}
+references the first octet in the link.
+
+@item
+The return value is the number of octets in the web link.  This number
+is the offset to add to @var{w_ptr} to move it to the end of the link in
+the input text.
+@end itemize
+
+If a valid web link is @strong{not} found: the return value is zero.
+
+@example
+char *              input_text   = \
+   "the URL is www.hoedown.org/index.html, got it?";
+size_t              input_len    = strlen(input_text);
+size_t              input_offset = strlen("the URL is ");
+
+uint8_t *           w_ptr = (uint8_t*)(input_text+input_offset);
+
+hoedown_buffer      link;
+size_t              offset_delta;
+size_t              rewind;
+
+assert('w' == input_text[input_offset]);
+assert('w' == w_ptr[0]);
+
+hoedown_buffer_init(&link, 1024, realloc, free, free);
+@{
+  offset_delta = hoedown_autolink__www(&rewind, &link,
+     w_ptr, input_offset, input_len, 0);
+  assert(strlen("www.hoedown.org/index.html") == offset_delta);
+  assert(0 == rewind);
+  assert(hoedown_buffer_eqs(&link, "www.hoedown.org/index.html"));
+  assert(0 == strcmp((char *)(w_ptr+offset_delta), ", got it?"));
+@}
+hoedown_buffer_uninit(&link);
+@end example
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@deftypefun size_t hoedown_autolink__email (size_t * @var{rewind_p}, hoedown_buffer * @var{link}, uint8_t * @var{at_ptr}, size_t @var{input_offset}, size_t @var{input_len}, hoedown_autolink_flags @var{flags})
+Find the limits of an email address link in the input Markdown buffer.
+
+This function assumes that:
+
+@itemize
+@item
+The input text is stored in a memory block as array of octets in
+@utf{}-8 encoding; the block is @var{input_len} octets wide.
+
+@item
+The pointer @var{at_ptr} references an octet in the input text at
+@var{input_offset} octets from the beginning.
+
+@item
+The pointer @var{at_ptr} references an octet representing the character
+@code{@@} in @utf{}-8 encoding:
+
+@example
+'@@' == at_ptr[0]
+@end example
+
+@item
+If @var{input_offset} is not zero (that is: @var{at_ptr} is not at the
+beginning of the input text): the octets before @var{at_ptr} represent
+alphanumeric characters (according to the C Standard Library function
+@cfunc{isalnum}) or characters in the set @samp{.+-_}.
+@end itemize
+
+This function scans the input text starting at @var{at_ptr}, both in the
+left and right directions, looking for a sequence of octets
+representing, in @utf{}-8 encoding, an email address.  The sequence must
+begin, to the left of the @samp{@@} character, with a non--empty prefix
+composed of:
+
+@itemize
+@item
+Alphanumeric characters according to the C Standard Library function
+@cfunc{isalnum}.
+
+@item
+Characters in the set @samp{.+-_}.
+@end itemize
+
+@noindent
+the sequence must end, to the right of the @samp{@@} character, with a
+non--empty suffix composed of:
+
+@itemize
+@item
+Alphanumeric characters according to the C Standard Library function
+@cfunc{isalnum}.
+
+@item
+Characters in the set @samp{.-_}.
+@end itemize
+
+@noindent
+the suffix must represent a valid host name.
+
+If a valid email address is found:
+
+@itemize
+@item
+The string representing the link is appended to the buffer referenced by
+@var{link}, which must be already initialised.
+
+@item
+The number of octets to the left of @var{at_ptr} which are part of the
+address, is stored in the location referenced by @var{rewind_p}.
+
+@item
+The return value is the number of octets in the email address at the
+right of the @var{at_ptr} pointer.  This number is the offset to add to
+@var{at_ptr} to move it to the end of the address in the input text.
+@end itemize
+
+If a valid email address is @strong{not} found: the return value is
+zero.
+
+@example
+char *              input_text   = \
+  "the address is kate.beckinsale@@underworld.earth, got it?";
+size_t              input_len    = strlen(input_text);
+size_t              input_offset = \
+  strlen("the address is kate.beckinsale");
+
+uint8_t *           at_ptr = (uint8_t *)(input_text+input_offset);
+
+hoedown_buffer      link;
+size_t              offset_delta;
+size_t              rewind;
+
+assert('@@' == input_text[input_offset]);
+assert('@@' == at_ptr[0]);
+
+hoedown_buffer_init(&link, 1024, realloc, free, free);
+@{
+  offset_delta = hoedown_autolink__email(&rewind, &link,
+     at_ptr, input_offset, input_len, 0);
+  assert(strlen("@@underworld.earth") == offset_delta);
+  assert(strlen("kate.beckinsale") == rewind);
+  assert(hoedown_buffer_eqs(&link,
+     "kate.beckinsale@@underworld.earth"));
+  assert(rewind + offset_delta == link.size);
+  assert(0 == strcmp((char *)(at_ptr+offset_delta), ", got it?"));
+@}
+hoedown_buffer_uninit(&link);
+@end example
+@end deftypefun
+
+@c ------------------------------------------------------------------------
+
+@deftypefun size_t hoedown_autolink__url (size_t * @var{rewind_p}, hoedown_buffer * @var{link},	uint8_t * @var{colon_ptr}, size_t @var{input_offset}, size_t @var{input_len}, hoedown_autolink_flags @var{flags})
+Find the limits of a @acronym{URL} in the input Markdown buffer.
+
+This function assumes that:
+
+@itemize
+@item
+The input text is stored in a memory block as array of octets in
+@utf{}-8 encoding; the block is @var{input_len} octets wide.
+
+@item
+The pointer @var{colon_ptr} references an octet in the input text at
+@var{input_offset} octets from the beginning.
+
+@item
+The pointer @var{colon_ptr} references an octet representing the
+character @code{:} in @utf{}-8 encoding:
+
+@example
+':' == colon_ptr[0]
+@end example
+
+@item
+If @var{input_offset} is not zero (that is: @var{colon_ptr} is not at
+the beginning of the input text): the octets to the left of
+@var{colon_ptr} must represent alphabetic characters according to the C
+Standard Library function @cfunc{isalpha}.
+@end itemize
+
+This function scans the input text starting at @var{colon_ptr}, both in
+the left and right directions, looking for a sequence of octets
+representing, in @utf{}-8 encoding, a @acronym{URL}.  The sequence must
+begin, to the left of the colon character, with a non--empty prefix
+composed by alphabetic characters, according to the C Standard Library
+function @cfunc{isalpha}.  The sequence must end, to the right of the
+colon character, with a non--empty suffix composed of:
+
+@itemize
+@item
+A sequence of @math{2} slash characters @samp{/}.
+
+@item
+A valid domain name composed of:
+
+@itemize -
+@item
+Alphanumeric characters according to the C Standard Library function
+@cfunc{isalnum}.
+
+@item
+Colon characters @samp{:}.
+
+@item
+Dot characters @samp{.}.
+
+@item
+Dash characters @samp{-}.
+@end itemize
+@end itemize
+
+If a valid @acronym{URL} is found:
+
+@itemize
+@item
+The string representing the @acronym{URL} is appended to the buffer
+referenced by @var{link}, which must be already initialised.
+
+@item
+The number of octets to the left of @var{colon_ptr} which are part of
+the @acronym{URL}, is stored in the location referenced by
+@var{rewind_p}.
+
+@item
+The return value is the number of octets in the @acronym{URL} to the
+right of @var{colon_ptr}.  This number is the offset to add to
+@var{colon_ptr} to move it to the end of the @acronym{URL} in the input
+text.
+@end itemize
+
+If a valid @acronym{URL} is @strong{not} found: the return value is
+zero.
+
+@example
+char *              input_text   = \
+   "the URL is http://www.hoedown.org/index.html, got it?";
+size_t              input_len    = strlen(input_text);
+size_t              input_offset = strlen("the URL is http");
+
+uint8_t *           colon_ptr = \
+   (uint8_t *)(input_text+input_offset);
+
+hoedown_buffer      link;
+size_t              offset_delta;
+size_t              rewind;
+
+assert(':' == input_text[input_offset]);
+assert(':' == colon_ptr[0]);
+
+hoedown_buffer_init(&link, 1024, realloc, free, free);
+@{
+  offset_delta = hoedown_autolink__url(&rewind, &link,
+     colon_ptr, input_offset, input_len, 0);
+  assert(strlen("://www.hoedown.org/index.html") == offset_delta);
+  assert(4 == rewind);
+  assert(hoedown_buffer_eqs(&link,
+     "http://www.hoedown.org/index.html"));
+  assert(rewind + offset_delta == link.size);
+  assert(0 == strcmp((char *)(colon_ptr+offset_delta),
+                     ", got it?"));
+@}
+hoedown_buffer_uninit(&link);
 @end example
 @end deftypefun
 

@@ -26,8 +26,9 @@ print_buffer (hoedown_buffer * B)
   fprintf(stderr, "\n");
 }
 
-int
-main (int argc, const char *const argv[])
+
+void
+test_safe (void)
 {
   /* Test URI for safe prefix. */
   {
@@ -62,9 +63,12 @@ main (int argc, const char *const argv[])
     const char *	str = "#/";
     assert(! hoedown_autolink_is_safe((const uint8_t *)str, strlen(str)));
   }
+}
 
-/* ------------------------------------------------------------------ */
-
+
+static void
+test_www (void)
+{
   /* Find WWW link. */
   {
     char *		input_text   = "the URL is www.hoedown.org/index.html, got it?";
@@ -92,9 +96,12 @@ main (int argc, const char *const argv[])
     }
     hoedown_buffer_uninit(&link);
   }
+}
 
-/* ------------------------------------------------------------------ */
-
+
+static void
+test_email (void)
+{
   /* Find email link. */
   {
     char *		input_text   = "the address is kate.beckinsale@underworld.earth, got it?";
@@ -123,9 +130,12 @@ main (int argc, const char *const argv[])
     }
     hoedown_buffer_uninit(&link);
   }
+}
 
-/* ------------------------------------------------------------------ */
-
+
+static void
+test_url (void)
+{
   /* Find URL link. */
   {
     char *		input_text   = "the URL is http://www.hoedown.org/index.html, got it?";
@@ -183,7 +193,47 @@ main (int argc, const char *const argv[])
     hoedown_buffer_uninit(&link);
   }
 
+/* ------------------------------------------------------------------ */
 
+  /* Find URL link.  Short domain. */
+  {
+    char *		input_text   = "the URL is http://localhost, got it?";
+    size_t		input_len    = strlen(input_text);
+    size_t		input_offset = strlen("the URL is http");
+
+    uint8_t *		colon_ptr = (uint8_t *)(input_text+input_offset);
+
+    hoedown_buffer	link;
+    size_t		offset_delta;
+    size_t		rewind;
+
+    assert(':' == input_text[input_offset]);
+    assert(':' == colon_ptr[0]);
+
+    hoedown_buffer_init(&link, 1024, realloc, free, free);
+    {
+      offset_delta = hoedown_autolink__url(&rewind, &link, colon_ptr, input_offset, input_len,
+					   HOEDOWN_AUTOLINK_SHORT_DOMAINS);
+      //fprintf(stderr, "%lu\n", offset_delta);
+      //print_buffer(&link);
+      assert(strlen("://localhost") == offset_delta);
+      assert(4 == rewind);
+      assert(hoedown_buffer_eqs(&link, "http://localhost"));
+      assert(rewind + offset_delta == link.size);
+      assert(0 == strcmp((char *)(colon_ptr+offset_delta), ", got it?"));
+    }
+    hoedown_buffer_uninit(&link);
+  }
+}
+
+
+int
+main (int argc, const char *const argv[])
+{
+  test_safe();
+  test_www();
+  test_email();
+  test_url();
   exit(EXIT_SUCCESS);
 }
 

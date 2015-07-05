@@ -870,6 +870,10 @@ functions.  The following constants are defined:
 @item HOEDOWN_AUTOLINK_SHORT_DOMAINS
 @cindex @code{HOEDOWN_AUTOLINK_SHORT_DOMAINS}, enum constant
 @cindex Enum constant @code{HOEDOWN_AUTOLINK_SHORT_DOMAINS}
+When checking the presence of a domain specification: do not enforce
+validation of a domain in the strict sense (with least one dot); so just
+make sure it's composed of valid domain characters and return the length
+of the the valid sequence.
 @end table
 @end deftp
 
@@ -1199,6 +1203,9 @@ text.
 
 If a valid @acronym{URL} is @strong{not} found: the return value is
 zero.
+
+This function honours the @samp{HOEDOWN_AUTOLINK_SHORT_DOMAINS} flag in
+the @var{flags} argument.
 
 @example
 char *              input_text   = \

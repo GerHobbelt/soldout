@@ -1255,9 +1255,58 @@ hoedown_buffer_uninit(&link);
 
 
 @menu
+* lib html renderer::           @ahtml{} from Markdown renderer.
 * lib html smartypants::        Processing @ahtml{} text with SmartyPants.
 * lib html misc::               Miscellaneous @ahtml{} helpers.
 @end menu
+
+@c page
+@node lib html renderer
+@subsection @ahtml{} from Markdown renderer
+
+
+The definitions of the @ahtml{} generation @api{} are in the header file
+@file{hoedown/html.h}.
+
+
+@deftp {Enum Typedef} hoedown_html_flags
+Enumeration typedef used to configure the @ahtml{} renderer.  It defines
+the following symbols:
+
+@table @code
+@item HOEDOWN_HTML_SKIP_HTML
+@cindex @code{HOEDOWN_HTML_SKIP_HTML}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_HTML_SKIP_HTML}
+
+@item HOEDOWN_HTML_ESCAPE
+@cindex @code{HOEDOWN_HTML_ESCAPE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_HTML_ESCAPE}
+
+@item HOEDOWN_HTML_HARD_WRAP
+@cindex @code{HOEDOWN_HTML_HARD_WRAP}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_HTML_HARD_WRAP}
+
+@item HOEDOWN_HTML_USE_XHTML
+@cindex @code{HOEDOWN_HTML_USE_XHTML}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_HTML_USE_XHTML}
+@end table
+@end deftp
+
+
+@deftypefun {hoedown_renderer *} hoedown_html_renderer_new (hoedown_html_flags @var{render_flags}, int @var{nesting_level})
+Allocate a regular @ahtml{} renderer.
+@end deftypefun
+
+
+@deftypefun {hoedown_renderer *} hoedown_html_toc_renderer_new (int @var{nesting_level})
+Like @cfunc{hoedown_html_renderer_new}, but the returned renderer
+produces the ``Table of Contents'' rather than a normal document.
+@end deftypefun
+
+
+@deftypefun void hoedown_html_renderer_free (hoedown_renderer * @var{renderer})
+Deallocate an @ahtml{} renderer.
+@end deftypefun
 
 @c page
 @node lib html smartypants

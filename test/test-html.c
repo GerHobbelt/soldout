@@ -118,11 +118,61 @@ test_markup_type (void)
 }
 
 
+static void
+html_rend (const char * in_str, const char * ou_str)
+{
+  hoedown_buffer		B;
+  hoedown_document *		D;
+  hoedown_renderer *		R;
+
+  hoedown_buffer_init(&B, 1024, realloc, free, free);
+  R = hoedown_html_renderer_new(0, 0);
+  D = hoedown_document_new(R, 0, 16);
+  {
+    hoedown_document_render(D, &B, (const uint8_t *)in_str, strlen(in_str));
+    print_buffer(&B);
+    assert(hoedown_buffer_eqs(&B, ou_str));
+  }
+  hoedown_document_free(D);
+  hoedown_html_renderer_free(R);
+  hoedown_buffer_uninit(&B);
+}
+void
+test_renderer (void)
+{
+  /* Simple text. */
+  {
+    static const char *		in_str = "Hello World!";
+    static const char *		ou_str = "<p>Hello World!</p>\n";
+    html_rend (in_str, ou_str);
+  }
+  /* Code markup. */
+  {
+    static const char *		in_str = "```Hello World!```";
+    static const char *		ou_str = "<p><code>Hello World!</code></p>\n";
+    html_rend (in_str, ou_str);
+  }
+  /* Emphasis markup. */
+  {
+    static const char *		in_str = "*Hello World!*";
+    static const char *		ou_str = "<p><em>Hello World!</em></p>\n";
+    html_rend (in_str, ou_str);
+  }
+  /* Emphasis markup. */
+  {
+    static const char *		in_str = "[Hello World!](http://localhost/)";
+    static const char *		ou_str = "<p><a href=\"http://localhost/\">Hello World!</a></p>\n";
+    html_rend (in_str, ou_str);
+  }
+}
+
+
 int
 main (int argc, const char *const argv[])
 {
   test_smartypants();
   test_markup_type();
+  test_renderer();
   exit(EXIT_SUCCESS);
 }
 

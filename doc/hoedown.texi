@@ -1265,6 +1265,65 @@ hoedown_buffer_uninit(&link);
 @subsection @ahtml{} from Markdown renderer
 
 
+The basic structure of code using the built--in @ahtml{} renderer is
+this:
+
+@example
+void
+html_rend (const char * in_str, const char * ou_str)
+@{
+  hoedown_buffer                B;
+  hoedown_document *            D;
+  hoedown_renderer *            R;
+
+  hoedown_buffer_init(&B, 1024, realloc, free, free);
+  R = hoedown_html_renderer_new(0, 0);
+  D = hoedown_document_new(R, 0, 16);
+  @{
+    hoedown_document_render(D, &B,
+       (const uint8_t *)in_str, strlen(in_str));
+    assert(hoedown_buffer_eqs(&B, ou_str));
+  @}
+  hoedown_document_free(D);
+  hoedown_html_renderer_free(R);
+  hoedown_buffer_uninit(&B);
+@}
+@end example
+
+@noindent
+and it can be used as follows:
+
+@example
+/* Simple text. */
+@{
+  char *  in_str = "Hello World!";
+  char *  ou_str = "<p>Hello World!</p>\n";
+  html_rend (in_str, ou_str);
+@}
+
+/* Code markup. */
+@{
+  char *  in_str = "```Hello World!```";
+  char *  ou_str = "<p><code>Hello World!</code></p>\n";
+  html_rend (in_str, ou_str);
+@}
+
+/* Emphasis markup. */
+@{
+  char *  in_str = "*Hello World!*";
+  char *  ou_str = "<p><em>Hello World!</em></p>\n";
+  html_rend (in_str, ou_str);
+@}
+
+/* Emphasis markup. */
+@{
+  char *  in_str = "[Hello World!]()";
+  char *  ou_str = \
+    "<p><a href=\"http://localhost/\">Hello World!</a></p>\n";
+  html_rend (in_str, ou_str);
+@}
+@end example
+
 The definitions of the @ahtml{} generation @api{} are in the header file
 @file{hoedown/html.h}.
 

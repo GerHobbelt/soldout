@@ -43,6 +43,12 @@
 
 @c *** KEEP ALPHABETIC ORDER ***
 
+@macro ahtml{}
+@acronym{HTML}
+@end macro
+
+@c ------------------------------------------------------------------------
+
 @macro acpi{}
 @acronym{ACPI}
 @end macro

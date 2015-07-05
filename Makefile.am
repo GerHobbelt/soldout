@@ -87,7 +87,8 @@ check_PROGRAMS	= \
 	test/test-buffer		\
 	test/test-stack			\
 	test/test-escape		\
-	test/test-autolink
+	test/test-autolink		\
+	test/test-html
 
 TESTS				= $(check_PROGRAMS)
 
@@ -108,6 +109,9 @@ test_test_escape_LDADD		= $(hoedown_test_ldadd)
 
 test_test_autolink_CPPFLAGS	= $(hoedown_test_cppflags)
 test_test_autolink_LDADD	= $(hoedown_test_ldadd)
+
+test_test_html_CPPFLAGS		= $(hoedown_test_cppflags)
+test_test_html_LDADD		= $(hoedown_test_ldadd)
 
 installcheck-local: $(TESTS)
 	@for f in $(TESTS); do $(builddir)/$$f; done

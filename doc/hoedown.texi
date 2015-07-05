@@ -127,11 +127,7 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 @menu
 * overview::                    Overview of the package.
-* version::                     Version functions.
-* buffers::                     Data buffers.
-* stacks::                      Stack containers.
-* escape::                      Escaping text elements.
-* autolink::                    Autolink helpers.
+* lib::                         The Hoedown library.
 
 Appendices
 
@@ -208,8 +204,22 @@ AC_CHECK_HEADERS([hoedown/version.h],,
 @end example
 
 @c page
-@node version
-@chapter Version functions
+@node lib
+@chapter The hoedown library
+
+
+@menu
+* lib version::                 Version functions.
+* lib buffers::                 Data buffers.
+* lib stacks::                  Stack containers.
+* lib escape::                  Escaping text elements.
+* lib autolink::                Autolink helpers.
+* lib html::                    @ahtml{} generation helpers.
+@end menu
+
+@c page
+@node lib version
+@section Version functions
 
 
 @ignore
@@ -241,22 +251,22 @@ Integers representing version number components.
 @end defvr
 
 @c page
-@node buffers
-@chapter Data buffers
+@node lib buffers
+@section Data buffers
 
 
 @menu
-* buffers memory::              Memory handling in data buffers.
-* buffers struct::              Data buffer structure.
-* buffers append::              Appending data to buffers.
-* buffers set::                 Setting data in buffers.
-* buffers compar::              Comparing data in buffers.
-* buffers misc::                Miscellaneous functions.
+* lib buffers memory::          Memory handling in data buffers.
+* lib buffers struct::          Data buffer structure.
+* lib buffers append::          Appending data to buffers.
+* lib buffers set::             Setting data in buffers.
+* lib buffers compar::          Comparing data in buffers.
+* lib buffers misc::            Miscellaneous functions.
 @end menu
 
 @c page
-@node buffers memory
-@section Memory handling in data buffers
+@node lib buffers memory
+@subsection Memory handling in data buffers
 
 
 The definitions of the buffers @api{} are in the header file
@@ -320,8 +330,8 @@ reallocation fails: abort the process by calling @cfunc{abort}.
 
 
 @c page
-@node buffers struct
-@section Data buffer structure
+@node lib buffers struct
+@subsection Data buffer structure
 
 
 The definitions of the buffers @api{} are in the header file
@@ -428,8 +438,8 @@ hoedown_buffer_uninit(&B);
 @end deftypefun
 
 @c page
-@node buffers append
-@section Appending data to buffers
+@node lib buffers append
+@subsection Appending data to buffers
 
 
 The definitions of the buffers @api{} are in the header file
@@ -538,8 +548,8 @@ hoedown_buffer_uninit(&B);
 @end deftypefun
 
 @c page
-@node buffers set
-@section Setting data in buffers
+@node lib buffers set
+@subsection Setting data in buffers
 
 
 The definitions of the buffers @api{} are in the header file
@@ -599,8 +609,8 @@ hoedown_buffer_uninit(&B);
 @end deftypefn
 
 @c page
-@node buffers compar
-@section Comparing data in buffers
+@node lib buffers compar
+@subsection Comparing data in buffers
 
 
 The definitions of the buffers @api{} are in the header file
@@ -681,8 +691,8 @@ hoedown_buffer_uninit(&B);
 @end deftypefun
 
 @c page
-@node buffers misc
-@section Miscellaneous functions
+@node lib buffers misc
+@subsection Miscellaneous functions
 
 
 The definitions of the buffers @api{} are in the header file
@@ -729,18 +739,18 @@ hoedown_buffer_uninit(&B);
 @end deftypefun
 
 @c page
-@node stacks
-@chapter Stack containers
+@node lib stacks
+@section Stack containers
 
 
 @menu
-* stacks struct::               Stack structures.
-* stacks ops::                  Operations on stack structures.
+* lib stacks struct::           Stack structures.
+* lib stacks ops::              Operations on stack structures.
 @end menu
 
 @c page
-@node stacks struct
-@section Stack structures
+@node lib stacks struct
+@subsection Stack structures
 
 
 The definitions of the stacks @api{} are in the header file
@@ -782,8 +792,8 @@ Increase the allocated size to the given value.
 @end deftypefun
 
 @c page
-@node stacks ops
-@section Operations on stack structures
+@node lib stacks ops
+@subsection Operations on stack structures
 
 
 The definitions of the stacks @api{} are in the header file
@@ -807,8 +817,8 @@ return @cnull{}.
 @end deftypefun
 
 @c page
-@node escape
-@chapter Escaping text elements
+@node lib escape
+@section Escaping text elements
 
 
 The definitions of the escaping @api{} are in the header file
@@ -816,9 +826,9 @@ The definitions of the escaping @api{} are in the header file
 
 
 @deftypefun void hoedown_escape_href (hoedown_buffer * @var{ob}, const uint8_t * @var{data}, size_t @var{size})
-Escape (part of) a @acronym{URL} inside @acronym{HTML}.  Escape all the
+Escape (part of) a @aurl{} inside @acronym{HTML}.  Escape all the
 characters in the @var{data} memory block that cannot appear in a
-@acronym{URL}; append the result to the buffer @var{ob}.
+@aurl{}; append the result to the buffer @var{ob}.
 
 @example
 hoedown_buffer      B;
@@ -854,8 +864,8 @@ hoedown_buffer_uninit(&B);
 @end deftypefun
 
 @c page
-@node autolink
-@chapter Autolink helpers
+@node lib autolink
+@section Autolink helpers
 
 
 The definitions of the autolink @api{} are in the header file
@@ -879,7 +889,7 @@ of the the valid sequence.
 
 
 @deftypefun int hoedown_autolink_is_safe (const uint8_t * @var{data}, size_t @var{size})
-Verify that a @acronym{URL} has a safe protocol.  Assume @var{data}
+Verify that a @aurl{} has a safe protocol.  Assume @var{data}
 references a memory block holding a string of @utf{}-8 encoded
 characters.  Return true (non--zero) if the prefix of the string matches
 one among:
@@ -1123,7 +1133,7 @@ hoedown_buffer_uninit(&link);
 @c ------------------------------------------------------------------------
 
 @deftypefun size_t hoedown_autolink__url (size_t * @var{rewind_p}, hoedown_buffer * @var{link},	uint8_t * @var{colon_ptr}, size_t @var{input_offset}, size_t @var{input_len}, hoedown_autolink_flags @var{flags})
-Find the limits of a @acronym{URL} in the input Markdown buffer.
+Find the limits of a @aurl{} in the input Markdown buffer.
 
 This function assumes that:
 
@@ -1153,7 +1163,7 @@ Standard Library function @cfunc{isalpha}.
 
 This function scans the input text starting at @var{colon_ptr}, both in
 the left and right directions, looking for a sequence of octets
-representing, in @utf{}-8 encoding, a @acronym{URL}.  The sequence must
+representing, in @utf{}-8 encoding, a @aurl{}.  The sequence must
 begin, to the left of the colon character, with a non--empty prefix
 composed by alphabetic characters, according to the C Standard Library
 function @cfunc{isalpha}.  The sequence must end, to the right of the
@@ -1182,26 +1192,26 @@ Dash characters @samp{-}.
 @end itemize
 @end itemize
 
-If a valid @acronym{URL} is found:
+If a valid @aurl{} is found:
 
 @itemize
 @item
-The string representing the @acronym{URL} is appended to the buffer
+The string representing the @aurl{} is appended to the buffer
 referenced by @var{link}, which must be already initialised.
 
 @item
 The number of octets to the left of @var{colon_ptr} which are part of
-the @acronym{URL}, is stored in the location referenced by
+the @aurl{}, is stored in the location referenced by
 @var{rewind_p}.
 
 @item
-The return value is the number of octets in the @acronym{URL} to the
+The return value is the number of octets in the @aurl{} to the
 right of @var{colon_ptr}.  This number is the offset to add to
-@var{colon_ptr} to move it to the end of the @acronym{URL} in the input
+@var{colon_ptr} to move it to the end of the @aurl{} in the input
 text.
 @end itemize
 
-If a valid @acronym{URL} is @strong{not} found: the return value is
+If a valid @aurl{} is @strong{not} found: the return value is
 zero.
 
 This function honours the @samp{HOEDOWN_AUTOLINK_SHORT_DOMAINS} flag in
@@ -1238,6 +1248,75 @@ hoedown_buffer_init(&link, 1024, realloc, free, free);
 hoedown_buffer_uninit(&link);
 @end example
 @end deftypefun
+
+@c page
+@node lib html
+@section @ahtml{} generation helpers
+
+
+The definitions of the @ahtml{} generation @api{} are in the header file
+@file{hoedown/html.h}.
+
+
+@deftypefun void hoedown_html_smartypants (hoedown_buffer * @var{ob}, const uint8_t * @var{data}, size_t @var{size})
+Take the memory block referenced by @var{data}, containing @var{size}
+octets, and process it as @ahtml{} text; the resulting output is
+appended to the buffer @var{ob}.
+
+Translate plain @ascii{} punctuation characters into ``smart''
+typographic punctuation @ahtml{} entities.  SmartyPants performs the
+following transformations:
+
+@itemize
+@item
+Straight quotes into ``curly'' quote @ahtml{} entities.  The input text:
+
+@example
+<p>"Hello" 'World'!</p>
+@end example
+
+@noindent
+is converted to:
+
+@example
+<p>&ldquo;Hello&rdquo; &lsquo;World&rsquo;!</p>
+@end example
+
+@item
+Backticks--style quotes into curly quote @ahtml{} entities.  The input
+text:
+
+@example
+<p>``Hello World!''</p>
+@end example
+
+@noindent
+is converted to:
+
+@example
+<p>&ldquo;Hello World!&rdquo;</p>
+@end example
+
+@item
+Dashes (@samp{--} and @samp{---}) into en- and em-dash entities.  The
+input text:
+
+@example
+<p>Trouble--maker---that is what you are!</p>
+@end example
+
+@noindent
+is converted to:
+
+@example
+<p>Trouble&ndash;maker&mdash;that is what you are!</p>
+@end example
+
+@item
+Three consecutive dots (@samp{...}) into an ellipsis entity.
+@end itemize
+@end deftypefun
+
 
 @c page
 @node references

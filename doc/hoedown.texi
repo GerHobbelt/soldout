@@ -1254,6 +1254,16 @@ hoedown_buffer_uninit(&link);
 @section @ahtml{} generation helpers
 
 
+@menu
+* lib html smartypants::        Processing @ahtml{} text with SmartyPants.
+* lib html misc::               Miscellaneous @ahtml{} helpers.
+@end menu
+
+@c page
+@node lib html smartypants
+@subsection Processing @ahtml{} text with SmartyPants
+
+
 The definitions of the @ahtml{} generation @api{} are in the header file
 @file{hoedown/html.h}.
 
@@ -1317,6 +1327,58 @@ Three consecutive dots (@samp{...}) into an ellipsis entity.
 @end itemize
 @end deftypefun
 
+@c page
+@node lib html misc
+@subsection Miscellaneous @ahtml{} helpers
+
+
+The definitions of the @ahtml{} generation @api{} are in the header file
+@file{hoedown/html.h}.
+
+
+@deftp {Enum Typedef} hoedown_html_tag
+Enumeration type definitions used to qualify @ahtml{} markups.  It
+includes the following symbols:
+
+@table @code
+@item OEDOWN_HTML_TAG_NONE
+@cindex @code{OEDOWN_HTML_TAG_NONE}, enumeration constant
+@cindex Enumeration constant @code{OEDOWN_HTML_TAG_NONE}
+Defined to be @samp{0}.  It means the analysed text is not a @ahtml{}
+markup.
+
+@item HOEDOWN_HTML_TAG_OPEN,
+@cindex @code{HOEDOWN_HTML_TAG_OPEN,}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_HTML_TAG_OPEN}
+It means the analysed text is not an opening @ahtml{} markup.
+
+@item HOEDOWN_HTML_TAG_CLOSE
+@cindex @code{HOEDOWN_HTML_TAG_CLOSE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_HTML_TAG_CLOSE}
+It means the analysed text is not a closing @ahtml{} markup.
+@end table
+@end deftp
+
+
+@deftypefun hoedown_html_tag hoedown_html_is_tag (const uint8_t * @var{data}, size_t @var{size}, const char * @var{tagname})
+Check if @var{data} starts with a specific @ahtml{} markup whose name is
+@var{tagname}; return the markup type or @samp{OEDOWN_HTML_TAG_NONE} if
+the text is not a markup.
+
+@example
+static const char *  str = "Hello World!";
+assert(HOEDOWN_HTML_TAG_NONE == \
+  hoedown_html_is_tag((const uint8_t *) str, strlen(str), "p"));
+
+static const char *  str = "<p>Hello World!</p>";
+assert(HOEDOWN_HTML_TAG_OPEN == \
+  hoedown_html_is_tag((const uint8_t *) str, strlen(str), "p"));
+
+static const char *  str = "</p><p>Hello World!</p>";
+assert(HOEDOWN_HTML_TAG_CLOSE == \
+  hoedown_html_is_tag((const uint8_t *) str, strlen(str), "p"));
+@end example
+@end deftypefun
 
 @c page
 @node references

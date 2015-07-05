@@ -100,10 +100,29 @@ test_smartypants (void)
 }
 
 
+void
+test_markup_type (void)
+{
+  {
+    static const char *	str  = "Hello World!";
+    assert(HOEDOWN_HTML_TAG_NONE == hoedown_html_is_tag((const uint8_t *) str, strlen(str), "p"));
+  }
+  {
+    static const char *	str = "<p>Hello World!</p>";
+    assert(HOEDOWN_HTML_TAG_OPEN == hoedown_html_is_tag((const uint8_t *) str, strlen(str), "p"));
+  }
+  {
+    static const char *	str = "</p><p>Hello World!</p>";
+    assert(HOEDOWN_HTML_TAG_CLOSE == hoedown_html_is_tag((const uint8_t *) str, strlen(str), "p"));
+  }
+}
+
+
 int
 main (int argc, const char *const argv[])
 {
   test_smartypants();
+  test_markup_type();
   exit(EXIT_SUCCESS);
 }
 

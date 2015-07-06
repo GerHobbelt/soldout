@@ -1366,6 +1366,25 @@ the following symbols:
 
 @deftypefun {hoedown_renderer *} hoedown_html_renderer_new (hoedown_html_flags @var{render_flags}, int @var{nesting_level})
 Allocate a regular @ahtml{} renderer.
+
+The argument @var{nesting_level} is the maximum header nesting level to
+include in the table of contents: when set to @samp{1} only the top
+headers are included (@samp{<h1>}); when set to @samp{2} only the top
+headers and the subheaders are included (@samp{<h1>} and @samp{<h2>});
+and so on.  Here ``inclusion in the table of contents'' means that
+@samp{<h1>} and similar markups are generated with the anchor:
+
+@example
+<h1 id="toc_0">Heading</h1>
+@end example
+
+@noindent
+so that the table of contents can reference them using the fragment
+identifier:
+
+@example
+<a href="#toc_0">Heading</a>
+@end example
 @end deftypefun
 
 
@@ -1378,6 +1397,13 @@ include in the table of contents: when set to @samp{1} only the top
 headers are included (@samp{<h1>}); when set to @samp{2} only the top
 headers and the subheaders are included (@samp{<h1>} and @samp{<h2>});
 and so on.
+
+We must be careful to generate a table of contents with
+@var{nesting_level} less than or equal to the value used when generating
+the full @ahtml{} document.
+
+@ref{htmlex toc, Rendering tables of contents}, for examples of
+generating table of contents.
 @end deftypefun
 
 

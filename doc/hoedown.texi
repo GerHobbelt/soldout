@@ -132,6 +132,7 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 Appendices
 
 * references::                  Bibliography and references.
+* htmlex::                      @ahtml{} rendering examples.
 
 Indexes
 
@@ -214,7 +215,8 @@ AC_CHECK_HEADERS([hoedown/version.h],,
 * lib stacks::                  Stack containers.
 * lib escape::                  Escaping text elements.
 * lib autolink::                Autolink helpers.
-* lib html::                    @ahtml{} generation helpers.
+* lib document::                Processing Markdown documents.
+* lib html::                    @ahtml{} generation.
 @end menu
 
 @c page
@@ -1250,9 +1252,19 @@ hoedown_buffer_uninit(&link);
 @end deftypefun
 
 @c page
-@node lib html
-@section @ahtml{} generation helpers
+@node lib document
+@section Processing Markdown documents
 
+
+
+
+@c page
+@node lib html
+@section @ahtml{} generation
+
+
+For examples of using the built--in @ahtml{} renderer @ref{htmlex,
+@ahtml{} rendering examples}.
 
 @menu
 * lib html renderer::           @ahtml{} from Markdown renderer.
@@ -1360,6 +1372,12 @@ Allocate a regular @ahtml{} renderer.
 @deftypefun {hoedown_renderer *} hoedown_html_toc_renderer_new (int @var{nesting_level})
 Like @cfunc{hoedown_html_renderer_new}, but the returned renderer
 produces the ``Table of Contents'' rather than a normal document.
+
+The argument @var{nesting_level} is the maximum header nesting level to
+include in the table of contents: when set to @samp{1} only the top
+headers are included (@samp{<h1>}); when set to @samp{2} only the top
+headers and the subheaders are included (@samp{<h1>} and @samp{<h2>});
+and so on.
 @end deftypefun
 
 
@@ -1512,6 +1530,194 @@ development of the repackaging takes place at:
 and as backup at:
 
 @center @value{BITBUCKET_URL}
+
+@c page
+@node htmlex
+@appendix @ahtml{} rendering examples
+
+
+@menu
+* htmlex toc::                  Rendering table of contents.
+@end menu
+
+@c page
+@node htmlex toc
+@appendixsec Rendering table of contents
+
+
+Let's consider the following code that renders and prints a table of
+contents:
+
+@example
+void
+print_buffer (hoedown_buffer * B)
+@{
+  fwrite(B->data, B->size, 1, stderr);
+  fprintf(stderr, "\n");
+@}
+static void
+html_toc_rend (const char * in_str, int nesting_level)
+@{
+  hoedown_buffer                B;
+  hoedown_document *            D;
+  hoedown_renderer *            R;
+
+  hoedown_buffer_init(&B, 1024, realloc, free, free);
+  R = hoedown_html_toc_renderer_new(nesting_level);
+  D = hoedown_document_new(R, 0, 16);
+  @{
+    hoedown_document_render(D, &B, (const uint8_t *)in_str, strlen(in_str));
+    print_buffer(&B);
+  @}
+  hoedown_document_free(D);
+  hoedown_html_renderer_free(R);
+  hoedown_buffer_uninit(&B);
+@}
+@end example
+
+Let's see what it generates:
+
+@itemize
+@item
+The following code:
+
+@example
+static const char * in_str = "\
+Heading1\n\
+========\n\
+\n\
+Subheading11\n\
+------------\n\
+\n\
+Subheading21\n\
+------------\n\
+\n\
+Heading2\n\
+========\n\
+\n\
+Subheading21\n\
+------------\n\
+\n\
+Subheading22\n\
+------------\n\
+";
+html_toc_rend (in_str, 3);
+@end example
+
+@noindent
+prints:
+
+@example
+<ul>
+<li>
+<a href=#toc_0>Heading1</a>
+<ul>
+<li>
+<a href=#toc_1>Subheading11</a>
+</li>
+<li>
+<a href=#toc_2>Subheading21</a>
+</li>
+</ul>
+</li>
+<li>
+<a href=#toc_3>Heading2</a>
+<ul>
+<li>
+<a href=#toc_4>Subheading21</a>
+</li>
+<li>
+<a href=#toc_5>Subheading22</a>
+</li>
+</ul>
+</li>
+</ul>
+@end example
+
+@item
+The following code:
+
+@example
+static const char * in_str = "\
+# Heading1\n\
+\n\
+## Subheading11\n\
+\n\
+## Subheading21\n\
+\n\
+# Heading2\n\
+\n\
+## Subheading21\n\
+\n\
+## Subheading22\n\
+";
+html_toc_rend (in_str, 3);
+@end example
+
+@noindent
+prints:
+
+@example
+<ul>
+<li>
+<a href=#toc_0>Heading1</a>
+<ul>
+<li>
+<a href=#toc_1>Subheading11</a>
+</li>
+<li>
+<a href=#toc_2>Subheading21</a>
+</li>
+</ul>
+</li>
+<li>
+<a href=#toc_3>Heading2</a>
+<ul>
+<li>
+<a href=#toc_4>Subheading21</a>
+</li>
+<li>
+<a href=#toc_5>Subheading22</a>
+</li>
+</ul>
+</li>
+</ul>
+@end example
+
+@item
+The following code limits the nesting level to @samp{1}:
+
+@example
+static const char * in_str = "\
+# Heading1\n\
+\n\
+## Subheading11\n\
+\n\
+## Subheading21\n\
+\n\
+# Heading2\n\
+\n\
+## Subheading21\n\
+\n\
+## Subheading22\n\
+";
+html_toc_rend (in_str, 1);
+@end example
+
+@noindent
+and it prints:
+
+@example
+<ul>
+<li>
+<a href=#toc_0>Heading1</a>
+</li>
+<li>
+<a href=#toc_1>Heading2</a>
+</li>
+</ul>
+@end example
+@end itemize
 
 @c page
 @node concept index

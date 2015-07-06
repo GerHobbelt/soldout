@@ -130,7 +130,7 @@ html_rend (const char * in_str, const char * ou_str)
   D = hoedown_document_new(R, 0, 16);
   {
     hoedown_document_render(D, &B, (const uint8_t *)in_str, strlen(in_str));
-    print_buffer(&B);
+    //print_buffer(&B);
     assert(hoedown_buffer_eqs(&B, ou_str));
   }
   hoedown_document_free(D);
@@ -167,12 +167,200 @@ test_renderer (void)
 }
 
 
+static void
+html_toc_rend (const char * in_str, const char * ou_str, int nesting_level)
+{
+  hoedown_buffer		B;
+  hoedown_document *		D;
+  hoedown_renderer *		R;
+
+  hoedown_buffer_init(&B, 1024, realloc, free, free);
+  R = hoedown_html_toc_renderer_new(nesting_level);
+  D = hoedown_document_new(R, 0, 16);
+  {
+    hoedown_document_render(D, &B, (const uint8_t *)in_str, strlen(in_str));
+    print_buffer(&B);
+    assert(hoedown_buffer_eqs(&B, ou_str));
+  }
+  hoedown_document_free(D);
+  hoedown_html_renderer_free(R);
+  hoedown_buffer_uninit(&B);
+}
+void
+test_toc_renderer (void)
+{
+  /* Simple table of contents. */
+  {
+    static const char *		in_str = "\
+Heading1\n\
+========\n\
+\n\
+Subheading11\n\
+------------\n\
+\n\
+Subheading21\n\
+------------\n\
+\n\
+Heading2\n\
+========\n\
+\n\
+Subheading21\n\
+------------\n\
+\n\
+Subheading22\n\
+------------\n\
+";
+    static const char *		ou_str = "\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_0\">Heading1</a>\n\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_1\">Subheading11</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_2\">Subheading21</a>\n\
+</li>\n\
+</ul>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_3\">Heading2</a>\n\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_4\">Subheading21</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_5\">Subheading22</a>\n\
+</li>\n\
+</ul>\n\
+</li>\n\
+</ul>\n\
+";
+    html_toc_rend (in_str, ou_str, 3);
+  }
+  /* Simple table of contents. */
+  {
+    static const char *		in_str = "\
+# Heading1\n\
+\n\
+## Subheading11\n\
+\n\
+## Subheading21\n\
+\n\
+# Heading2\n\
+\n\
+## Subheading21\n\
+\n\
+## Subheading22\n\
+";
+    static const char *		ou_str = "\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_0\">Heading1</a>\n\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_1\">Subheading11</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_2\">Subheading21</a>\n\
+</li>\n\
+</ul>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_3\">Heading2</a>\n\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_4\">Subheading21</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_5\">Subheading22</a>\n\
+</li>\n\
+</ul>\n\
+</li>\n\
+</ul>\n\
+";
+    html_toc_rend (in_str, ou_str, 3);
+  }
+  /* Simple table of contents. */
+  {
+    static const char *		in_str = "\
+# Heading1\n\
+\n\
+## Subheading11\n\
+\n\
+## Subheading21\n\
+\n\
+# Heading2\n\
+\n\
+## Subheading21\n\
+\n\
+## Subheading22\n\
+";
+    static const char *		ou_str = "\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_0\">Heading1</a>\n\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_1\">Subheading11</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_2\">Subheading21</a>\n\
+</li>\n\
+</ul>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_3\">Heading2</a>\n\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_4\">Subheading21</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_5\">Subheading22</a>\n\
+</li>\n\
+</ul>\n\
+</li>\n\
+</ul>\n\
+";
+    html_toc_rend (in_str, ou_str, 3);
+  }
+  /* Table of contents, limited nesting level. */
+  {
+    static const char *		in_str = "\
+# Heading1\n\
+\n\
+## Subheading11\n\
+\n\
+## Subheading21\n\
+\n\
+# Heading2\n\
+\n\
+## Subheading21\n\
+\n\
+## Subheading22\n\
+";
+    static const char *		ou_str = "\
+<ul>\n\
+<li>\n\
+<a href=\"#toc_0\">Heading1</a>\n\
+</li>\n\
+<li>\n\
+<a href=\"#toc_1\">Heading2</a>\n\
+</li>\n\
+</ul>\n\
+";
+    html_toc_rend (in_str, ou_str, 1);
+  }
+}
+
+
 int
 main (int argc, const char *const argv[])
 {
   test_smartypants();
   test_markup_type();
   test_renderer();
+  test_toc_renderer();
   exit(EXIT_SUCCESS);
 }
 

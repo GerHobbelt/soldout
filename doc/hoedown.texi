@@ -127,6 +127,8 @@ OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
 
 @menu
 * overview::                    Overview of the package.
+* hoedown::                     The @command{hoedown} program.
+* smartypants::                 The @command{smartypants} program.
 * lib::                         The Hoedown library.
 
 Appendices
@@ -203,6 +205,346 @@ AC_CHECK_LIB([hoedown],[hoedown_version],,
 AC_CHECK_HEADERS([hoedown/version.h],,
   [AC_MSG_FAILURE([test for Hoedown header failed])])
 @end example
+
+@c page
+@node hoedown
+@chapter The @command{hoedown} program
+
+
+@cindex @command{hoedown}, command line program
+@cindex Command line program @command{hoedown}
+
+
+The package compiles and installs the program @command{hoedown}, which
+can process input Markdown documents and generate @ahtml{} output using
+the built--in @ahtml{} renderer.  Synopsis:
+
+@example
+hoedown [OPTION]... [FILE]
+@end example
+
+Process the Markdown in @samp{FILE} (or standard input) and render it to
+standard output, using the Hoedown library.  Parsing and rendering can
+be customized through the options below.  The default is to parse pure
+markdown and output @ahtml{}.
+
+Main options:
+
+@table @code
+@item -n @var{N}
+@itemx --max-nesting=@var{N}
+@cindex @option{-n}, command line option
+@cindex Command line option @option{-n}
+@cindex @option{--max-nesting}, command line option
+@cindex Command line option @option{--max-nesting}
+Maximum level of block nesting parsed.  Default is 16.
+
+@item -t
+@itemx --toc-level=@var{N}
+@cindex @option{-t}, command line option
+@cindex Command line option @option{-t}
+@cindex @option{--toc-level}, command line option
+@cindex Command line option @option{--toc-level}
+Maximum level for headers included in the Table of Contents.  Zero
+disables the inclusion of Table of Contents in the output (the default).
+
+@item --html
+@cindex @option{--html}, command line option
+@cindex Command line option @option{--html}
+Render (X)HTML. The default.
+
+@item --html-toc
+@cindex @option{--html-toc}, command line option
+@cindex Command line option @option{--html-toc}
+Render the Table of Contents in @acronym{(X)HTML}.
+
+@item -T
+@itemx --time
+@cindex @option{-T}, command line option
+@cindex Command line option @option{-T}
+@cindex @option{--time}, command line option
+@cindex Command line option @option{--time}
+Show time spent in rendering.
+
+@item -i @var{N}
+@itemx --input-unit=@var{N}
+@cindex @option{-i}, command line option
+@cindex Command line option @option{-i}
+@cindex @option{--input-unit}, command line option
+@cindex Command line option @option{--input-unit}
+Reading block size.  Default is 1024.
+
+@item -o @var{N}
+@itemx --output-unit=@var{N}
+@cindex @option{-o}, command line option
+@cindex Command line option @option{-o}
+@cindex @option{--output-unit}, command line option
+@cindex Command line option @option{--output-unit}
+Writing block size.  Default is 64.
+
+@item -h
+@itemx --help
+@cindex @option{-h}, command line option
+@cindex Command line option @option{-h}
+@cindex @option{--help}, command line option
+@cindex Command line option @option{--help}
+Print this help text.
+
+@item -v
+@itemx --version
+@cindex @option{-v}, command line option
+@cindex Command line option @option{-v}
+@cindex @option{--version}, command line option
+@cindex Command line option @option{--version}
+Print Hoedown version.
+@end table
+
+Block extensions:
+
+@table @option
+@item --tables
+@cindex @option{--tables}, command line option
+@cindex Command line option @option{--tables}
+Parse PHP-Markdown style tables.
+
+@item --fenced-code
+@cindex @option{--fenced-code}, command line option
+@cindex Command line option @option{--fenced-code}
+Parse fenced code blocks.
+
+@item --footnotes
+@cindex @option{--footnotes}, command line option
+@cindex Command line option @option{--footnotes}
+Parse footnotes.
+
+@item --all-block
+@cindex @option{--all-block}, command line option
+@cindex Command line option @option{--all-block}
+Enable all of the above.
+@end table
+
+Span extensions:
+
+@table @option
+@item --autolink
+@cindex @option{--autolink}, command line option
+@cindex Command line option @option{--autolink}
+Automatically turn safe @aurl{}s into links.
+
+@item --strikethrough
+@cindex @option{--strikethrough}, command line option
+@cindex Command line option @option{--strikethrough}
+Parse @samp{~~stikethrough~~} spans.
+
+@item --underline
+@cindex @option{--underline}, command line option
+@cindex Command line option @option{--underline}
+Parse @samp{_underline_} instead of emphasis.
+
+@item --highlight
+@cindex @option{--highlight}, command line option
+@cindex Command line option @option{--highlight}
+Parse @samp{==highlight==} spans.
+
+@item --quote
+@cindex @option{--quote}, command line option
+@cindex Command line option @option{--quote}
+Render ``quotes'' as @samp{<q>quotes</q>}.
+
+@item --superscript
+@cindex @option{--superscript}, command line option
+@cindex Command line option @option{--superscript}
+Parse @samp{super^script}.
+
+@item --math
+@cindex @option{--math}, command line option
+@cindex Command line option @option{--math}
+Parse TeX @samp{$$math$$} syntax, Kramdown style.
+
+@item --all-span
+@cindex @option{--all-span}, command line option
+@cindex Command line option @option{--all-span}
+Enable all of the above.
+@end table
+
+Other flags:
+
+@table @option
+@item --disable-intra-emphasis
+@cindex @option{--disable-intra-emphasis}, command line option
+@cindex Command line option @option{--disable-intra-emphasis}
+Disable @samp{emphasis_between_words}.
+
+@item --space-headers
+@cindex @option{--space-headers}, command line option
+@cindex Command line option @option{--space-headers}
+Require a space after @samp{#} in headers.
+
+@item --math-explicit
+@cindex @option{--math-explicit}, command line option
+@cindex Command line option @option{--math-explicit}
+Instead of guessing by context, parse @samp{$inline math$} and @samp{$$always block
+math$$} (requires @option{--math}).
+
+@item --all-flags
+@cindex @option{--all-flags}, command line option
+@cindex Command line option @option{--all-flags}
+Enable all of the above.
+@end table
+
+Negative flags:
+
+@table @option
+@item --disable-indented-code
+@cindex @option{--disable-indented-code}, command line option
+@cindex Command line option @option{--disable-indented-code}
+Don't parse indented code blocks.
+
+@item --all-negative
+@cindex @option{--all-negative}, command line option
+@cindex Command line option @option{--all-negative}
+Enable all of the above.
+@end table
+
+HTML-specific options:
+
+@table @option
+@item --skip-html
+@cindex @option{--skip-html}, command line option
+@cindex Command line option @option{--skip-html}
+Strip all @ahtml{} tags.
+
+@item --escape
+@cindex @option{--escape}, command line option
+@cindex Command line option @option{--escape}
+Escape all @ahtml{}.
+
+@item --hard-wrap
+@cindex @option{--hard-wrap}, command line option
+@cindex Command line option @option{--hard-wrap}
+Render each linebreak as @samp{<br>}.
+
+@item --xhtml
+@cindex @option{--xhtml}, command line option
+@cindex Command line option @option{--xhtml}
+Render @acronym{XHTML}.
+@end table
+
+Flags and extensions can be negated by prepending @samp{no} to them, as
+in @option{--no-tables}, @option{--no-span} or @option{--no-escape}.
+Options are processed in order, so in case of contradictory options the
+last specified stands.
+
+When @samp{FILE} is @samp{-}, read standard input.  If no @samp{FILE}
+was given, read standard input.  Use @option{--} to signal end of option
+parsing.  Exit status is: @samp{0} if no errors occurred, @samp{1} with
+option parsing errors, @samp{4} with memory allocation errors or
+@samp{5} with I/O errors.
+
+@c page
+@node smartypants
+@chapter The @command{smartypants} program
+
+
+@cindex @command{smartypants}, command line program
+@cindex Command line program @command{smartypants}
+
+
+The package compiles and installs the program @command{smartypants},
+which translates plain @ascii{} punctuation characters into ``smart''
+typographic punctuation @ahtml{} entities.  @command{smartypants}
+performs the following transformations:
+
+@itemize
+@item
+Straight quotes into ``curly'' quote @ahtml{} entities.  The input text:
+
+@example
+<p>"Hello" 'World'!</p>
+@end example
+
+@noindent
+is converted to:
+
+@example
+<p>&ldquo;Hello&rdquo; &lsquo;World&rsquo;!</p>
+@end example
+
+@item
+Backticks--style quotes into curly quote @ahtml{} entities.  The input
+text:
+
+@example
+<p>``Hello World!''</p>
+@end example
+
+@noindent
+is converted to:
+
+@example
+<p>&ldquo;Hello World!&rdquo;</p>
+@end example
+
+@item
+Dashes (@samp{--} and @samp{---}) into en- and em-dash entities.  The
+input text:
+
+@example
+<p>Trouble--maker---that is what you are!</p>
+@end example
+
+@noindent
+is converted to:
+
+@example
+<p>Trouble&ndash;maker&mdash;that is what you are!</p>
+@end example
+
+@item
+Three consecutive dots (@samp{...}) into an ellipsis entity.
+@end itemize
+
+Synopsis:
+
+@example
+smartypants [OPTION]... [FILE]
+@end example
+
+Apply SmartyPants smart punctuation to the @ahtml{} in @samp{FILE} (or
+standard input), and output the resulting @ahtml{} to standard output.
+
+Main options:
+
+@table @code
+@item -T
+@itemx --time
+Show time spent in SmartyPants processing.
+
+@item -i @var{N}
+@itemx --input-unit=@var{N}
+Reading block size.  Default is 1024.
+
+@item -o @var{N}
+@itemx --output-unit=@var{N}
+Writing block size.  Default is 64.
+
+@item -h
+@itemx --help
+Print this help text.
+
+@item -v
+@itemx --version
+Print Hoedown version.
+@end table
+
+Options are processed in order, so in case of contradictory options the
+last specified stands.
+
+When @samp{FILE} is @samp{-}, read standard input.  If no @samp{FILE}
+was given, read standard input.  Use @samp{--} to signal end of option
+parsing.  Exit status is: @samp{0} if no errors occurred, @samp{1} with
+option parsing errors, @samp{4} with memory allocation errors or
+@samp{5} with I/O errors.
 
 @c page
 @node lib
@@ -1541,7 +1883,7 @@ HOEDOWN_EXT_DISABLE_INDENTED_CODE
 
 @menu
 * lib document renderer struct::                Custom renderer data structure.
-* lib document renderer blockcode::             Rendering.
+* lib document renderer blockcode::             Rendering code blocks callback.
 * lib document renderer blockquote::            Rendering.
 * lib document renderer header::                Rendering.
 * lib document renderer hrule::                 Rendering.
@@ -1723,7 +2065,7 @@ When set to @cnull{}: no document footer is generated.
 
 @c page
 @node lib document renderer blockcode
-@subsubsection Rendering
+@subsubsection Rendering code blocks callback
 
 
 The definitions of the document @api{} are in the header file

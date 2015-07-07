@@ -1256,7 +1256,1096 @@ hoedown_buffer_uninit(&link);
 @section Processing Markdown documents
 
 
+@menu
+* lib document intro::          Markdown processing introduction.
+* lib document api::            Markdown processing @api{}.
+* lib document ext::            Markdown processing extensions.
+* lib document renderer::       Defining custom renderers.
+@end menu
 
+@c page
+@node lib document intro
+@subsection Markdown processing introduction
+
+
+The basic structure of code processing Markdown is this:
+
+@example
+#include <hoedown/buffer.h>
+#include <hoedown/document.h>
+#include <hoedown/html.h>
+
+void
+html_rend (const char * in_str, const char * ou_str)
+@{
+  hoedown_buffer                B;
+  hoedown_document *            D;
+  hoedown_renderer *            R;
+
+  hoedown_buffer_init(&B, 1024, realloc, free, free);
+  R = hoedown_html_renderer_new(0, 0);
+  D = hoedown_document_new(R, 0, 16);
+  @{
+    hoedown_document_render(D, &B,
+       (const uint8_t *)in_str, strlen(in_str));
+    /* Here the HTML output is in B.*/
+  @}
+  hoedown_document_free(D);
+  hoedown_html_renderer_free(R);
+  hoedown_buffer_uninit(&B);
+@}
+@end example
+
+@noindent
+and it can be used as follows:
+
+@example
+char *  in_str = "Hello World!";
+char *  ou_str = "<p>Hello World!</p>\n";
+html_rend (in_str, ou_str);
+@end example
+
+@c page
+@node lib document api
+@subsection Markdown processing @api{}
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftp {Opaque Struct Typedef} hoedown_document
+Type of structure used to represent the processing of a Markdown
+document.  Instances of this type are allocated with
+@cfunc{hoedown_document_new} and released with
+@cfunc{hoedown_document_free}.
+@end deftp
+
+
+@deftp {Struct Typedef} hoedown_renderer_data
+Type of structure used to represent custom state of Markdown
+processing.  It has the following public fields:
+
+@table @code
+@item void * opaque
+A pointer that can be used for anything by client code.
+@end table
+
+Pointers to a structure of this type are handed as last argument to all
+the document rendering callbacks registered in instances of
+@objtype{hoedown_renderer}.  In particular: the callback
+@code{doc_header} can be used to initialise this state, and the callback
+@code{doc_footer} can be used to finalise it.  @ref{lib document
+renderer struct, Custom renderer data structure}, for details on the
+renderer.
+@end deftp
+
+
+@deftypefun {hoedown_document *} hoedown_document_new (const hoedown_renderer * @var{renderer}, hoedown_extensions @var{extensions}, size_t @var{max_nesting})
+Allocate a new document processor instance.
+
+The @var{renderer} argument must be a pointer to an renderer instance,
+for example the built--in @ahtml{} renderers created by
+@cfunc{hoedown_html_renderer_new} and
+@cfunc{hoedown_html_toc_renderer_new} (@pxref{lib html renderer}).
+
+The argument @var{extensions} must be an OR combination of the
+enumeration constants @objtype{hoedown_extensions} (@pxref{lib document
+ext, Markdown processing extensions}).
+
+The argument @var{max_nesting} represents the maximum nesting level of
+Markdown blocks.  This limit exists for security purposes: it avoids
+malicious input to cause runaways of nested function calls in an attempt
+to cripple the internal state of the parser.  Most likely, setting this
+operand to @math{16} is fine for all the legitimate input documents.
+@end deftypefun
+
+
+@deftypefun void hoedown_document_free (hoedown_document * @var{doc})
+Deallocate a document processor instance.
+@end deftypefun
+
+
+@deftypefun void hoedown_document_render (hoedown_document * @var{doc}, hoedown_buffer * @var{ob}, const uint8_t * @var{data}, size_t @var{size})
+@deftypefunx void hoedown_document_render_inline (hoedown_document * @var{doc}, hoedown_buffer * @var{ob}, const uint8_t * @var{data}, size_t @var{size})
+Render regular Markdown or inline Markdown using the document processor.
+
+The argument @var{doc} must reference an already initialised Markdown
+document renderer.  The argument @var{ob} must reference an already
+initialised buffer to which the output will be appended.  The argument
+@var{data} must reference an array of @var{size} octets containing the
+input Markdown text.
+
+The input Markdown text is processed with the following rules:
+
+@itemize
+@item
+The input text may optionally start with a @utf{}-8 Byte Order Mark
+(@acronym{BOM}), which is the sequence of @math{3} octets: @samp{0xEF},
+@samp{0xBB}, @samp{0xBF}.  If present: this @acronym{BOM} is just
+skipped.
+
+@item
+Lines in the input text are terminated by @samp{\n} or @samp{\r\n}; such
+line endings are normalised in the output into a single @samp{\n}
+character.
+
+@item
+Tabulation characters @samp{\t} (Unicode code point @samp{0x09}) are
+expanded to @math{4} spaces in the output.
+@end itemize
+@end deftypefun
+
+@c page
+@node lib document ext
+@subsection Markdown processing extensions
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftp {Enum Typedef} hoedown_extensions
+Enumeration typedef representing a combination of extensions to Markdown
+text processing.  It defines the following constants:
+
+@itemize
+@item
+Block--level extensions:
+
+@table @code
+@item HOEDOWN_EXT_TABLES
+@cindex @code{HOEDOWN_EXT_TABLES}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_TABLES}
+
+@item HOEDOWN_EXT_FENCED_CODE
+@cindex @code{HOEDOWN_EXT_FENCED_CODE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_FENCED_CODE}
+
+@item HOEDOWN_EXT_FOOTNOTES
+@cindex @code{HOEDOWN_EXT_FOOTNOTES}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_FOOTNOTES}
+@end table
+
+@item
+Span--level extensions:
+
+@table @code
+@item HOEDOWN_EXT_AUTOLINK
+@cindex @code{HOEDOWN_EXT_AUTOLINK}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_AUTOLINK}
+
+@item HOEDOWN_EXT_STRIKETHROUGH
+@cindex @code{HOEDOWN_EXT_STRIKETHROUGH}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_STRIKETHROUGH}
+
+@item HOEDOWN_EXT_UNDERLINE
+@cindex @code{HOEDOWN_EXT_UNDERLINE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_UNDERLINE}
+
+@item HOEDOWN_EXT_HIGHLIGHT
+@cindex @code{HOEDOWN_EXT_HIGHLIGHT}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_HIGHLIGHT}
+
+@item HOEDOWN_EXT_QUOTE
+@cindex @code{HOEDOWN_EXT_QUOTE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_QUOTE}
+
+@item HOEDOWN_EXT_SUPERSCRIPT
+@cindex @code{HOEDOWN_EXT_SUPERSCRIPT}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_SUPERSCRIPT}
+
+@item HOEDOWN_EXT_MATH
+@cindex @code{HOEDOWN_EXT_MATH}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_MATH}
+@end table
+
+@item
+Other flags:
+
+@table @code
+@item HOEDOWN_EXT_NO_INTRA_EMPHASIS
+@cindex @code{HOEDOWN_EXT_NO_INTRA_EMPHASIS}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_NO_INTRA_EMPHASIS}
+
+@item HOEDOWN_EXT_SPACE_HEADERS
+@cindex @code{HOEDOWN_EXT_SPACE_HEADERS}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_SPACE_HEADERS}
+
+@item HOEDOWN_EXT_MATH_EXPLICIT
+@cindex @code{HOEDOWN_EXT_MATH_EXPLICIT}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_MATH_EXPLICIT}
+@end table
+
+@item
+Negative flags:
+
+@table @code
+@item HOEDOWN_EXT_DISABLE_INDENTED_CODE
+@cindex @code{HOEDOWN_EXT_DISABLE_INDENTED_CODE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_EXT_DISABLE_INDENTED_CODE}
+@end table
+@end itemize
+@end deftp
+
+
+@defvr {Preprocessor Constant} HOEDOWN_EXT_BLOCK
+An OR combination of the following constants:
+
+@example
+HOEDOWN_EXT_TABLES
+HOEDOWN_EXT_FENCED_CODE
+HOEDOWN_EXT_FOOTNOTES
+@end example
+@end defvr
+
+
+@defvr {Preprocessor Constant} HOEDOWN_EXT_SPAN
+An OR combination of the following constants:
+
+@example
+HOEDOWN_EXT_AUTOLINK
+HOEDOWN_EXT_STRIKETHROUGH
+HOEDOWN_EXT_UNDERLINE
+HOEDOWN_EXT_HIGHLIGHT
+HOEDOWN_EXT_QUOTE
+HOEDOWN_EXT_SUPERSCRIPT
+HOEDOWN_EXT_MATH
+@end example
+@end defvr
+
+
+@defvr {Preprocessor Constant} HOEDOWN_EXT_FLAGS
+An OR combination of the following constants:
+
+@example
+HOEDOWN_EXT_NO_INTRA_EMPHASIS
+HOEDOWN_EXT_SPACE_HEADERS
+HOEDOWN_EXT_MATH_EXPLICIT
+@end example
+@end defvr
+
+
+@defvr {Preprocessor Constant} HOEDOWN_EXT_NEGATIVE
+An OR combination of the following constants:
+
+@example
+HOEDOWN_EXT_DISABLE_INDENTED_CODE
+@end example
+@end defvr
+
+@c page
+@node lib document renderer
+@subsection Defining custom renderers
+
+
+@menu
+* lib document renderer struct::                Custom renderer data structure.
+* lib document renderer blockcode::             Rendering.
+* lib document renderer blockquote::            Rendering.
+* lib document renderer header::                Rendering.
+* lib document renderer hrule::                 Rendering.
+* lib document renderer list::                  Rendering lists.
+* lib document renderer listitem::              Rendering.
+* lib document renderer paragraph::             Rendering.
+* lib document renderer table::                 Rendering tables.
+* lib document renderer table_header::          Rendering.
+* lib document renderer table_body::            Rendering.
+* lib document renderer table_row::             Rendering.
+* lib document renderer table_cell::            Rendering.
+* lib document renderer footnotes::             Rendering.
+* lib document renderer footnote_def::          Rendering.
+* lib document renderer blockhtml::             Rendering.
+* lib document renderer autolink::              Rendering autilinks.
+* lib document renderer codespan::              Rendering.
+* lib document renderer double_emphasis::       Rendering.
+* lib document renderer emphasis::              Rendering.
+* lib document renderer underline::             Rendering.
+* lib document renderer highlight::             Rendering.
+* lib document renderer quote::                 Rendering.
+* lib document renderer image::                 Rendering.
+* lib document renderer linebreak::             Rendering.
+* lib document renderer link::                  Rendering.
+* lib document renderer triple_emphasis::       Rendering.
+* lib document renderer strikethrough::         Rendering.
+* lib document renderer superscript::           Rendering.
+* lib document renderer footnote_ref::          Rendering.
+* lib document renderer math::                  Rendering.
+* lib document renderer raw_html::              Rendering.
+* lib document renderer entity::                Rendering.
+* lib document renderer normal_text::           Rendering.
+* lib document renderer doc_header::            Rendering.
+* lib document renderer doc_footer::            Rendering.
+@end menu
+
+@c page
+@node lib document renderer struct
+@subsubsection Custom renderer data structure
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftp {Struct Typedef} hoedown_renderer
+Data structure typedef used to represent output renderers.  Instances of
+this type must be dynamically allocated; the structure definition
+contains both public fields and private fields.  When a struct field is
+unused: it must be set to @cnull{}.
+
+The following fields are defined:
+
+@table @code
+@item blockcode
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item blockquote
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item header
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item hrule
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item list
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item listitem
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item paragraph
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item table
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item table_header
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item table_body
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item table_row
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item table_cell
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item footnotes
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item footnote_def
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item blockhtml
+Block level callback; when set to @cnull{} the block is skipped.
+
+@item autolink
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item codespan
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item double_emphasis
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item emphasis
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item underline
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item highlight
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item quote
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item image
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item linebreak
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item link
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item triple_emphasis
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item strikethrough
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item superscript
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item footnote_ref
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item math
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item raw_html
+Span level callback; when set to @cnull{} or set to a function pointer
+returning @code{0}: the span is printed verbatim.
+
+@item entity
+Low level callback; when set to @cnull{}: copy the input directly into
+the output.
+
+@item normal_text
+Low level callback; when set to @cnull{}: copy the input directly into
+the output.
+
+@item doc_header
+When set to @cnull{}: no document header is generated.
+
+@item doc_footer
+When set to @cnull{}: no document footer is generated.
+@end table
+@end deftp
+
+@c page
+@node lib document renderer blockcode
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void blockcode (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, const hoedown_buffer * @var{lang}, const hoedown_renderer_data * @var{data})
+Callbacks used to render code blocks:
+
+@example
+
+@end example
+
+@noindent
+are set in the field @code{blockcode} of structures of type
+@objtype{howdown_renderer}.
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer blockquote
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void blockquote (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+Callbacks used to render ???:
+
+@example
+
+@end example
+
+@noindent
+are set in the field @code{blockquote} of structures of type
+@objtype{howdown_renderer}.
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer header
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void header (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, int @var{level}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer hrule
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void hrule (hoedown_buffer * @var{ob}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer list
+@subsubsection Rendering lists
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+
+@deftp {Enum Typedef} hoedown_list_flags
+Enumeration typedef for constants describing numbered lists.  It defines
+the following constants:
+
+@table @code
+@item HOEDOWN_LIST_ORDERED
+
+@item HOEDOWN_LI_BLOCK
+@samp{<li>} containing block data.
+@end table
+
+Bitwise OR compositions of these constants are used as argument to the
+@code{list} and @code{listitem} renderer callbacks.
+@end deftp
+
+
+@deftypefn {Callback Signature} void list (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, hoedown_list_flags @var{flags}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer listitem
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void listitem (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, hoedown_list_flags @var{flags}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer paragraph
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void paragraph (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer table
+@subsubsection Rendering tables
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftp {Enum Typedef} hoedown_table_flags
+Enumeration typedef for constants describing tables.  It defines the
+following constants:
+
+@table @code
+@item HOEDOWN_TABLE_ALIGN_LEFT
+@cindex @code{HOEDOWN_TABLE_ALIGN_LEFT}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_TABLE_ALIGN_LEFT}
+
+@item HOEDOWN_TABLE_ALIGN_RIGHT
+@cindex @code{HOEDOWN_TABLE_ALIGN_RIGHT}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_TABLE_ALIGN_RIGHT}
+
+@item HOEDOWN_TABLE_ALIGN_CENTER
+@cindex @code{HOEDOWN_TABLE_ALIGN_CENTER}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_TABLE_ALIGN_CENTER}
+
+@item HOEDOWN_TABLE_ALIGNMASK
+@cindex @code{HOEDOWN_TABLE_ALIGNMASK}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_TABLE_ALIGNMASK}
+
+@item HOEDOWN_TABLE_HEADER
+@cindex @code{HOEDOWN_TABLE_HEADER}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_TABLE_HEADER}
+@end table
+
+Bitwise OR compositions of these constants are used as argument to the
+@code{table_cell} renderer callback.
+@end deftp
+
+
+@deftypefn {Callback Signature} void table (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer table_header
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void table_header (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer table_body
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void table_body (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer table_row
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void table_row (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer table_cell
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void table_cell (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, hoedown_table_flags @var{flags}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer footnotes
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void footnotes (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer footnote_def
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void footnote_def (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, unsigned int @var{num}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer blockhtml
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void blockhtml (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer autolink
+@subsubsection Rendering autilinks
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftp {Enum Typedef} hoedown_autolink_type
+Enumeration typedef for constants describing tables.  It defines the
+following constants:
+
+@table @code
+@item HOEDOWN_AUTOLINK_NONE
+@cindex @code{HOEDOWN_AUTOLINK_NONE}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_AUTOLINK_NONE}
+
+@item HOEDOWN_AUTOLINK_NORMAL
+@cindex @code{HOEDOWN_AUTOLINK_NORMAL}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_AUTOLINK_NORMAL}
+
+@item HOEDOWN_AUTOLINK_EMAIL
+@cindex @code{HOEDOWN_AUTOLINK_EMAIL}, enumeration constant
+@cindex Enumeration constant @code{HOEDOWN_AUTOLINK_EMAIL}
+@end table
+
+Bitwise OR compositions of these constants are used as argument to the
+@code{autolink} renderer callback.
+@end deftp
+
+
+@deftypefn {Callback Signature} int autolink (hoedown_buffer * @var{ob}, const hoedown_buffer *link, hoedown_autolink_type @var{type}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer codespan
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int codespan (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer double_emphasis
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int double_emphasis (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer emphasis
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int emphasis (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer underline
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int underline (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer highlight
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int highlight (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer quote
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int quote (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer image
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int image (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{link}, const hoedown_buffer * @var{title}, const hoedown_buffer * @var{alt}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer linebreak
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int linebreak (hoedown_buffer * @var{ob}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer link
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int link (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_buffer * @var{link}, const hoedown_buffer * @var{title}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer triple_emphasis
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int triple_emphasis (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer strikethrough
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int strikethrough (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer superscript
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int superscript (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{content}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer footnote_ref
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int footnote_ref (hoedown_buffer * @var{ob}, unsigned int @var{num}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer math
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int math (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, int @var{displaymode}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer raw_html
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} int raw_html (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer entity
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void entity (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer normal_text
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void normal_text (hoedown_buffer * @var{ob}, const hoedown_buffer * @var{text}, const hoedown_renderer_data * @var{data})
+
+Output text must be appended to the output buffer @var{ob}.  The pointer
+@var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer doc_header
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void doc_header (hoedown_buffer * @var{ob}, int @var{inline_render}, const hoedown_renderer_data * @var{data})
+Signature of callback functions used to render document headers; this
+callback is called before processing the input document.  When the
+corresponding field in the @objtype{hoedown_renderer} is set to
+@cnull{}: no document footer is generated.
+
+Output text must be appended to the output buffer @var{ob}.  The
+argument @var{inline_render} is true if this callback has been called
+while rendering an inline Markdown document; otherwise it is false.  The
+pointer @var{data} references a custom rendering data.
+@end deftypefn
+
+@c page
+@node lib document renderer doc_footer
+@subsubsection Rendering
+
+
+The definitions of the document @api{} are in the header file
+@file{hoedown/document.h}.
+
+
+@deftypefn {Callback Signature} void doc_footer (hoedown_buffer * @var{ob}, int @var{inline_render}, const hoedown_renderer_data * @var{data})
+Signature of callback functions used to render document footers; this
+callback is called after processing the input document.  When the
+corresponding field in the @objtype{hoedown_renderer} is set to
+@cnull{}: no document footer is generated.
+
+Output text must be appended to the output buffer @var{ob}.  The
+argument @var{inline_render} is true if this callback has been called
+while rendering an inline Markdown document; otherwise it is false.  The
+pointer @var{data} references a custom rendering data.
+@end deftypefn
 
 @c page
 @node lib html

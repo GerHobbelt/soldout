@@ -155,8 +155,68 @@ language library implementing a Markdown parser.  This distribution is
 an repackaging of the original @value{PACKAGE} package, using the @gnu{}
 Autotools.
 
+@value{PACKAGE} is a revived fork of
+@url{https://github.com/vmg/sundown, Sundown}, the Markdown parser based
+on the original code of the
+@url{http://fossil.instinctive.eu/libupskirt/index, Upskirt} library by
+Natacha Porte.
+
+Features:
+
+@table @strong
+@item Fully standards compliant
+@value{PACKAGE} passes out of the box the official Markdown v1.0.0 and
+v1.0.3 test suites, and has been extensively tested with additional
+corner cases to make sure its output is as sane as possible at all
+times.
+
+@item Massive extension support
+@value{PACKAGE} has optional support for several (unofficial) Markdown
+extensions, such as non--strict emphasis, fenced code blocks, tables,
+autolinks, strikethrough and more.
+
+@item @utf{}-8 aware
+@value{PACKAGE} is fully @utf{}-8 aware, both when parsing the source
+document and when generating the resulting @acronym{(X)HTML} code.
+
+@item Tested and Ready to be used on production
+@value{PACKAGE} has been extensively security audited, and includes
+protection against all possible DOS attacks (stack overflows, out of
+memory situations, malformed Markdown syntax@dots{}).
+
+We've worked very hard to make @value{PACKAGE} never leak or crash under
+@strong{any} input.
+
+@strong{Warning}: @value{PACKAGE} doesn't validate or post--process the
+@ahtml{} in Markdown documents.  Unless you use @samp{HTML_ESCAPE} or
+@samp{HTML_SKIP}, you should strongly consider using a good
+post--processor in conjunction with Hoedown to prevent client--side
+attacks.
+
+@item Customizable renderers
+@value{PACKAGE} is not stuck with @acronym{XHTML} output: the Markdown
+parser of the library is decoupled from the renderer, so it's trivial to
+extend the library with custom renderers.  A fully functional
+@acronym{(X)HTML} renderer is included.
+
+@item Optimized for speed
+@value{PACKAGE} is written in C, with a special emphasis on performance.
+When wrapped on a dynamic language such as Python or Ruby, it has shown
+to be up to 40 times faster than other native alternatives.
+
+@item Zero--dependency
+@value{PACKAGE} is a zero--dependency library composed of some @samp{.c}
+files and their headers.  No dependencies, no bullshit.  Only standard
+C99 that builds everywhere.
+
+@item Additional features
+@value{PACKAGE} comes with a fully functional implementation of
+SmartyPants, a separate autolinker, escaping utilities, buffers and
+stacks.
+@end table
+
 @value{PACKAGE} installs multiple header files under the directory
-@code{$(prefix)/hoedown/}.  All the function names in the @api{} are
+@code{$(includedir)/hoedown}.  All the function names in the @api{} are
 prefixed with @code{hoedown_}; all the constant names are prefixed with
 @code{HOEDOWN_}; all the type names are prefixed with @code{hoedown_}.
 

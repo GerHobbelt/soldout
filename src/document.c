@@ -2488,8 +2488,8 @@ parse_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 	}
 }
 
-/* parse_first_block • parsing of one block, the length that has been parsed is returned as o_parsed */
-int parse_first_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, int *o_parsed)
+/* hoedown_parse_first_block • parsing of one block, the length that has been parsed is returned as o_parsed */
+int hoedown_parse_first_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, int *o_parsed)
 {
     int format = 0;
     size_t beg = 0, i, headerlevel;
@@ -2497,7 +2497,7 @@ int parse_first_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, 
     if (!(*data)) return -1;
 
     is_atxheader_level(doc, data, size, &headerlevel);
-    
+
     if (headerlevel) {
         beg += parse_atxheader(ob, doc, data, size);
         format = 10 + headerlevel;

@@ -6,4 +6,6 @@ perl:
   - "5.12"
 before_install:
  - sudo apt-get install -qq tidy
-script: make test
+script: 
+ - qmake QMAKE_CC=$CC hoedown.pro
+ - make test

@@ -12,20 +12,22 @@ TEMPLATE = lib
 SOURCES += \
     src/autolink.c \
     src/buffer.c \
+    src/document.c \
     src/escape.c \
     src/html.c \
     src/html_blocks.c \
     src/html_smartypants.c \
-    src/markdown.c \
-    src/stack.c
+    src/stack.c \
+    src/version.c
 
 HEADERS += \
     src/autolink.h \
     src/buffer.h \
+    src/document.h \
     src/escape.h \
     src/html.h \
-    src/markdown.h \
-    src/stack.h
+    src/stack.h \
+    src/version.h
 
 unix:!symbian {
     # install header files

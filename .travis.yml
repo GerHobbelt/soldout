@@ -8,4 +8,4 @@ before_install:
  - sudo apt-get install -qq tidy
 script: 
  - qmake QMAKE_CC=$CC hoedown.pro
- - make test
+ - make 

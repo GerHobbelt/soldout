@@ -1,5 +1,57 @@
 # Changelog
 
+* Avoid escaping ampersands in href links.
+
+  *Nolan Evans*
+
+## Version 3.3.4
+
+* Fix `bufprintf` to correctly work on Windows MinGW-w64 so strings
+  are properly written to the buffer.
+
+  *Kenichi Saita*
+
+* Fix the header anchor normalization by skipping non-ASCII chars
+  and not calling tolower because this leads to invalid UTF-8 byte
+  sequences in the HTML output. (tolower is not locale-aware)
+
+  *Clemens Gruber*
+
+## Version 3.3.3
+
+* Fix a memory leak instantiating a `Redcarpet::Render::Base` object.
+
+  *Oleg Dashevskii*
+
+* Fix the `StripDown` renderer to handle the `:highlight` option.
+
+  *Itay Grudev*
+
+* The `StripDown` renderer handles tables if the `tables` extension is
+  enabled.
+
+  *amnesia7*
+
+* Fix Smarty Pants to avoid fraction conversions when there are several
+  numbers separated with slashes (e.g. for a date).
+
+  *Sam Saffron*
+
+## Version 3.3.2
+
+* Fix a potential security issue in the HTML renderer
+  (Thanks to Giancarlo Canales Barreto for the heads up)
+
+## Version 3.3.1
+
+* Include the `Redcarpet::CLI`'s file in the gemspec to make it
+  available when downloading.
+
+## Version 3.3.0
+
+* Fix the stripping of surrounding characters that should be removed
+  during anchor generation.
+
 * Provide a `Redcarpet::CLI` class to create custom binary files.
 
   Relying on Ruby's OptionParser, it's now straightforward to add new

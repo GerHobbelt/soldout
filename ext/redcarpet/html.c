@@ -1,18 +1,24 @@
 /*
  * Copyright (c) 2009, Natacha Porté
- * Copyright (c) 2011, Vicent Marti
+ * Copyright (c) 2015, Vicent Marti
  *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
  *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
  */
 
 #include "markdown.h"
@@ -264,51 +270,35 @@ rndr_linebreak(struct buf *ob, void *opaque)
 	return 1;
 }
 
-char *header_anchor(const struct buf *buffer)
+static void
+rndr_header_anchor(struct buf *out, const struct buf *anchor)
 {
-	size_t i, j, k, size = buffer->size;
+	static const char *STRIPPED = " -&+$,/:;=?@\"#{}|^~[]`\\*()%.!'";
 
-	char text[size];
-	strcpy(text, bufcstr(buffer));
+	const uint8_t *a = anchor->data;
+	const size_t size = anchor->size;
+	size_t i = 0;
+	int stripped = 0, inserted = 0;
 
-	char raw_string[size];
-
-	/* Strip down the inline HTML markup if needed */
-	if (strchr(text, '<') < strchr(text, '>')) {
-		char* part = strtok(text, "<>");
-
-		/* Once every two times, the yielded token is the
-		   content of a HTML tag so we don't need to copy it */
-		for (k = 0; part != NULL; k++) {
-			if (k == 0)
-				strcpy(raw_string, part);
-			else if (k % 2 == 0)
-				strcat(raw_string, part);
-
-			part = strtok(NULL, "<>");
+	for (; i < size; ++i) {
+		if (a[i] == '<') {
+			while (i < size && a[i] != '>')
+				i++;
 		}
-
-		size = strlen(raw_string);
-	} else {
-		strcpy(raw_string, text);
+		else if (!isascii(a[i]) || strchr(STRIPPED, a[i])) {
+			if (inserted && !stripped)
+				bufputc(out, '-');
+			stripped = 1;
+		}
+		else {
+			bufputc(out, tolower(a[i]));
+			stripped = 0;
+			inserted++;
+		}
 	}
 
-	char* heading = malloc(size * sizeof(char));
-
-	/* Dasherize the string removing extra white spaces
-	   and stripped chars */
-	for (i = 0, j = 0; i < size; ++i, ++j) {
-		while ((i+1) < size && STRIPPED_CHAR(raw_string[i]) && STRIPPED_CHAR(raw_string[i+1]))
-			i++;
-
-		if (STRIPPED_CHAR(raw_string[i]))
-			heading[j] = '-';
-		else
-			heading[j] = tolower(raw_string[i]);
-	}
-
-	heading[j++] = '\0';
-	return heading;
+	if (stripped)
+		out->size--;
 }
 
 static void
@@ -319,8 +309,11 @@ rndr_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 	if (ob->size)
 		bufputc(ob, '\n');
 
-	if ((options->flags & HTML_TOC) && (level <= options->toc_data.nesting_level))
-		bufprintf(ob, "<h%d id=\"%s\">", level, header_anchor(text));
+	if ((options->flags & HTML_TOC) && (level <= options->toc_data.nesting_level)) {
+		bufprintf(ob, "<h%d id=\"", level);
+		rndr_header_anchor(ob, text);
+		BUFPUTSL(ob, "\">");
+	}
 	else
 		bufprintf(ob, "<h%d>", level);
 
@@ -689,7 +682,9 @@ toc_header(struct buf *ob, const struct buf *text, int level, void *opaque)
 			BUFPUTSL(ob,"</li>\n<li>\n");
 		}
 
-		bufprintf(ob, "<a href=\"#%s\">", header_anchor(text));
+		bufprintf(ob, "<a href=\"#");
+		rndr_header_anchor(ob, text);
+		BUFPUTSL(ob, "\">");
 
 		if (text) {
 			if (options->flags & HTML_ESCAPE)

@@ -13,7 +13,7 @@ module Redcarpet
         :autolink, :codespan, :double_emphasis,
         :emphasis, :underline, :raw_html,
         :triple_emphasis, :strikethrough,
-        :superscript,
+        :superscript, :highlight,
 
         # footnotes
         :footnotes, :footnote_def, :footnote_ref,
@@ -42,6 +42,18 @@ module Redcarpet
 
       def header(text, header_level)
         text + "\n"
+      end
+
+      def table(header, body)
+        "#{header}#{body}"
+      end
+
+      def table_row(content)
+        content + "\n"
+      end
+
+      def table_cell(content, alignment)
+        content + "\t"
       end
     end
   end

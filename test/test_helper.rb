@@ -1,5 +1,6 @@
 # coding: UTF-8
-Encoding.default_internal = 'UTF-8' if defined? Encoding
+$:.unshift(File.expand_path('../../lib', __FILE__))
+Encoding.default_internal = 'UTF-8'
 
 require 'test/unit'
 
@@ -19,7 +20,12 @@ class Redcarpet::TestCase < Test::Unit::TestCase
       options = Hash[options.map {|o| [o, true]}]
     end
 
-    render = renderer.new(options)
+    render = begin
+      renderer.new(options)
+    rescue ArgumentError
+      renderer.new
+    end
+
     parser = Redcarpet::Markdown.new(render, options)
 
     parser.render(markdown)

@@ -1,10 +1,10 @@
 # encoding: utf-8
 Gem::Specification.new do |s|
   s.name = 'redcarpet'
-  s.version = '3.3.0'
+  s.version = '3.3.4'
   s.summary = "Markdown that smells nice"
   s.description = 'A fast, safe and extensible Markdown to (X)HTML parser'
-  s.date = '2014-10-11'
+  s.date = '2015-12-25'
   s.email = 'vicent@github.com'
   s.homepage = 'http://github.com/vmg/redcarpet'
   s.authors = ["Natacha Porté", "Vicent Martí"]
@@ -37,17 +37,20 @@ Gem::Specification.new do |s|
     ext/redcarpet/stack.c
     ext/redcarpet/stack.h
     lib/redcarpet.rb
+    lib/redcarpet/cli.rb
     lib/redcarpet/compat.rb
     lib/redcarpet/render_man.rb
     lib/redcarpet/render_strip.rb
     redcarpet.gemspec
     test/benchmark.rb
     test/custom_render_test.rb
+    test/fixtures/benchmark.md
     test/html5_test.rb
     test/html_render_test.rb
     test/html_toc_render_test.rb
     test/markdown_test.rb
     test/pathological_inputs_test.rb
+    test/redcarpet_bin_test.rb
     test/redcarpet_compat_test.rb
     test/safe_render_test.rb
     test/smarty_html_test.rb
@@ -62,6 +65,7 @@ Gem::Specification.new do |s|
   s.executables = ["redcarpet"]
   s.require_paths = ["lib"]
 
-  s.add_development_dependency "rake-compiler", "~> 0.8.3"
-  s.add_development_dependency "test-unit", "~> 3.0.9"
+  s.add_development_dependency "rake", "~> 10.5"
+  s.add_development_dependency "rake-compiler", "~> 0.9.5"
+  s.add_development_dependency "test-unit", "~> 3.1.3"
 end

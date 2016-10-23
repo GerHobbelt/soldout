@@ -8,6 +8,7 @@ TARGET = hoedown
 TEMPLATE = lib
 
 CONFIG += warn_off
+CONFIG += staticlib
 
 SOURCES += src/autolink.c \
     src/buffer.c \

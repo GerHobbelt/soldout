@@ -1,4 +1,4 @@
-﻿Sundown
+Sundown
 =======
 
 `Upskirt` is a Markdown parser based on the original code of the
@@ -76,6 +76,7 @@ by our awesome contributors.
 - [MoonShine](https://github.com/brandonc/moonshine) (.NET)
 - [PHP-Sundown](https://github.com/chobie/php-sundown) (PHP)
 - [Sundown.net](https://github.com/txdv/sundown.net) (.NET)
+- [Perfect-Markdown](https://github.com/PerfectlySoft/Perfect-Markdown) (Swift)
 
 Help us
 -------

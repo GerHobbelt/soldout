@@ -9,6 +9,74 @@
 
 #define USE_XHTML(opt) (opt->flags & HOEDOWN_HTML_USE_XHTML)
 
+
+// parse format of "@wxh"
+int
+parse_at_size(const uint8_t *data, int *out_w, int *out_h)
+{
+	if (!data || !out_w || !out_h) {
+		return -1;
+	}
+	
+	int width = 0, height = 0, *pvalue = 0;
+	int quit = 0, has_size = 0, has_sep = 0;
+	
+	int k = 0;
+	size_t dlen = strlen((const char *)data);
+	for (; !quit && (k < dlen); k++) {
+		unsigned char ch = data[k];
+		switch (ch) {
+			case '\n':
+				quit = 1; // end
+				break;
+			case ' ':
+			case '\t':
+				if (has_size) {
+					quit = 1; // end
+				}
+				break;
+			case '@':
+				if (has_size) {
+					quit = 1;
+					has_size = 0;
+				}else {
+					has_size = 1;
+					pvalue = &width;
+				}
+				break;
+			case 'x':
+				if (has_size) {
+					if (has_sep) {
+						quit = 1;
+						has_size = 0;
+					}else {
+						has_sep = 1;
+						pvalue = &height;
+					}
+				}
+				break;
+			default:
+				if (has_size) {
+					if (ch >= '0' && ch <= '9') {
+						*pvalue = (*pvalue) * 10 + (ch - '0');
+					}else{
+						quit = 1;
+						has_size = 0;
+					}
+				}
+				break;
+		}
+	}
+	
+	if (has_size) {
+		*out_w = width;
+		*out_h = height;
+		return k;
+	}else {
+		return -1;
+	}
+}
+
 hoedown_html_tag
 hoedown_html_is_tag(const uint8_t *data, size_t size, const char *tagname)
 {
@@ -381,8 +449,27 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 		escape_html(ob, alt->data, alt->size);
 
 	if (title && title->size) {
-		HOEDOWN_BUFPUTSL(ob, "\" title=\"");
-		escape_html(ob, title->data, title->size); }
+		int next_pos = -1;
+		int width = 0, height = 0;
+		if (title->data[0] == '@' && title->size >= 4) {
+			next_pos = parse_at_size(title->data, &width, &height);
+		}
+		if (next_pos > 0) {
+			if (width > 0) {
+				hoedown_buffer_printf(ob, "\" width=\"%d", width);
+			}
+			if (height > 0) {
+				hoedown_buffer_printf(ob, "\" height=\"%d", height);
+			}
+			if (next_pos < title->size) {
+				HOEDOWN_BUFPUTSL(ob, "\" title=\"");
+				escape_html(ob, title->data+next_pos, title->size-next_pos);
+			}
+		}else {
+			HOEDOWN_BUFPUTSL(ob, "\" title=\"");
+			escape_html(ob, title->data, title->size); 
+		}
+	}
 
 	hoedown_buffer_puts(ob, USE_XHTML(state) ? "\"/>" : "\">");
 	return 1;

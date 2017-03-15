@@ -1,0 +1,5 @@
+module hoedown {
+  header "src/html.h"
+  link "hoedown"
+  export *
+}

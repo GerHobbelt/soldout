@@ -6,6 +6,7 @@ QT -= core gui
 TARGET = hoedown
 
 TEMPLATE = lib
+DEF_FILE = hoedown.def
 
 CONFIG += warn_off
 CONFIG += staticlib
@@ -27,3 +28,10 @@ HEADERS += src/autolink.h \
     src/document.h \
     src/stack.h \
     src/version.h
+
+unix:!macx {
+    isEmpty(PREFIX): PREFIX = /usr
+    target.path = $${PREFIX}/lib
+    INSTALLS += target
+    message("VNote hoedown will be installed in prefix $${PREFIX}")
+}

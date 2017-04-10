@@ -1,5 +1,5 @@
 CFLAGS = -g -O3 -ansi -pedantic -Wall -Wextra -Wno-unused-parameter
-PREFIX = /usr/local
+PREFIX = /usr
 BINDIR = $(PREFIX)/bin
 LIBDIR = $(PREFIX)/lib
 INCLUDEDIR = $(PREFIX)/include

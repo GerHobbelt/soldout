@@ -28,10 +28,3 @@ HEADERS += src/autolink.h \
     src/document.h \
     src/stack.h \
     src/version.h
-
-unix:!macx {
-    isEmpty(PREFIX): PREFIX = /usr
-    target.path = $${PREFIX}/lib
-    INSTALLS += target
-    message("VNote hoedown will be installed in prefix $${PREFIX}")
-}

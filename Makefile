@@ -72,19 +72,19 @@ clean:
 # Installing
 
 install:
-	install -m755 -d $(DESTDIR)$(LIBDIR)
-	install -m755 -d $(DESTDIR)$(BINDIR)
-	install -m755 -d $(DESTDIR)$(INCLUDEDIR)
+	# install -m755 -d $(DESTDIR)$(LIBDIR)
+	# install -m755 -d $(DESTDIR)$(BINDIR)
+	# install -m755 -d $(DESTDIR)$(INCLUDEDIR)
 
-	install -m644 libhoedown.a $(DESTDIR)$(LIBDIR)
-	install -m755 libhoedown.so.3 $(DESTDIR)$(LIBDIR)
-	ln -f -s libhoedown.so.3 $(DESTDIR)$(LIBDIR)/libhoedown.so
+	# install -m644 libhoedown.a $(DESTDIR)$(LIBDIR)
+	# install -m755 libhoedown.so.3 $(DESTDIR)$(LIBDIR)
+	# ln -f -s libhoedown.so.3 $(DESTDIR)$(LIBDIR)/libhoedown.so
 
-	install -m755 hoedown $(DESTDIR)$(BINDIR)
-	install -m755 smartypants $(DESTDIR)$(BINDIR)
+	# install -m755 hoedown $(DESTDIR)$(BINDIR)
+	# install -m755 smartypants $(DESTDIR)$(BINDIR)
 
-	install -m755 -d $(DESTDIR)$(INCLUDEDIR)/hoedown
-	install -m644 src/*.h $(DESTDIR)$(INCLUDEDIR)/hoedown
+	# install -m755 -d $(DESTDIR)$(INCLUDEDIR)/hoedown
+	# install -m644 src/*.h $(DESTDIR)$(INCLUDEDIR)/hoedown
 
 # Generic object compilations
 

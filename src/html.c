@@ -10,19 +10,41 @@
 #define USE_XHTML(opt) (opt->flags & HOEDOWN_HTML_USE_XHTML)
 
 
-// parse format of "@wxh"
+// parse format of "@w%", "@w%h", "@wxh", "line@wxh", "font@s"
 int
-parse_at_size(const uint8_t *data, int *out_w, int *out_h)
+parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag)
 {
-	if (!data || !out_w || !out_h) {
+	if (!data || !out_w) {
 		return -1;
 	}
-	
+
+	int k = 0;
 	int width = 0, height = 0, *pvalue = 0;
 	int quit = 0, has_size = 0, has_sep = 0;
-	
-	int k = 0;
 	size_t dlen = strlen((const char *)data);
+
+	if (tag) {
+		char *tagx = NULL;
+		size_t tagx_len = 0;
+		char *ptr = NULL;
+		char *end = NULL;
+
+		end = strstr((const char *)data, "\n");
+		if (!end) return -1;
+
+		size_t tag_len = strlen(tag);
+		if (tag_len == 0) return -1;
+
+		tagx = malloc(strlen(tag)+2);
+		strcpy(tagx, tag);
+		strcat(tagx, "@");
+		tagx_len = strlen(tagx);
+		ptr = strstr((const char *)data, tagx);
+		free(tagx);
+		if (!ptr || (ptr-end) > 0) return -1;
+		k = (int)(((const uint8_t *)ptr - data) + (tagx_len-1));
+	}
+
 	for (; !quit && (k < dlen); k++) {
 		unsigned char ch = data[k];
 		switch (ch) {
@@ -44,6 +66,10 @@ parse_at_size(const uint8_t *data, int *out_w, int *out_h)
 					pvalue = &width;
 				}
 				break;
+			case '%':
+				if (has_size) {
+					height = -1;
+				}
 			case 'x':
 				if (has_size) {
 					if (has_sep) {
@@ -57,6 +83,7 @@ parse_at_size(const uint8_t *data, int *out_w, int *out_h)
 				break;
 			default:
 				if (has_size) {
+					if (height < 0) height = 0;
 					if (ch >= '0' && ch <= '9') {
 						*pvalue = (*pvalue) * 10 + (ch - '0');
 					}else{
@@ -67,10 +94,10 @@ parse_at_size(const uint8_t *data, int *out_w, int *out_h)
 				break;
 		}
 	}
-	
+
 	if (has_size) {
-		*out_w = width;
-		*out_h = height;
+		if (out_w) *out_w = width;
+		if (out_h) *out_h = height;
 		return k;
 	}else {
 		return -1;
@@ -452,7 +479,7 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 		int next_pos = -1;
 		int width = 0, height = 0;
 		if (title->data[0] == '@' && title->size >= 4) {
-			next_pos = parse_at_size(title->data, &width, &height);
+			next_pos = parse_at_size(title->data, &width, &height, 0);
 		}
 		if (next_pos > 0) {
 			if (width > 0) {

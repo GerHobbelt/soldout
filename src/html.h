@@ -55,6 +55,7 @@ typedef struct hoedown_html_renderer_state hoedown_html_renderer_state;
  * FUNCTIONS *
  *************/
 
+int parse_at_attr(const uint8_t *data, char *val, int *len, const char *tag);
 int parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag);
 
 /* hoedown_html_smartypants: process an HTML snippet using SmartyPants for smart punctuation */

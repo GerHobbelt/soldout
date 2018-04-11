@@ -9,56 +9,120 @@
 
 #define USE_XHTML(opt) (opt->flags & HOEDOWN_HTML_USE_XHTML)
 
+static int
+lang_head_len(const char *data) {
+	char *end = strstr(data, "\n");
+	if (!end) return -1;
+	return (int)(end-data)+1;
+}
+
+static int
+lang_at_tag(const char *data, const char *tag)
+{
+	char *tagx = NULL;
+	size_t tagx_len = 0;
+	char *ptr = NULL;
+	char *end = NULL;
+
+	end = strstr(data, "\n");
+	if (!end) return -1;
+	size_t tag_len = strlen(tag);
+	if (tag_len == 0) return -1;
+
+	tagx = malloc(tag_len+2);
+	strcpy(tagx, tag);
+	strcat(tagx, "@");
+	tagx_len = strlen(tagx);
+
+	ptr = strstr((const char *)data, tagx);
+	free(tagx);
+	if (!ptr || (ptr-end) >= 0) return -1;
+	return (int)((ptr - data) + (tagx_len-1));
+}
+
+int
+parse_at_attr(const uint8_t *data, char *val, int *len, const char *tag)
+{
+	if (!data || !val || !len || !tag) return -1;
+
+	int outlen = 0;
+	int inlen = *len;
+	int dlen = lang_head_len((const char *)data);
+	*len = 0;
+	if (inlen <= 0) return -1;
+	if (dlen <= 0) return -1;
+
+	int k = 0;
+	int quit = 0, has_attr = 0;
+	k = lang_at_tag((const char *)data, tag);
+	if (k < 0) return -1;
+
+	for (; !quit && (k < dlen); k++) {
+		unsigned char ch = data[k];
+		switch (ch) {
+			case '\n':
+			case ' ':
+			case '\t':
+				quit = 1;
+				break;
+			case '@':
+				if (has_attr) { // error
+					quit = 1;
+					has_attr = 0;
+				}else {
+					has_attr = 1;
+				}
+				break;
+			default:
+				if (has_attr) {
+					if (outlen >= inlen) { // too long(max 16)
+						quit = 1;
+						has_attr = 0;
+						break;
+					}
+					val[outlen++] = ch;
+				}
+				break;
+		}
+	}
+
+	if (has_attr) {
+		*len = outlen;
+		val[outlen] = '\0';
+		return k;
+	}else {
+		*len = 0;
+		return -1;
+	}
+}
 
 // parse format of "@w%", "@w%h", "@wxh", "line@wxh", "font@s"
 int
 parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag)
 {
-	if (!data || !out_w) {
-		return -1;
-	}
+	if (!data || !out_w) return -1;
 
 	int k = 0;
 	int width = 0, height = 0, *pvalue = 0;
 	int quit = 0, has_size = 0, has_sep = 0;
-	size_t dlen = strlen((const char *)data);
+	int dlen = (int)strlen((const char *)data);
 
 	if (tag) {
-		char *tagx = NULL;
-		size_t tagx_len = 0;
-		char *ptr = NULL;
-		char *end = NULL;
-
-		end = strstr((const char *)data, "\n");
-		if (!end) return -1;
-
-		size_t tag_len = strlen(tag);
-		if (tag_len == 0) return -1;
-
-		tagx = malloc(strlen(tag)+2);
-		strcpy(tagx, tag);
-		strcat(tagx, "@");
-		tagx_len = strlen(tagx);
-		ptr = strstr((const char *)data, tagx);
-		free(tagx);
-		if (!ptr || (ptr-end) > 0) return -1;
-		k = (int)(((const uint8_t *)ptr - data) + (tagx_len-1));
+		k = lang_at_tag((const char *)data, tag);
+		if (k < 0) return -1;
+		dlen = lang_head_len((const char *)data);
 	}
 
 	for (; !quit && (k < dlen); k++) {
 		unsigned char ch = data[k];
 		switch (ch) {
 			case '\n':
-				quit = 1; // end
-				break;
 			case ' ':
 			case '\t':
-				if (has_size) {
-					quit = 1; // end
-				}
+				quit = 1;
 				break;
 			case '@':
-				if (has_size) {
+				if (has_size) { // error
 					quit = 1;
 					has_size = 0;
 				}else {
@@ -72,7 +136,7 @@ parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag)
 				}
 			case 'x':
 				if (has_size) {
-					if (has_sep) {
+					if (has_sep) { // error
 						quit = 1;
 						has_size = 0;
 					}else {
@@ -86,7 +150,7 @@ parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag)
 					if (height < 0) height = 0;
 					if (ch >= '0' && ch <= '9') {
 						*pvalue = (*pvalue) * 10 + (ch - '0');
-					}else{
+					}else{ // error
 						quit = 1;
 						has_size = 0;
 					}

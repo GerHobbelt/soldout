@@ -1148,16 +1148,18 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 		fr = find_footnote_ref(&doc->footnotes_found, id.data, id.size);
 
-		/* mark footnote used */
-		if (fr && !fr->is_used) {
-			if(!add_footnote_ref(&doc->footnotes_used, fr))
-				goto cleanup;
-			fr->is_used = 1;
-			fr->num = doc->footnotes_used.count;
+		if (fr) {
+			/* mark footnote used */
+			if (!fr->is_used) {
+				if(!add_footnote_ref(&doc->footnotes_used, fr))
+					goto cleanup;
+				fr->is_used = 1;
+				fr->num = doc->footnotes_used.count;
+			}
 
 			/* render */
 			if (doc->md.footnote_ref)
-				ret = doc->md.footnote_ref(ob, fr->num, &doc->data);
+				ret = doc->md.footnote_ref(ob, fr->num, fr->is_used, &doc->data);
 		}
 
 		goto cleanup;

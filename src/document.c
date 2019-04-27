@@ -1281,6 +1281,35 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		i++;
 	}
 
+	/* ruby text extension */
+	else if (i < size && data[i] == '{') {
+		/* checking if renderer and extension exists */
+		if (!(doc->ext_flags & HOEDOWN_EXT_RUBY && doc->md.ruby))
+			goto cleanup;
+
+		/* looking for the enclosing bracket */
+		i++;
+		title_b = i;
+		while (i < size && data[i] != '}') i++;
+		if (i >= size) goto cleanup;
+		title_e = i;
+
+		/* build up buffer */
+		if (txt_e > 1) {
+			content = newbuf(doc, BUFFER_SPAN);
+			hoedown_buffer_put(content, data + 1, txt_e - 1);
+		}
+
+		if (title_e > title_b) {
+			title = newbuf(doc, BUFFER_SPAN);
+			hoedown_buffer_put(title, data + title_b, title_e - title_b);
+		}
+
+		ret = doc->md.ruby(ob, content, title, &doc->data);
+
+		goto cleanup;
+	}
+
 	/* shortcut reference style link */
 	else {
 		hoedown_buffer *id = newbuf(doc, BUFFER_SPAN);

@@ -29,6 +29,7 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_QUOTE = (1 << 7),
 	HOEDOWN_EXT_SUPERSCRIPT = (1 << 8),
 	HOEDOWN_EXT_MATH = (1 << 9),
+	HOEDOWN_EXT_RUBY = (1 << 10),
 
 	/* other flags */
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS = (1 << 11),
@@ -51,7 +52,8 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_HIGHLIGHT |\
 	HOEDOWN_EXT_QUOTE |\
 	HOEDOWN_EXT_SUPERSCRIPT |\
-	HOEDOWN_EXT_MATH )
+	HOEDOWN_EXT_MATH |\
+	HOEDOWN_EXT_RUBY)
 
 #define HOEDOWN_EXT_FLAGS (\
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS |\
@@ -131,6 +133,7 @@ struct hoedown_renderer {
 	int (*superscript)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*footnote_ref)(hoedown_buffer *ob, unsigned int num, int is_crossref, const hoedown_renderer_data *data);
 	int (*math)(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data);
+	int (*ruby)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *ruby, const hoedown_renderer_data *data);
 	int (*raw_html)(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data);
 
 	/* low level callbacks - NULL copies input directly into the output */

@@ -559,6 +559,23 @@ rndr_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const
 	return 1;
 }
 
+static int
+rndr_ruby(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *ruby, const hoedown_renderer_data *data)
+{
+	if (!text || !text->size) return 0;
+	HOEDOWN_BUFPUTSL(ob, "<ruby>");
+	hoedown_buffer_put(ob, content->data, content->size);
+
+	if (ruby && ruby->size) {
+		HOEDOWN_BUFPUTSL(ob, "<rp>(</rp><rt>");
+		hoedown_buffer_put(ob, ruby->data, ruby->size);
+		HOEDOWN_BUFPUTSL(ob, "</rt><rp>)</rp>");
+	}
+	
+	HOEDOWN_BUFPUTSL(ob, "</ruby>");
+	return 1;
+}
+
 static void
 toc_header(hoedown_buffer *ob, const hoedown_buffer *content, int level, const hoedown_renderer_data *data)
 {
@@ -719,6 +736,7 @@ hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level)
 		rndr_superscript,
 		rndr_footnote_ref,
 		rndr_math,
+		rndr_ruby,
 		rndr_raw_html,
 
 		NULL,

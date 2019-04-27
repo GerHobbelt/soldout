@@ -877,10 +877,13 @@ static size_t
 char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	size_t end, nq = 0, i, f_begin, f_end;
+	int is_cite;
 
 	/* counting the number of quotes in the delimiter */
 	while (nq < size && data[nq] == '"')
 		nq++;
+
+	is_cite = (nq == 2 && doc->ext_flags & HOEDOWN_EXT_DOUBLEQUOTE_CITE);
 
 	/* finding the next delimiter */
 	end = nq;
@@ -907,8 +910,14 @@ char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 		hoedown_buffer *work = newbuf(doc, BUFFER_SPAN);
 		parse_inline(work, doc, data + f_begin, f_end - f_begin);
 
-		if (!doc->md.quote(ob, work, &doc->data))
-			end = 0;
+		if (is_cite) {
+			if (!doc->md.cite(ob, work, &doc->data))
+				end = 0;
+		}
+		else {
+			if (!doc->md.quote(ob, work, &doc->data))
+				end = 0;
+		}
 		popbuf(doc, BUFFER_SPAN);
 	} else {
 		if (!doc->md.quote(ob, 0, &doc->data))

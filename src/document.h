@@ -35,6 +35,7 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS = (1 << 11),
 	HOEDOWN_EXT_SPACE_HEADERS = (1 << 12),
 	HOEDOWN_EXT_MATH_EXPLICIT = (1 << 13),
+	HOEDOWN_EXT_DOUBLEQUOTE_CITE = (1 << 15),
 
 	/* negative flags */
 	HOEDOWN_EXT_DISABLE_INDENTED_CODE = (1 << 14)
@@ -58,7 +59,8 @@ typedef enum hoedown_extensions {
 #define HOEDOWN_EXT_FLAGS (\
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS |\
 	HOEDOWN_EXT_SPACE_HEADERS |\
-	HOEDOWN_EXT_MATH_EXPLICIT )
+	HOEDOWN_EXT_MATH_EXPLICIT |\
+	HOEDOWN_EXT_DOUBLEQUOTE_CITE)
 
 #define HOEDOWN_EXT_NEGATIVE (\
 	HOEDOWN_EXT_DISABLE_INDENTED_CODE )
@@ -125,6 +127,7 @@ struct hoedown_renderer {
 	int (*underline)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*highlight)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*quote)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
+	int (*cite)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*image)(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_buffer *alt, const hoedown_renderer_data *data);
 	int (*linebreak)(hoedown_buffer *ob, const hoedown_renderer_data *data);
 	int (*link)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_renderer_data *data);

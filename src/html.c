@@ -204,6 +204,19 @@ rndr_quote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_rend
 }
 
 static int
+rndr_cite(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+{
+	if (!content || !content->size)
+		return 0;
+
+	HOEDOWN_BUFPUTSL(ob, "<cite>");
+	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "</cite>");
+
+	return 1;
+}
+
+static int
 rndr_linebreak(hoedown_buffer *ob, const hoedown_renderer_data *data)
 {
 	hoedown_html_renderer_state *state = data->opaque;
@@ -571,7 +584,7 @@ rndr_ruby(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffe
 		hoedown_buffer_put(ob, ruby->data, ruby->size);
 		HOEDOWN_BUFPUTSL(ob, "</rt><rp>)</rp>");
 	}
-	
+
 	HOEDOWN_BUFPUTSL(ob, "</ruby>");
 	return 1;
 }
@@ -665,6 +678,7 @@ hoedown_html_toc_renderer_new(int nesting_level)
 		rndr_underline,
 		rndr_highlight,
 		rndr_quote,
+		rndr_cite,
 		NULL,
 		NULL,
 		toc_link,
@@ -673,6 +687,7 @@ hoedown_html_toc_renderer_new(int nesting_level)
 		rndr_superscript,
 		NULL,
 		NULL,
+		rndr_ruby,
 		NULL,
 
 		NULL,
@@ -728,6 +743,7 @@ hoedown_html_renderer_new(hoedown_html_flags render_flags, int nesting_level)
 		rndr_underline,
 		rndr_highlight,
 		rndr_quote,
+		rndr_cite,
 		rndr_image,
 		rndr_linebreak,
 		rndr_link,

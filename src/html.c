@@ -575,7 +575,7 @@ rndr_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const
 static int
 rndr_ruby(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *ruby, const hoedown_renderer_data *data)
 {
-	if (!text || !text->size) return 0;
+	if (!content || !content->size) return 0;
 	HOEDOWN_BUFPUTSL(ob, "<ruby>");
 	hoedown_buffer_put(ob, content->data, content->size);
 

@@ -877,13 +877,10 @@ static size_t
 char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	size_t end, nq = 0, i, f_begin, f_end;
-	int is_cite;
 
 	/* counting the number of quotes in the delimiter */
 	while (nq < size && data[nq] == '"')
 		nq++;
-
-	is_cite = (nq == 2 && doc->ext_flags & HOEDOWN_EXT_DOUBLEQUOTE_CITE);
 
 	/* finding the next delimiter */
 	end = nq;
@@ -910,14 +907,8 @@ char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 		hoedown_buffer *work = newbuf(doc, BUFFER_SPAN);
 		parse_inline(work, doc, data + f_begin, f_end - f_begin);
 
-		if (is_cite) {
-			if (!doc->md.cite(ob, work, &doc->data))
-				end = 0;
-		}
-		else {
-			if (!doc->md.quote(ob, work, &doc->data))
-				end = 0;
-		}
+		if (!doc->md.quote(ob, work, &doc->data))
+			end = 0;
 		popbuf(doc, BUFFER_SPAN);
 	} else {
 		if (!doc->md.quote(ob, 0, &doc->data))
@@ -1124,6 +1115,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 {
 	int is_img = (offset && data[-1] == '!' && !is_escaped(data - offset, offset - 1));
 	int is_footnote = (doc->ext_flags & HOEDOWN_EXT_FOOTNOTES && data[1] == '^');
+	int is_cite = (doc->ext_flags & HOEDOWN_EXT_CITE && data[1] == '[');
 	size_t i = 1, txt_e, link_b = 0, link_e = 0, title_b = 0, title_e = 0;
 	hoedown_buffer *content = NULL;
 	hoedown_buffer *link = NULL;
@@ -1315,6 +1307,25 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		}
 
 		ret = doc->md.ruby(ob, content, title, &doc->data);
+
+		goto cleanup;
+	}
+
+	/* citation extension */
+	else if (is_cite && txt_e >= 4 && data[txt_e - 2] == ']') {
+		/* checking if renderer and extension exists */
+		if (!(doc->ext_flags & HOEDOWN_EXT_CITE && doc->md.cite))
+			goto cleanup;
+
+		/* building content */
+		content = newbuf(doc, BUFFER_SPAN);
+		hoedown_buffer_put(content, data + 2, txt_e	- 2);
+
+		doc->in_link_body = 1;
+		parse_inline(content, doc, data + 2, txt_e - 2);
+		doc->in_link_body = 0;
+
+		ret = doc->md.cite(ob, content, &doc->data);
 
 		goto cleanup;
 	}

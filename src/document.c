@@ -1115,7 +1115,6 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 {
 	int is_img = (offset && data[-1] == '!' && !is_escaped(data - offset, offset - 1));
 	int is_footnote = (doc->ext_flags & HOEDOWN_EXT_FOOTNOTES && data[1] == '^');
-	int is_cite = (doc->ext_flags & HOEDOWN_EXT_CITE && data[1] == '[');
 	size_t i = 1, txt_e, link_b = 0, link_e = 0, title_b = 0, title_e = 0;
 	hoedown_buffer *content = NULL;
 	hoedown_buffer *link = NULL;
@@ -1150,6 +1149,8 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		fr = find_footnote_ref(&doc->footnotes_found, id.data, id.size);
 
 		if (fr) {
+			int is_used = fr->is_used;
+
 			/* mark footnote used */
 			if (!fr->is_used) {
 				if(!add_footnote_ref(&doc->footnotes_used, fr))
@@ -1160,7 +1161,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 			/* render */
 			if (doc->md.footnote_ref)
-				ret = doc->md.footnote_ref(ob, fr->num, fr->is_used, &doc->data);
+				ret = doc->md.footnote_ref(ob, fr->num, is_used, &doc->data);
 		}
 
 		goto cleanup;
@@ -1283,11 +1284,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 	}
 
 	/* ruby text extension */
-	else if (i < size && data[i] == '{') {
-		/* checking if renderer and extension exists */
-		if (!(doc->ext_flags & HOEDOWN_EXT_RUBY && doc->md.ruby))
-			goto cleanup;
-
+	else if (i < size && data[i] == '{' && doc->ext_flags & HOEDOWN_EXT_RUBY) {
 		/* looking for the enclosing bracket */
 		i++;
 		title_b = i;
@@ -1307,26 +1304,24 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		}
 
 		ret = doc->md.ruby(ob, content, title, &doc->data);
+		i++;
 
 		goto cleanup;
 	}
 
 	/* citation extension */
-	else if (is_cite && txt_e >= 4 && data[txt_e - 2] == ']') {
-		/* checking if renderer and extension exists */
-		if (!(doc->ext_flags & HOEDOWN_EXT_CITE && doc->md.cite))
-			goto cleanup;
+	else if (txt_e >= 4 && data[1] == '[' && data[txt_e - 1] == ']' &&
+			 doc->ext_flags & HOEDOWN_EXT_CITE) {
 
 		/* building content */
 		content = newbuf(doc, BUFFER_SPAN);
-		hoedown_buffer_put(content, data + 2, txt_e	- 2);
+		hoedown_buffer_put(content, data + 2, txt_e	- 3);
 
-		doc->in_link_body = 1;
-		parse_inline(content, doc, data + 2, txt_e - 2);
-		doc->in_link_body = 0;
+		if (doc->md.cite)
+			ret = doc->md.cite(ob, content, &doc->data);
 
-		ret = doc->md.cite(ob, content, &doc->data);
-
+		/* rewinding the spacing */
+		i = txt_e + 1;
 		goto cleanup;
 	}
 

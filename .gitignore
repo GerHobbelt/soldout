@@ -39,6 +39,12 @@ mvc/2010/obj
 mvc/2012/ipch
 mvc/2012/bin
 mvc/2012/obj
+mvc/2013/ipch
+mvc/2013/bin
+mvc/2013/obj
+mvc/2019/.vs
+mvc/2019/bin
+mvc/2019/obj
 *.suo
 *.ncb
 *.sdf

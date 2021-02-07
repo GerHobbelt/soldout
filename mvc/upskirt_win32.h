@@ -8,7 +8,9 @@
     #define strncasecmp _strnicmp
     #define ssize_t int
     #define inline __inline
+#if _MSC_VER < 1900
     #define snprintf _snprintf
+#endif
 #if _MSC_VER < 1500
     #define vsnprintf _vsnprintf
 #endif

@@ -13,6 +13,165 @@
 #define USE_XHTML(opt) (opt->flags & SCIDOWN_RENDER_USE_XHTML)
 #define MAX_FILE_SIZE 1000000
 
+static int
+lang_head_len(const char *data) {
+	char *end = strstr(data, "\n");
+	if (!end) return -1;
+	return (int)(end-data)+1;
+}
+
+static int
+lang_at_tag(const char *data, const char *tag)
+{
+	char *tagx = NULL;
+	size_t tagx_len = 0;
+	char *ptr = NULL;
+	char *end = NULL;
+
+	end = strstr(data, "\n");
+	if (!end) return -1;
+	size_t tag_len = strlen(tag);
+	if (tag_len == 0) return -1;
+
+	tagx = malloc(tag_len+2);
+	strcpy(tagx, tag);
+	strcat(tagx, "@");
+	tagx_len = strlen(tagx);
+
+	ptr = strstr((const char *)data, tagx);
+	free(tagx);
+	if (!ptr || (ptr-end) >= 0) return -1;
+	return (int)((ptr - data) + (tagx_len-1));
+}
+
+int
+parse_at_attr(const uint8_t *data, char *val, int *len, const char *tag)
+{
+	if (!data || !val || !len || !tag) return -1;
+
+	int outlen = 0;
+	int inlen = *len;
+	int dlen = lang_head_len((const char *)data);
+	*len = 0;
+	if (inlen <= 0) return -1;
+	if (dlen <= 0) return -1;
+
+	int k = 0;
+	int quit = 0, has_attr = 0;
+	k = lang_at_tag((const char *)data, tag);
+	if (k < 0) return -1;
+
+	for (; !quit && (k < dlen); k++) {
+		unsigned char ch = data[k];
+		switch (ch) {
+			case '\n':
+			case ' ':
+			case '\t':
+				quit = 1;
+				break;
+			case '@':
+				if (has_attr) { // error
+					quit = 1;
+					has_attr = 0;
+				}else {
+					has_attr = 1;
+				}
+				break;
+			default:
+				if (has_attr) {
+					if (outlen >= inlen) { // too long(max 16)
+						quit = 1;
+						has_attr = 0;
+						break;
+					}
+					val[outlen++] = ch;
+				}
+				break;
+		}
+	}
+
+	if (has_attr) {
+		*len = outlen;
+		val[outlen] = '\0';
+		return k;
+	}else {
+		*len = 0;
+		return -1;
+	}
+}
+
+// parse format of "@w%", "@w%h", "@wxh", "line@wxh", "font@s"
+int
+parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag)
+{
+	if (!data || !out_w) return -1;
+
+	int k = 0;
+	int width = 0, height = 0, *pvalue = 0;
+	int quit = 0, has_size = 0, has_sep = 0;
+	int dlen = (int)strlen((const char *)data);
+
+	if (tag) {
+		k = lang_at_tag((const char *)data, tag);
+		if (k < 0) return -1;
+		dlen = lang_head_len((const char *)data);
+	}
+
+	for (; !quit && (k < dlen); k++) {
+		unsigned char ch = data[k];
+		switch (ch) {
+			case '\n':
+			case ' ':
+			case '\t':
+				quit = 1;
+				break;
+			case '@':
+				if (has_size) { // error
+					quit = 1;
+					has_size = 0;
+				}else {
+					has_size = 1;
+					pvalue = &width;
+				}
+				break;
+			case '%':
+				if (has_size) {
+					height = -1;
+				}
+			case 'x':
+				if (has_size) {
+					if (has_sep) { // error
+						quit = 1;
+						has_size = 0;
+					}else {
+						has_sep = 1;
+						pvalue = &height;
+					}
+				}
+				break;
+			default:
+				if (has_size) {
+					if (height < 0) height = 0;
+					if (ch >= '0' && ch <= '9') {
+						*pvalue = (*pvalue) * 10 + (ch - '0');
+					}else{ // error
+						quit = 1;
+						has_size = 0;
+					}
+				}
+				break;
+		}
+	}
+
+	if (has_size) {
+		if (out_w) *out_w = width;
+		if (out_h) *out_h = height;
+		return k;
+	}else {
+		return -1;
+	}
+}
+
 scidown_render_tag
 hoedown_html_is_tag(const uint8_t *data, size_t size, const char *tagname)
 {
@@ -484,11 +643,29 @@ rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer 
 		escape_html(ob, alt->data, alt->size);
 
 	if (title && title->size) {
-		HOEDOWN_BUFPUTSL(ob, "\" title=\"");
-		escape_html(ob, title->data, title->size); }
+		int next_pos = -1;
+		int width = 0, height = 0;
+		if (title->data[0] == '@' && title->size >= 4) {
+			next_pos = parse_at_size(title->data, &width, &height, 0);
+		}
+		if (next_pos > 0) {
+			if (width > 0) {
+				hoedown_buffer_printf(ob, "\" width=\"%d", width);
+			}
+			if (height > 0) {
+				hoedown_buffer_printf(ob, "\" height=\"%d", height);
+			}
+			if (next_pos < title->size) {
+				HOEDOWN_BUFPUTSL(ob, "\" title=\"");
+				escape_html(ob, title->data+next_pos, title->size-next_pos);
+			}
+		}else {
+			HOEDOWN_BUFPUTSL(ob, "\" title=\"");
+			escape_html(ob, title->data, title->size); 
+		}
+	}
+
 	hoedown_buffer_puts(ob, USE_XHTML(state) ? "\"/>" : "\">");
-
-
 	return 1;
 }
 

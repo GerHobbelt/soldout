@@ -269,6 +269,19 @@ rndr_quote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_rend
 }
 
 static int
+rndr_cite(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+{
+	if (!content || !content->size)
+		return 0;
+
+	HOEDOWN_BUFPUTSL(ob, "<cite>");
+	hoedown_buffer_put(ob, content->data, content->size);
+	HOEDOWN_BUFPUTSL(ob, "</cite>");
+
+	return 1;
+}
+
+static int
 rndr_linebreak(hoedown_buffer *ob, const hoedown_renderer_data *data)
 {
 	hoedown_html_renderer_state *state = data->opaque;
@@ -632,10 +645,15 @@ rndr_footnote_def(hoedown_buffer *ob, const hoedown_buffer *content, unsigned in
 }
 
 static int
-rndr_footnote_ref(hoedown_buffer *ob, int num, const hoedown_renderer_data *data)
+rndr_footnote_ref(hoedown_buffer *ob, int num, int is_crossref, const hoedown_renderer_data *data)
 {
-	if (num >= 0) {
-		hoedown_buffer_printf(ob, "<sup id=\"fnref%d\"><a href=\"#fn%d\" rel=\"footnote\">%d</a></sup>", num, num, num);
+    if (num >= 0) {
+		if (is_crossref) {
+			hoedown_buffer_printf(ob, "<a href=\"#fn%d\" rel=\"crossref footnote\">%d</a>", num, num);
+		}
+		else {
+			hoedown_buffer_printf(ob, "<sup id=\"fnref%d\"><a href=\"#fn%d\" rel=\"footnote\">%d</a></sup>", num, num, num);
+		}
 	} else {
 		hoedown_buffer_printf(ob, "<sup>?</sup>");
 	}
@@ -649,6 +667,23 @@ rndr_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const
 
 	escape_html(ob, text->data, text->size);
 	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\]" : "\\)"), 2);
+	return 1;
+}
+
+static int
+rndr_ruby(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *ruby, const hoedown_renderer_data *data)
+{
+	if (!content || !content->size) return 0;
+	HOEDOWN_BUFPUTSL(ob, "<ruby>");
+	hoedown_buffer_put(ob, content->data, content->size);
+
+	if (ruby && ruby->size) {
+		HOEDOWN_BUFPUTSL(ob, "<rp>(</rp><rt>");
+		hoedown_buffer_put(ob, ruby->data, ruby->size);
+		HOEDOWN_BUFPUTSL(ob, "</rt><rp>)</rp>");
+	}
+
+	HOEDOWN_BUFPUTSL(ob, "</ruby>");
 	return 1;
 }
 
@@ -1027,6 +1062,7 @@ hoedown_html_toc_renderer_new(int nesting_level, localization local)
 		rndr_underline,
 		rndr_highlight,
 		rndr_quote,
+		rndr_cite,
 		NULL,
 		NULL,
 		toc_link,
@@ -1035,6 +1071,7 @@ hoedown_html_toc_renderer_new(int nesting_level, localization local)
 		rndr_superscript,
 		NULL,
 		NULL,
+		rndr_ruby,
 		NULL,
 		NULL,
 		NULL,
@@ -1115,6 +1152,7 @@ hoedown_html_renderer_new(scidown_render_flags render_flags, int nesting_level, 
 		rndr_underline,
 		rndr_highlight,
 		rndr_quote,
+		rndr_cite,
 		rndr_image,
 		rndr_linebreak,
 		rndr_link,
@@ -1125,6 +1163,7 @@ hoedown_html_renderer_new(scidown_render_flags render_flags, int nesting_level, 
 		rndr_math,
 		rndr_math,
 		rndr_ref,
+		rndr_ruby,
 		rndr_raw_html,
 
 		NULL,

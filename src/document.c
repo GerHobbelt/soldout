@@ -1345,18 +1345,22 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 		fr = find_footnote_ref(&doc->footnotes_found, id.data, id.size);
 
-		/* mark footnote used */
-		if (fr && !fr->is_used) {
-			if(!add_footnote_ref(&doc->footnotes_used, fr))
-				goto cleanup;
-			fr->is_used = 1;
-			fr->num = doc->footnotes_used.count;
+		if (fr) {
+			int is_used = fr->is_used;
+
+			/* mark footnote used */
+			if (!is_used) {
+				if(!add_footnote_ref(&doc->footnotes_used, fr))
+					goto cleanup;
+				fr->is_used = 1;
+				fr->num = doc->footnotes_used.count;
+			}
 
 			/* render */
 			if (doc->md.footnote_ref)
-				ret = doc->md.footnote_ref(ob, fr->num, &doc->data);
+				ret = doc->md.footnote_ref(ob, fr->num, is_used, &doc->data);
 		} else if (doc->md.footnote_ref) {
-			ret = doc->md.footnote_ref(ob, -1, &doc->data);
+			ret = doc->md.footnote_ref(ob, -1, FALSE, &doc->data);
 		}
 
 		goto cleanup;
@@ -1477,6 +1481,48 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		link = lr->link;
 		title = lr->title;
 		i++;
+	}
+
+	/* ruby text extension */
+	else if (i < size && data[i] == '{' && doc->ext_flags & HOEDOWN_EXT_RUBY) {
+		/* looking for the enclosing bracket */
+		i++;
+		title_b = i;
+		while (i < size && data[i] != '}') i++;
+		if (i >= size) goto cleanup;
+		title_e = i;
+
+		/* build up buffer */
+		if (txt_e > 1) {
+			content = newbuf(doc, BUFFER_SPAN);
+			hoedown_buffer_put(content, data + 1, txt_e - 1);
+		}
+
+		if (title_e > title_b) {
+			title = newbuf(doc, BUFFER_SPAN);
+			hoedown_buffer_put(title, data + title_b, title_e - title_b);
+		}
+
+		ret = doc->md.ruby(ob, content, title, &doc->data);
+		i++;
+
+		goto cleanup;
+	}
+
+	/* citation extension */
+	else if (txt_e >= 4 && data[1] == '[' && data[txt_e - 1] == ']' &&
+			 doc->ext_flags & HOEDOWN_EXT_CITE) {
+
+		/* building content */
+		content = newbuf(doc, BUFFER_SPAN);
+		hoedown_buffer_put(content, data + 2, txt_e	- 3);
+
+		if (doc->md.cite)
+			ret = doc->md.cite(ob, content, &doc->data);
+
+		/* rewinding the spacing */
+		i = txt_e + 1;
+		goto cleanup;
 	}
 
 	/* shortcut reference style link */

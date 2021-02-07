@@ -31,18 +31,20 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_QUOTE = (1 << 7),
 	HOEDOWN_EXT_SUPERSCRIPT = (1 << 8),
 	HOEDOWN_EXT_MATH = (1 << 9),
+	HOEDOWN_EXT_RUBY = (1 << 10),
 
 
 	/* other flags */
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS = (1 << 11),
 	HOEDOWN_EXT_SPACE_HEADERS = (1 << 12),
 	HOEDOWN_EXT_MATH_EXPLICIT = (1 << 13),
+	HOEDOWN_EXT_CITE = (1 << 14),
 
 	/* experimental */
-	HOEDOWN_EXT_SCI  = (1<<14),
+	HOEDOWN_EXT_SCI  = (1 << 15),
 
 	/* negative flags */
-	HOEDOWN_EXT_DISABLE_INDENTED_CODE = (1 << 15)
+	HOEDOWN_EXT_DISABLE_INDENTED_CODE = (1 << 16)
 } hoedown_extensions;
 
 #define HOEDOWN_EXT_BLOCK (\
@@ -57,12 +59,14 @@ typedef enum hoedown_extensions {
 	HOEDOWN_EXT_HIGHLIGHT |\
 	HOEDOWN_EXT_QUOTE |\
 	HOEDOWN_EXT_SUPERSCRIPT |\
-	HOEDOWN_EXT_MATH )
+	HOEDOWN_EXT_MATH |\
+	HOEDOWN_EXT_RUBY)
 
 #define HOEDOWN_EXT_FLAGS (\
 	HOEDOWN_EXT_NO_INTRA_EMPHASIS |\
 	HOEDOWN_EXT_SPACE_HEADERS |\
-	HOEDOWN_EXT_MATH_EXPLICIT )
+	HOEDOWN_EXT_MATH_EXPLICIT |\
+	HOEDOWN_EXT_CITE)
 
 #define HOEDOWN_EXT_NEGATIVE (\
 	HOEDOWN_EXT_DISABLE_INDENTED_CODE )
@@ -210,15 +214,17 @@ struct hoedown_renderer {
 	int (*underline)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*highlight)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*quote)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
+	int (*cite)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*image)(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_buffer *alt, const hoedown_renderer_data *data);
 	int (*linebreak)(hoedown_buffer *ob, const hoedown_renderer_data *data);
 	int (*link)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_renderer_data *data);
 	int (*triple_emphasis)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*strikethrough)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
 	int (*superscript)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data);
-	int (*footnote_ref)(hoedown_buffer *ob, int num, const hoedown_renderer_data *data);
+	int (*footnote_ref)(hoedown_buffer *ob, int num, int is_crossref, const hoedown_renderer_data *data);
 	int (*math)(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data);
 	int (*eq_math)(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data);
+	int (*ruby)(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *ruby, const hoedown_renderer_data *data);
 	int (*ref)(hoedown_buffer *ob, char * id, int count);
 	int (*raw_html)(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data);
 

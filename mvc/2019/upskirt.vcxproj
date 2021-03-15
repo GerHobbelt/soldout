@@ -250,6 +250,14 @@
     <None Include="..\..\html_block_names.txt" />
     <None Include="..\..\README.markdown" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="libupskirt.vcxproj">
+      <Project>{bef78878-99b5-47fc-ae1b-210edf9643f8}</Project>
+    </ProjectReference>
+    <ProjectReference Include="smartypants.vcxproj">
+      <Project>{b682a9fc-8c10-ce85-1083-3c42ca82502d}</Project>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

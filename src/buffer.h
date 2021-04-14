@@ -1,106 +1,137 @@
-/*
- * Copyright (c) 2008, Natacha Porté
- * Copyright (c) 2011, Vicent Martí
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+/* buffer.h - simple, fast buffers */
 
-#ifndef UPSKIRT_BUFFER_H__
-#define UPSKIRT_BUFFER_H__
+#ifndef HOEDOWN_BUFFER_H
+#define HOEDOWN_BUFFER_H
 
+#include <stdio.h>
 #include <stddef.h>
 #include <stdarg.h>
 #include <stdint.h>
-
-#include "upskirt_dll_exports.h"
-#if defined(_WIN32)
-  #include "../mvc/upskirt_win32.h"
-#endif
-
+#include <stdlib.h>
 
 #ifdef __cplusplus
-namespace upskirt { extern "C" {
+extern "C" {
 #endif
 
-typedef enum {
-    SD_BUF_OK = 0,
-    SD_BUF_ENOMEM = -1,
-} sd_buferror_t;
+#if defined(_MSC_VER)
+#define __attribute__(x)
+#define inline __inline
+#define __builtin_expect(x,n) x
+#endif
 
-typedef void *(*sd_malloc_cb)(size_t);
-typedef void *(*sd_realloc_cb)(void *, size_t);
-typedef void (*sd_free_cb)(void *);
 
-/* struct sd_buf: character array buffer */
-struct sd_buf {
-    uint8_t *data;      /* actual character data */
-    size_t size;    /* size of the string */
-    size_t asize;   /* allocated size (0 = volatile buffer) */
-    size_t unit;    /* reallocation unit size (0 = read-only buffer) */
-    sd_realloc_cb realloc;
-    sd_free_cb free;
+/*********
+ * TYPES *
+ *********/
+
+typedef void *(*hoedown_realloc_callback)(void *, size_t);
+typedef void (*hoedown_free_callback)(void *);
+
+struct hoedown_buffer {
+	uint8_t *data;	/* actual character data */
+	size_t size;	/* size of the string */
+	size_t asize;	/* allocated size (0 = volatile buffer) */
+	size_t unit;	/* reallocation unit size (0 = read-only buffer) */
+
+	hoedown_realloc_callback data_realloc;
+	hoedown_free_callback data_free;
+	hoedown_free_callback buffer_free;
 };
 
-/* SD_BUF_STATIC: global buffer from a string litteral */
-#define SD_BUF_STATIC(string) \
-    { (uint8_t *)(string), sizeof(string) - 1, sizeof(string), 0, 0 }
+typedef struct hoedown_buffer hoedown_buffer;
 
-/* SD_BUF_VOLATILE: macro for creating a volatile buffer on the stack */
-#define SD_BUF_VOLATILE(strname) \
-    { (uint8_t *)(strname), strlen(strname), 0, 0, 0 }
 
-/* SD_BUFPUTSL: optimized sd_bufputs of a string litteral */
-#define SD_BUFPUTSL(output, literal) \
-    sd_bufput(output, literal, sizeof(literal) - 1)
+/*************
+ * FUNCTIONS *
+ *************/
 
-/* sd_bufgrow: increasing the allocated size to the given value */
-SDPUBFUN int sd_bufgrow(struct sd_buf *, size_t);
+/* allocation wrappers */
+void *hoedown_malloc(size_t size) __attribute__ ((malloc));
+void *hoedown_calloc(size_t nmemb, size_t size) __attribute__ ((malloc));
+void *hoedown_realloc(void *ptr, size_t size) __attribute__ ((malloc));
 
-/* sd_bufnew: allocation of a new buffer; use the system default heap allocation functions */
-SDPUBFUN struct sd_buf *sd_bufnew(size_t) __attribute__ ((malloc));
+/* hoedown_buffer_init: initialize a buffer with custom allocators */
+void hoedown_buffer_init(
+	hoedown_buffer *buffer,
+	size_t unit,
+	hoedown_realloc_callback data_realloc,
+	hoedown_free_callback data_free,
+	hoedown_free_callback buffer_free
+);
 
-/* sd_bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
-SDPUBFUN struct sd_buf *sd_bufnewcb(size_t, sd_malloc_cb, sd_realloc_cb, sd_free_cb);
+/* hoedown_buffer_uninit: uninitialize an existing buffer */
+void hoedown_buffer_uninit(hoedown_buffer *buf);
 
-/* sd_bufcstr: NUL-termination of the string array (making a C-string) */
-SDPUBFUN const char *sd_bufcstr(struct sd_buf *);
+/* hoedown_buffer_new: allocate a new buffer */
+hoedown_buffer *hoedown_buffer_new(size_t unit) __attribute__ ((malloc));
 
-/* sd_bufprefix: compare the beginning of a buffer with a string */
-SDPUBFUN int sd_bufprefix(const struct sd_buf *buf, const char *prefix);
+/* hoedown_buffer_reset: free internal data of the buffer */
+void hoedown_buffer_reset(hoedown_buffer *buf);
 
-/* sd_bufput: appends raw data to a buffer */
-SDPUBFUN void sd_bufput(struct sd_buf *, const void *, size_t);
+/* hoedown_buffer_grow: increase the allocated size to the given value */
+void hoedown_buffer_grow(hoedown_buffer *buf, size_t neosz);
 
-/* sd_bufputs: appends a NUL-terminated string to a buffer */
-SDPUBFUN void sd_bufputs(struct sd_buf *, const char *);
+/* hoedown_buffer_put: append raw data to a buffer */
+void hoedown_buffer_put(hoedown_buffer *buf, const uint8_t *data, size_t size);
 
-/* sd_bufputc: appends a single char to a buffer */
-SDPUBFUN void sd_bufputc(struct sd_buf *, uint8_t);
+/* hoedown_buffer_puts: append a NUL-terminated string to a buffer */
+void hoedown_buffer_puts(hoedown_buffer *buf, const char *str);
 
-/* sd_bufrelease: decrease the reference count and free the buffer if needed */
-SDPUBFUN void sd_bufrelease(struct sd_buf *);
+/* hoedown_buffer_putc: append a single char to a buffer */
+void hoedown_buffer_putc(hoedown_buffer *buf, uint8_t c);
 
-/* sd_bufreset: frees internal data of the buffer */
-SDPUBFUN void sd_bufreset(struct sd_buf *);
+/* hoedown_buffer_putf: read from a file and append to a buffer, until EOF or error */
+int hoedown_buffer_putf(hoedown_buffer *buf, FILE* file);
 
-/* sd_bufslurp: removes a given number of bytes from the head of the array */
-SDPUBFUN void sd_bufslurp(struct sd_buf *, size_t);
+/* hoedown_buffer_set: replace the buffer's contents with raw data */
+void hoedown_buffer_set(hoedown_buffer *buf, const uint8_t *data, size_t size);
 
-/* sd_bufprintf: formatted printing to a buffer */
-SDPUBFUN void sd_bufprintf(struct sd_buf *, const char *, ...) __attribute__ ((format (printf, 2, 3)));
+/* hoedown_buffer_sets: replace the buffer's contents with a NUL-terminated string */
+void hoedown_buffer_sets(hoedown_buffer *buf, const char *str);
+
+/* hoedown_buffer_eq: compare a buffer's data with other data for equality */
+int hoedown_buffer_eq(const hoedown_buffer *buf, const uint8_t *data, size_t size);
+
+/* hoedown_buffer_eq: compare a buffer's data with NUL-terminated string for equality */
+int hoedown_buffer_eqs(const hoedown_buffer *buf, const char *str);
+
+/* hoedown_buffer_prefix: compare the beginning of a buffer with a string */
+int hoedown_buffer_prefix(const hoedown_buffer *buf, const char *prefix);
+
+/* hoedown_buffer_slurp: remove a given number of bytes from the head of the buffer */
+void hoedown_buffer_slurp(hoedown_buffer *buf, size_t size);
+
+/* hoedown_buffer_cstr: NUL-termination of the string array (making a C-string) */
+const char *hoedown_buffer_cstr(hoedown_buffer *buf);
+
+/* hoedown_buffer_printf: formatted printing to a buffer */
+void hoedown_buffer_printf(hoedown_buffer *buf, const char *fmt, ...) __attribute__ ((format (printf, 2, 3)));
+
+/* hoedown_buffer_put_utf8: put a Unicode character encoded as UTF-8 */
+void hoedown_buffer_put_utf8(hoedown_buffer *buf, unsigned int codepoint);
+
+/* hoedown_buffer_replace_last: replace last part of the buffer with new string */
+void hoedown_buffer_replace_last(hoedown_buffer *buf, const char * str);
+
+/* hoedown_buffer_free: free the buffer */
+void hoedown_buffer_free(hoedown_buffer *buf);
+
+
+/* HOEDOWN_BUFPUTSL: optimized hoedown_buffer_puts of a string literal */
+#define HOEDOWN_BUFPUTSL(output, literal) \
+	hoedown_buffer_put(output, (const uint8_t *)literal, sizeof(literal) - 1)
+
+/* HOEDOWN_BUFSETSL: optimized hoedown_buffer_sets of a string literal */
+#define HOEDOWN_BUFSETSL(output, literal) \
+	hoedown_buffer_set(output, (const uint8_t *)literal, sizeof(literal) - 1)
+
+/* HOEDOWN_BUFEQSL: optimized hoedown_buffer_eqs of a string literal */
+#define HOEDOWN_BUFEQSL(output, literal) \
+	hoedown_buffer_eq(output, (const uint8_t *)literal, sizeof(literal) - 1)
+
 
 #ifdef __cplusplus
-} }
+}
 #endif
 
-#endif
+#endif /** HOEDOWN_BUFFER_H **/

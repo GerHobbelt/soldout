@@ -1,22 +1,3 @@
-/*
- * Copyright (c) 2008, Natacha Porté
- * Copyright (c) 2011, Vicent Martí
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
-
-#define BUFFER_MAX_ALLOC_SIZE (1024 * 1024 * 16) //16mb
-
 #include "buffer.h"
 
 #include <stdio.h>
@@ -24,208 +5,322 @@
 #include <string.h>
 #include <assert.h>
 
+void *
+hoedown_malloc(size_t size)
+{
+	void *ret = malloc(size);
+
+	if (!ret) {
+		fprintf(stderr, "Allocation failed.\n");
+		abort();
+	}
+
+	return ret;
+}
+
+void *
+hoedown_calloc(size_t nmemb, size_t size)
+{
+	void *ret = calloc(nmemb, size);
+
+	if (!ret) {
+		fprintf(stderr, "Allocation failed.\n");
+		abort();
+	}
+
+	return ret;
+}
+
+void *
+hoedown_realloc(void *ptr, size_t size)
+{
+	void *ret = realloc(ptr, size);
+
+	if (!ret) {
+		fprintf(stderr, "Allocation failed.\n");
+		abort();
+	}
+
+	return ret;
+}
+
+void
+hoedown_buffer_init(
+	hoedown_buffer *buf,
+	size_t unit,
+	hoedown_realloc_callback data_realloc,
+	hoedown_free_callback data_free,
+	hoedown_free_callback buffer_free)
+{
+	assert(buf);
+
+	buf->data = NULL;
+	buf->size = buf->asize = 0;
+	buf->unit = unit;
+	buf->data_realloc = data_realloc;
+	buf->data_free = data_free;
+	buf->buffer_free = buffer_free;
+}
+
+void
+hoedown_buffer_uninit(hoedown_buffer *buf)
+{
+	assert(buf && buf->unit);
+	buf->data_free(buf->data);
+}
+
+hoedown_buffer *
+hoedown_buffer_new(size_t unit)
+{
+	hoedown_buffer *ret = hoedown_malloc(sizeof (hoedown_buffer));
+	hoedown_buffer_init(ret, unit, hoedown_realloc, free, free);
+	return ret;
+}
+
+void
+hoedown_buffer_free(hoedown_buffer *buf)
+{
+	if (!buf) return;
+	assert(buf && buf->unit);
+
+	buf->data_free(buf->data);
+
+	if (buf->buffer_free)
+		buf->buffer_free(buf);
+}
+
+void
+hoedown_buffer_reset(hoedown_buffer *buf)
+{
+	assert(buf && buf->unit);
+
+	buf->data_free(buf->data);
+	buf->data = NULL;
+	buf->size = buf->asize = 0;
+}
+
+void
+hoedown_buffer_grow(hoedown_buffer *buf, size_t neosz)
+{
+	size_t neoasz;
+	assert(buf && buf->unit);
+
+	if (buf->asize >= neosz)
+		return;
+
+	neoasz = buf->asize + buf->unit;
+	while (neoasz < neosz)
+		neoasz += buf->unit;
+
+	buf->data = buf->data_realloc(buf->data, neoasz);
+	memset(&buf->data[buf->asize], 0, neoasz - buf->asize);
+	buf->asize = neoasz;
+}
+
+void
+hoedown_buffer_put(hoedown_buffer *buf, const uint8_t *data, size_t size)
+{
+	if (!size)
+		return;
+	assert(buf && buf->unit);
+
+	if (buf->size + size > buf->asize)
+		hoedown_buffer_grow(buf, buf->size + size);
+
+	memcpy(buf->data + buf->size, data, size);
+	buf->size += size;
+}
+
+void
+hoedown_buffer_puts(hoedown_buffer *buf, const char *str)
+{
+	if (!str)
+		return;
+	hoedown_buffer_put(buf, (const uint8_t *)str, strlen(str));
+}
+
+void
+hoedown_buffer_putc(hoedown_buffer *buf, uint8_t c)
+{
+	assert(buf && buf->unit);
+
+	if (buf->size >= buf->asize)
+		hoedown_buffer_grow(buf, buf->size + 1);
+
+	buf->data[buf->size] = c;
+	buf->size += 1;
+}
+
 int
-sd_bufprefix(const struct sd_buf *buf, const char *prefix)
+hoedown_buffer_putf(hoedown_buffer *buf, FILE *file)
 {
-    size_t i;
-    assert(buf && buf->unit);
+	assert(buf && buf->unit);
 
-    for (i = 0; i < buf->size; ++i) {
-        if (prefix[i] == 0)
-            return 0;
+	while (!(feof(file) || ferror(file))) {
+		hoedown_buffer_grow(buf, buf->size + buf->unit);
+		buf->size += fread(buf->data + buf->size, 1, buf->unit, file);
+	}
 
-        if (buf->data[i] != prefix[i])
-            return buf->data[i] - prefix[i];
-    }
-
-    return 0;
+	return ferror(file);
 }
 
-/* sd_bufgrow: increasing the allocated size to the given value */
+void
+hoedown_buffer_set(hoedown_buffer *buf, const uint8_t *data, size_t size)
+{
+	assert(buf && buf->unit);
+
+	if (size > buf->asize)
+		hoedown_buffer_grow(buf, size);
+
+	memcpy(buf->data, data, size);
+	buf->size = size;
+}
+
+void
+hoedown_buffer_sets(hoedown_buffer *buf, const char *str)
+{
+	hoedown_buffer_set(buf, (const uint8_t *)str, strlen(str));
+}
+
 int
-sd_bufgrow(struct sd_buf *buf, size_t neosz)
+hoedown_buffer_eq(const hoedown_buffer *buf, const uint8_t *data, size_t size)
 {
-    size_t neoasz;
-    void *neodata;
-
-    assert(buf && buf->unit);
-
-    if (neosz > BUFFER_MAX_ALLOC_SIZE)
-        return SD_BUF_ENOMEM;
-
-    if (buf->asize >= neosz)
-        return SD_BUF_OK;
-
-    neoasz = buf->asize + buf->unit;
-    while (neoasz < neosz)
-        neoasz += buf->unit;
-
-    neodata = buf->realloc(buf->data, neoasz);
-    if (!neodata)
-        return SD_BUF_ENOMEM;
-
-    buf->data = neodata;
-    buf->asize = neoasz;
-    return SD_BUF_OK;
+	if (buf->size != size) return 0;
+	return memcmp(buf->data, data, size) == 0;
 }
 
-
-/* sd_bufnew: allocation of a new buffer; use the system default heap allocation functions */
-struct sd_buf *
-sd_bufnew(size_t unit)
+int
+hoedown_buffer_eqs(const hoedown_buffer *buf, const char *str)
 {
-    return sd_bufnewcb(unit, malloc, realloc, free);
+	return hoedown_buffer_eq(buf, (const uint8_t *)str, strlen(str));
 }
 
-/* sd_bufnewcb: allocation of a new buffer; use user-specified heap allocation functions to manage the buffer */
-struct sd_buf *
-sd_bufnewcb(size_t unit, sd_malloc_cb malloc_cb, sd_realloc_cb realloc_cb, sd_free_cb free_cb)
+int
+hoedown_buffer_prefix(const hoedown_buffer *buf, const char *prefix)
 {
-    struct sd_buf *ret;
-    ret = malloc_cb(sizeof(*ret));
+	size_t i;
 
-    if (ret) {
-        ret->data = 0;
-        ret->size = ret->asize = 0;
-        ret->unit = unit;
+	for (i = 0; i < buf->size; ++i) {
+		if (prefix[i] == 0)
+			return 0;
 
-        ret->realloc = realloc_cb;
-        ret->free = free_cb;
-    }
-    return ret;
+		if (buf->data[i] != prefix[i])
+			return buf->data[i] - prefix[i];
+	}
+
+	return 0;
 }
 
-/* bufnullterm: NULL-termination of the string array */
+void
+hoedown_buffer_slurp(hoedown_buffer *buf, size_t size)
+{
+	assert(buf && buf->unit);
+
+	if (size >= buf->size) {
+		buf->size = 0;
+		return;
+	}
+
+	buf->size -= size;
+	memmove(buf->data, buf->data + size, buf->size);
+}
+
 const char *
-sd_bufcstr(struct sd_buf *buf)
+hoedown_buffer_cstr(hoedown_buffer *buf)
 {
-    assert(buf && buf->unit);
+	assert(buf && buf->unit);
 
-    if (buf->size < buf->asize && buf->data[buf->size] == 0)
-        return (char *)buf->data;
+	if (buf->size < buf->asize && buf->data[buf->size] == 0)
+		return (char *)buf->data;
 
-    if (buf->size + 1 <= buf->asize || sd_bufgrow(buf, buf->size + 1) == 0) {
-        buf->data[buf->size] = 0;
-        return (char *)buf->data;
-    }
+	hoedown_buffer_grow(buf, buf->size + 1);
+	buf->data[buf->size] = 0;
 
-    return NULL;
+	return (char *)buf->data;
 }
 
-/* sd_bufprintf: formatted printing to a buffer */
 void
-sd_bufprintf(struct sd_buf *buf, const char *fmt, ...)
+hoedown_buffer_printf(hoedown_buffer *buf, const char *fmt, ...)
 {
-    va_list ap;
-    int n;
+	va_list ap;
+	int n;
 
-    assert(buf && buf->unit);
+	assert(buf && buf->unit);
 
-    if (buf->size >= buf->asize && sd_bufgrow(buf, buf->size + 1) < 0)
-        return;
+	if (buf->size >= buf->asize)
+		hoedown_buffer_grow(buf, buf->size + 1);
 
-    va_start(ap, fmt);
-    n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
-    va_end(ap);
+	va_start(ap, fmt);
+	n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
+	va_end(ap);
 
-    if (n < 0) {
-#ifdef _MSC_VER
-        va_start(ap, fmt);
-        n = _vscprintf(fmt, ap);
-        va_end(ap);
+	if (n < 0) {
+#ifndef _MSC_VER
+		return;
 #else
-        return;
+		va_start(ap, fmt);
+		n = _vscprintf(fmt, ap);
+		va_end(ap);
 #endif
-    }
+	}
 
-    if ((size_t)n >= buf->asize - buf->size) {
-        if (sd_bufgrow(buf, buf->size + n + 1) < 0)
-            return;
+	if ((size_t)n >= buf->asize - buf->size) {
+		hoedown_buffer_grow(buf, buf->size + n + 1);
 
-        va_start(ap, fmt);
-        n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
-        va_end(ap);
-    }
+		va_start(ap, fmt);
+		n = vsnprintf((char *)buf->data + buf->size, buf->asize - buf->size, fmt, ap);
+		va_end(ap);
+	}
 
-    if (n < 0)
-        return;
+	if (n < 0)
+		return;
 
-    buf->size += n;
+	buf->size += n;
 }
 
-/* sd_bufput: appends raw data to a buffer */
-void
-sd_bufput(struct sd_buf *buf, const void *data, size_t len)
+void hoedown_buffer_put_utf8(hoedown_buffer *buf, unsigned int c) {
+	unsigned char unichar[4];
+
+	assert(buf && buf->unit);
+
+	if (c < 0x80) {
+		hoedown_buffer_putc(buf, c);
+	}
+	else if (c < 0x800) {
+		unichar[0] = 192 + (c / 64);
+		unichar[1] = 128 + (c % 64);
+		hoedown_buffer_put(buf, unichar, 2);
+	}
+	else if (c - 0xd800u < 0x800) {
+		HOEDOWN_BUFPUTSL(buf, "\xef\xbf\xbd");
+	}
+	else if (c < 0x10000) {
+		unichar[0] = 224 + (c / 4096);
+		unichar[1] = 128 + (c / 64) % 64;
+		unichar[2] = 128 + (c % 64);
+		hoedown_buffer_put(buf, unichar, 3);
+	}
+	else if (c < 0x110000) {
+		unichar[0] = 240 + (c / 262144);
+		unichar[1] = 128 + (c / 4096) % 64;
+		unichar[2] = 128 + (c / 64) % 64;
+		unichar[3] = 128 + (c % 64);
+		hoedown_buffer_put(buf, unichar, 4);
+	}
+	else {
+		HOEDOWN_BUFPUTSL(buf, "\xef\xbf\xbd");
+	}
+}
+
+void hoedown_buffer_replace_last(hoedown_buffer *buf, const char * str)
 {
-    assert(buf && buf->unit);
-
-    if (buf->size + len > buf->asize && sd_bufgrow(buf, buf->size + len) < 0)
-        return;
-
-    memcpy(buf->data + buf->size, data, len);
-    buf->size += len;
+	int n = strlen(str);
+	if (n > buf->size)
+	{
+		return;
+	}
+	int i;
+	for (i = 1;i <= n;i++){
+		buf->data[buf->size-i] = str[n-i];
+	}
 }
-
-/* sd_bufputs: appends a NUL-terminated string to a buffer */
-void
-sd_bufputs(struct sd_buf *buf, const char *str)
-{
-    if (!str)
-        return;
-
-    sd_bufput(buf, str, strlen(str));
-}
-
-
-/* sd_bufputc: appends a single uint8_t to a buffer */
-void
-sd_bufputc(struct sd_buf *buf, uint8_t c)
-{
-    assert(buf && buf->unit);
-
-    if (buf->size + 1 > buf->asize && sd_bufgrow(buf, buf->size + 1) < 0)
-        return;
-
-    buf->data[buf->size] = c;
-    buf->size += 1;
-}
-
-/* sd_bufrelease: decrease the reference count and free the buffer if needed */
-void
-sd_bufrelease(struct sd_buf *buf)
-{
-    if (!buf)
-        return;
-
-    buf->free(buf->data);
-    buf->free(buf);
-}
-
-
-/* sd_bufreset: frees internal data of the buffer */
-void
-sd_bufreset(struct sd_buf *buf)
-{
-    if (!buf)
-        return;
-
-    buf->free(buf->data);
-    buf->data = NULL;
-    buf->size = buf->asize = 0;
-}
-
-/* sd_bufslurp: removes a given number of bytes from the head of the array */
-void
-sd_bufslurp(struct sd_buf *buf, size_t len)
-{
-    assert(buf && buf->unit);
-
-    if (len >= buf->size) {
-        buf->size = 0;
-        return;
-    }
-
-    buf->size -= len;
-    memmove(buf->data, buf->data + len, buf->size);
-}
-

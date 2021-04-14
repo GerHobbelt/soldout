@@ -1,81 +1,79 @@
 #include "stack.h"
+
+#include "buffer.h"
+
+#include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 
-int
-stack_grow(struct stack *st, size_t new_size)
+void
+hoedown_stack_init(hoedown_stack *st, size_t initial_size)
 {
-    void **new_st;
+	assert(st);
 
-    if (st->asize >= new_size)
-        return 0;
+	st->item = NULL;
+	st->size = st->asize = 0;
 
-    new_st = realloc(st->item, new_size * sizeof(void *));
-    if (new_st == NULL)
-        return -1;
+	if (!initial_size)
+		initial_size = 8;
 
-    memset(new_st + st->asize, 0x0,
-        (new_size - st->asize) * sizeof(void *));
-
-    st->item = new_st;
-    st->asize = new_size;
-
-    if (st->size > new_size)
-        st->size = new_size;
-
-    return 0;
+	hoedown_stack_grow(st, initial_size);
 }
 
 void
-stack_free(struct stack *st)
+hoedown_stack_uninit(hoedown_stack *st)
 {
-    if (!st)
-        return;
+	assert(st);
 
-    free(st->item);
-
-    st->item = NULL;
-    st->size = 0;
-    st->asize = 0;
+	free(st->item);
 }
 
-int
-stack_init(struct stack *st, size_t initial_size)
+void
+hoedown_stack_grow(hoedown_stack *st, size_t neosz)
 {
-    st->item = NULL;
-    st->size = 0;
-    st->asize = 0;
+	assert(st);
 
-    if (!initial_size)
-        initial_size = 8;
+	if (st->asize >= neosz)
+		return;
 
-    return stack_grow(st, initial_size);
+	st->item = hoedown_realloc(st->item, neosz * sizeof(void *));
+	memset(st->item + st->asize, 0x0, (neosz - st->asize) * sizeof(void *));
+
+	st->asize = neosz;
+
+	if (st->size > neosz)
+		st->size = neosz;
 }
 
-void *
-stack_pop(struct stack *st)
+void
+hoedown_stack_push(hoedown_stack *st, void *item)
 {
-    if (!st->size)
-        return NULL;
+	assert(st);
 
-    return st->item[--st->size];
-}
+	if (st->size >= st->asize)
+		hoedown_stack_grow(st, st->size * 2);
 
-int
-stack_push(struct stack *st, void *item)
-{
-    if (stack_grow(st, st->size * 2) < 0)
-        return -1;
-
-    st->item[st->size++] = item;
-    return 0;
+	st->item[st->size++] = item;
 }
 
 void *
-stack_top(struct stack *st)
+hoedown_stack_pop(hoedown_stack *st)
 {
-    if (!st->size)
-        return NULL;
+	assert(st);
 
-    return st->item[st->size - 1];
+	if (!st->size)
+		return NULL;
+
+	return st->item[--st->size];
 }
 
+void *
+hoedown_stack_top(const hoedown_stack *st)
+{
+	assert(st);
+
+	if (!st->size)
+		return NULL;
+
+	return st->item[st->size - 1];
+}

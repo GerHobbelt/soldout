@@ -1,7 +1,7 @@
 /* stack.h - simple stacking */
 
-#ifndef HOEDOWN_STACK_H
-#define HOEDOWN_STACK_H
+#ifndef UPSKIRT_STACK_H
+#define UPSKIRT_STACK_H
 
 #include <stddef.h>
 
@@ -14,39 +14,39 @@ extern "C" {
  * TYPES *
  *********/
 
-struct hoedown_stack {
+struct sd_stack {
 	void **item;
 	size_t size;
 	size_t asize;
 };
-typedef struct hoedown_stack hoedown_stack;
+typedef struct sd_stack sd_stack;
 
 
 /*************
  * FUNCTIONS *
  *************/
 
-/* hoedown_stack_init: initialize a stack */
-void hoedown_stack_init(hoedown_stack *st, size_t initial_size);
+/* sd_stack_init: initialize a stack */
+void sd_stack_init(sd_stack *st, size_t initial_size);
 
-/* hoedown_stack_uninit: free internal data of the stack */
-void hoedown_stack_uninit(hoedown_stack *st);
+/* sd_stack_uninit: free internal data of the stack */
+void sd_stack_uninit(sd_stack *st);
 
-/* hoedown_stack_grow: increase the allocated size to the given value */
-void hoedown_stack_grow(hoedown_stack *st, size_t neosz);
+/* sd_stack_grow: increase the allocated size to the given value */
+void sd_stack_grow(sd_stack *st, size_t neosz);
 
-/* hoedown_stack_push: push an item to the top of the stack */
-void hoedown_stack_push(hoedown_stack *st, void *item);
+/* sd_stack_push: push an item to the top of the stack */
+void sd_stack_push(sd_stack *st, void *item);
 
-/* hoedown_stack_pop: retrieve and remove the item at the top of the stack */
-void *hoedown_stack_pop(hoedown_stack *st);
+/* sd_stack_pop: retrieve and remove the item at the top of the stack */
+void *sd_stack_pop(sd_stack *st);
 
-/* hoedown_stack_top: retrieve the item at the top of the stack */
-void *hoedown_stack_top(const hoedown_stack *st);
+/* sd_stack_top: retrieve the item at the top of the stack */
+void *sd_stack_top(const sd_stack *st);
 
 
 #ifdef __cplusplus
 }
 #endif
 
-#endif /** HOEDOWN_STACK_H **/
+#endif /** UPSKIRT_STACK_H **/

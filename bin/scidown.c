@@ -34,40 +34,40 @@ struct html_flag_info {
 };
 
 static struct extension_category_info categories_info[] = {
-	{HOEDOWN_EXT_BLOCK, "block", "Block extensions"},
-	{HOEDOWN_EXT_SPAN, "span", "Span extensions"},
-	{HOEDOWN_EXT_FLAGS, "flags", "Other flags"},
-	{HOEDOWN_EXT_NEGATIVE, "negative", "Negative flags"},
+	{UPSKIRT_EXT_BLOCK, "block", "Block extensions"},
+	{UPSKIRT_EXT_SPAN, "span", "Span extensions"},
+	{UPSKIRT_EXT_FLAGS, "flags", "Other flags"},
+	{UPSKIRT_EXT_NEGATIVE, "negative", "Negative flags"},
 };
 
 static struct extension_info extensions_info[] = {
-	{HOEDOWN_EXT_TABLES, "tables", "Parse PHP-Markdown style tables."},
-	{HOEDOWN_EXT_FENCED_CODE, "fenced-code", "Parse fenced code blocks."},
-	{HOEDOWN_EXT_FOOTNOTES, "footnotes", "Parse footnotes."},
+	{UPSKIRT_EXT_TABLES, "tables", "Parse PHP-Markdown style tables."},
+	{UPSKIRT_EXT_FENCED_CODE, "fenced-code", "Parse fenced code blocks."},
+	{UPSKIRT_EXT_FOOTNOTES, "footnotes", "Parse footnotes."},
 
-	{HOEDOWN_EXT_AUTOLINK, "autolink", "Automatically turn safe URLs into links."},
-	{HOEDOWN_EXT_STRIKETHROUGH, "strikethrough", "Parse ~~stikethrough~~ spans."},
-	{HOEDOWN_EXT_UNDERLINE, "underline", "Parse _underline_ instead of emphasis."},
-	{HOEDOWN_EXT_HIGHLIGHT, "highlight", "Parse ==highlight== spans."},
-	{HOEDOWN_EXT_QUOTE, "quote", "Render \"quotes\" as <q>quotes</q>."},
-	{HOEDOWN_EXT_SUPERSCRIPT, "superscript", "Parse super^script."},
-	{HOEDOWN_EXT_MATH, "math", "Parse TeX $$math$$ syntax, Kramdown style."},
+	{UPSKIRT_EXT_AUTOLINK, "autolink", "Automatically turn safe URLs into links."},
+	{UPSKIRT_EXT_STRIKETHROUGH, "strikethrough", "Parse ~~stikethrough~~ spans."},
+	{UPSKIRT_EXT_UNDERLINE, "underline", "Parse _underline_ instead of emphasis."},
+	{UPSKIRT_EXT_HIGHLIGHT, "highlight", "Parse ==highlight== spans."},
+	{UPSKIRT_EXT_QUOTE, "quote", "Render \"quotes\" as <q>quotes</q>."},
+	{UPSKIRT_EXT_SUPERSCRIPT, "superscript", "Parse super^script."},
+	{UPSKIRT_EXT_MATH, "math", "Parse TeX $$math$$ syntax, Kramdown style."},
 
-	{HOEDOWN_EXT_NO_INTRA_EMPHASIS, "disable-intra-emphasis", "Disable emphasis_between_words."},
-	{HOEDOWN_EXT_SPACE_HEADERS, "space-headers", "Require a space after '#' in headers."},
-	{HOEDOWN_EXT_MATH_EXPLICIT, "math-explicit", "Instead of guessing by context, parse $inline math$ and $$always block math$$ (requires --math)."},
-	{HOEDOWN_EXT_SCI, "scidown", "SciDown Extension"},
-	{HOEDOWN_EXT_DISABLE_INDENTED_CODE, "disable-indented-code", "Don't parse indented code blocks."},
+	{UPSKIRT_EXT_NO_INTRA_EMPHASIS, "disable-intra-emphasis", "Disable emphasis_between_words."},
+	{UPSKIRT_EXT_SPACE_HEADERS, "space-headers", "Require a space after '#' in headers."},
+	{UPSKIRT_EXT_MATH_EXPLICIT, "math-explicit", "Instead of guessing by context, parse $inline math$ and $$always block math$$ (requires --math)."},
+	{UPSKIRT_EXT_SCI, "scidown", "SciDown Extension"},
+	{UPSKIRT_EXT_DISABLE_INDENTED_CODE, "disable-indented-code", "Don't parse indented code blocks."},
 };
 
 static struct html_flag_info html_flags_info[] = {
-	{SCIDOWN_RENDER_SKIP_HTML, "skip-html", "Strip all HTML tags."},
-	{SCIDOWN_RENDER_ESCAPE, "escape", "Escape all HTML."},
-	{SCIDOWN_RENDER_HARD_WRAP, "hard-wrap", "Render each linebreak as <br>."},
-	{SCIDOWN_RENDER_USE_XHTML, "xhtml", "Render XHTML."},
-	{SCIDOWN_RENDER_MERMAID, "mermaid", "Render mermaid diagrams."},
-	{SCIDOWN_RENDER_GNUPLOT, "gnuplot", "Render gnuplot plot."},
-	{SCIDOWN_RENDER_CSS, "style", "Set specified style-sheet."}
+	{UPSKIRT_RENDER_SKIP_HTML, "skip-html", "Strip all HTML tags."},
+	{UPSKIRT_RENDER_ESCAPE, "escape", "Escape all HTML."},
+	{UPSKIRT_RENDER_HARD_WRAP, "hard-wrap", "Render each linebreak as <br>."},
+	{UPSKIRT_RENDER_USE_XHTML, "xhtml", "Render XHTML."},
+	{UPSKIRT_RENDER_MERMAID, "mermaid", "Render mermaid diagrams."},
+	{UPSKIRT_RENDER_GNUPLOT, "gnuplot", "Render gnuplot plot."},
+	{UPSKIRT_RENDER_CSS, "style", "Set specified style-sheet."}
 };
 
 static const char *category_prefix = "all-";
@@ -169,7 +169,7 @@ struct option_data {
 	scidown_render_flags render_flags;
 
 	/* parsing */
-	hoedown_extensions extensions;
+	sd_extensions extensions;
 	size_t max_nesting;
 };
 
@@ -177,7 +177,7 @@ static int
 parse_short_option(char opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
-	long int num;
+	long int num = 0;
 	int isNum = next ? parseint(next, &num) : 0;
 
 	if (opt == 'h') {
@@ -304,7 +304,7 @@ static int
 parse_long_option(char *opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
-	long int num;
+	long int num = 0;
 	int isNum = next ? parseint(next, &num) : 0;
 
 	if (strcmp(opt, "help")==0) {
@@ -388,10 +388,10 @@ int main(int argc, char* argv[])
 	struct option_data data;
 	clock_t t1, t2;
 	FILE *file = stdin;
-	hoedown_buffer *ib, *ob;
-	hoedown_renderer *renderer = NULL;
-	void (*renderer_free)(hoedown_renderer *) = NULL;
-	hoedown_document *document;
+	sd_buffer *ib, *ob;
+	sd_renderer *renderer = NULL;
+	void (*renderer_free)(sd_renderer *) = NULL;
+	sd_document *document;
 
 	/* Parse options */
 	data.basename = argv[0];
@@ -402,8 +402,8 @@ int main(int argc, char* argv[])
 	data.filename = NULL;
 	data.renderer = RENDERER_HTML;
 	data.toc_level = 0;
-	data.render_flags = SCIDOWN_RENDER_CHARTER;
-	data.extensions = HOEDOWN_EXT_BLOCK | HOEDOWN_EXT_SPAN | HOEDOWN_EXT_FLAGS;
+	data.render_flags = UPSKIRT_RENDER_CHARTER;
+	data.extensions = UPSKIRT_EXT_BLOCK | UPSKIRT_EXT_SPAN | UPSKIRT_EXT_FLAGS;
 	data.max_nesting = DEF_MAX_NESTING;
 
 	argc = parse_options(argc, argv, parse_short_option, parse_long_option, parse_argument, &data);
@@ -420,9 +420,9 @@ int main(int argc, char* argv[])
 	}
 
 	/* Read everything */
-	ib = hoedown_buffer_new(data.iunit);
+	ib = sd_buffer_new(data.iunit);
 
-	if (hoedown_buffer_putf(ib, file)) {
+	if (sd_buffer_putf(ib, file)) {
 		fprintf(stderr, "I/O errors found while reading input.\n");
 		return 5;
 	}
@@ -431,15 +431,15 @@ int main(int argc, char* argv[])
 
 	/* Create the renderer */
 	if (data.renderer == RENDERER_HTML)
-		renderer = hoedown_html_renderer_new(data.render_flags, data.toc_level, get_local());
+		renderer = sd_html_renderer_new(data.render_flags, data.toc_level, get_local());
 	else if (data.renderer == RENDERER_HTML_TOC)
-		renderer = hoedown_html_toc_renderer_new(data.toc_level, get_local());
+		renderer = sd_html_toc_renderer_new(data.toc_level, get_local());
 	else if (data.renderer == RENDERER_LATEX)
 		renderer = scidown_latex_renderer_new(data.render_flags, data.toc_level, get_local());
-	renderer_free = hoedown_html_renderer_free;
+	renderer_free = sd_html_renderer_free;
 
 	/* Perform Markdown rendering */
-	ob = hoedown_buffer_new(data.ounit);
+	ob = sd_buffer_new(data.ounit);
 
 	ext_definition ext = {NULL, NULL};
 	if (data.renderer == RENDERER_HTML) {
@@ -448,20 +448,20 @@ int main(int argc, char* argv[])
 							"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>\n";
 		ext.extra_closing = "<script>renderMathInElement(document.body);</script>\n";
 	}
-	document = hoedown_document_new(renderer, data.extensions,&ext, NULL, data.max_nesting);
+	document = sd_document_new(renderer, data.extensions,&ext, NULL, data.max_nesting);
 
 	t1 = clock();
-	hoedown_document_render(document, ob, ib->data, ib->size, -1);
+	sd_document_render(document, ob, ib->data, ib->size, -1);
 	t2 = clock();
 
 	/* Cleanup */
-	hoedown_buffer_free(ib);
-	hoedown_document_free(document);
+	sd_buffer_free(ib);
+	sd_document_free(document);
 	renderer_free(renderer);
 
 	/* Write the result to stdout */
 	(void)fwrite(ob->data, 1, ob->size, stdout);
-	hoedown_buffer_free(ob);
+	sd_buffer_free(ob);
 
 	if (ferror(stdout)) {
 		fprintf(stderr, "I/O errors found while writing output.\n");

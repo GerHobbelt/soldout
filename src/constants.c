@@ -415,7 +415,6 @@ paper_to_latex(scidow_paper_size size) {
     // B43 and B169
     return A5_STRING;
   }
-  return NULL;
 }
 
 const char*

@@ -23,9 +23,9 @@
 #define BUFFER_BLOCK 0
 #define BUFFER_SPAN 1
 
-#define HOEDOWN_LI_END 8	/* internal list flag */
+#define UPSKIRT_LI_END 8	/* internal list flag */
 
-const char *hoedown_find_block_tag(const char *str, unsigned int len);
+const char *sd_find_block_tag(const char *str, unsigned int len);
 int find_ref(reference * refs, char*id, int *counter);
 
 /***************
@@ -36,8 +36,8 @@ int find_ref(reference * refs, char*id, int *counter);
 struct link_ref {
 	unsigned int id;
 
-	hoedown_buffer *link;
-	hoedown_buffer *title;
+	sd_buffer *link;
+	sd_buffer *title;
 
 	struct link_ref *next;
 };
@@ -49,7 +49,7 @@ struct footnote_ref {
 	int is_used;
 	unsigned int num;
 
-	hoedown_buffer *contents;
+	sd_buffer *contents;
 };
 
 /* footnote_item: an item in a footnote_list */
@@ -70,25 +70,25 @@ struct footnote_list {
 /*   data is the pointer of the beginning of the span */
 /*   offset is the number of valid chars before data */
 typedef size_t
-(*char_trigger)(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
+(*char_trigger)(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
 
-static size_t char_emphasis(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_linebreak(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_codespan(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_escape(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_entity(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_langle_tag(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_autolink_url(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_autolink_www(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_image(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_superscript(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
-static size_t char_ref(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_emphasis(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_quote(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_linebreak(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_codespan(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_escape(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_entity(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_langle_tag(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_autolink_url(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_autolink_email(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_autolink_www(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_link(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_image(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_superscript(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_math(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
+static size_t char_ref(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size);
 
-void sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size, int position);
+void sub_render(sd_document *doc, sd_buffer *ob, const uint8_t *data, size_t size, int position);
 
 enum markdown_char_t {
 	MD_CHAR_NONE = 0,
@@ -128,9 +128,9 @@ static char_trigger markdown_char_ptrs[] = {
 	&char_ref
 };
 
-struct hoedown_document {
-	hoedown_renderer md;
-	hoedown_renderer_data data;
+struct sd_document {
+	sd_renderer md;
+	sd_renderer_data data;
 	metadata * document_metadata;
 	reference * floating_references;
 	ext_definition * extensions;
@@ -143,8 +143,8 @@ struct hoedown_document {
 	struct footnote_list footnotes_found;
 	struct footnote_list footnotes_used;
 	uint8_t active_char[256];
-	hoedown_stack work_bufs[2];
-	hoedown_extensions ext_flags;
+	sd_stack work_bufs[2];
+	sd_extensions ext_flags;
 	size_t max_nesting;
 	int in_link_body;
 };
@@ -202,33 +202,33 @@ is_separator(uint8_t chr)
     return S_ISREG(path_stat.st_mode);
  }
 
-static hoedown_buffer *
-newbuf(hoedown_document *doc, int type)
+static sd_buffer *
+newbuf(sd_document *doc, int type)
 {
 	static const size_t buf_size[2] = {256, 64};
-	hoedown_buffer *work = NULL;
-	hoedown_stack *pool = &doc->work_bufs[type];
+	sd_buffer *work = NULL;
+	sd_stack *pool = &doc->work_bufs[type];
 
 	if (pool->size < pool->asize &&
 		pool->item[pool->size] != NULL) {
 		work = pool->item[pool->size++];
 		work->size = 0;
 	} else {
-		work = hoedown_buffer_new(buf_size[type]);
-		hoedown_stack_push(pool, work);
+		work = sd_buffer_new(buf_size[type]);
+		sd_stack_push(pool, work);
 	}
 
 	return work;
 }
 
 static void
-popbuf(hoedown_document *doc, int type)
+popbuf(sd_document *doc, int type)
 {
 	doc->work_bufs[type].size--;
 }
 
 static void
-unscape_text(hoedown_buffer *ob, hoedown_buffer *src)
+unscape_text(sd_buffer *ob, sd_buffer *src)
 {
 	size_t i = 0, org;
 	while (i < src->size) {
@@ -237,12 +237,12 @@ unscape_text(hoedown_buffer *ob, hoedown_buffer *src)
 			i++;
 
 		if (i > org)
-			hoedown_buffer_put(ob, src->data + org, i - org);
+			sd_buffer_put(ob, src->data + org, i - org);
 
 		if (i + 1 >= src->size)
 			break;
 
-		hoedown_buffer_putc(ob, src->data[i + 1]);
+		sd_buffer_putc(ob, src->data[i + 1]);
 		i += 2;
 	}
 }
@@ -264,7 +264,7 @@ add_link_ref(
 	struct link_ref **references,
 	const uint8_t *name, size_t name_size)
 {
-	struct link_ref *ref = hoedown_calloc(1, sizeof(struct link_ref));
+	struct link_ref *ref = sd_calloc(1, sizeof(struct link_ref));
 
 	ref->id = hash_link_ref(name, name_size);
 	ref->next = references[ref->id % REF_TABLE_SIZE];
@@ -302,8 +302,8 @@ free_link_refs(struct link_ref **references)
 
 		while (r) {
 			next = r->next;
-			hoedown_buffer_free(r->link);
-			hoedown_buffer_free(r->title);
+			sd_buffer_free(r->link);
+			sd_buffer_free(r->title);
 			free(r);
 			r = next;
 		}
@@ -313,7 +313,7 @@ free_link_refs(struct link_ref **references)
 static struct footnote_ref *
 create_footnote_ref(struct footnote_list *list, const uint8_t *name, size_t name_size)
 {
-	struct footnote_ref *ref = hoedown_calloc(1, sizeof(struct footnote_ref));
+	struct footnote_ref *ref = sd_calloc(1, sizeof(struct footnote_ref));
 	ref->id = hash_link_ref(name, name_size);
 
 	return ref;
@@ -322,7 +322,7 @@ create_footnote_ref(struct footnote_list *list, const uint8_t *name, size_t name
 static int
 add_footnote_ref(struct footnote_list *list, struct footnote_ref *ref)
 {
-	struct footnote_item *item = hoedown_calloc(1, sizeof(struct footnote_item));
+	struct footnote_item *item = sd_calloc(1, sizeof(struct footnote_item));
 	if (!item)
 		return 0;
 	item->ref = ref;
@@ -358,7 +358,7 @@ find_footnote_ref(struct footnote_list *list, uint8_t *name, size_t length)
 static void
 free_footnote_ref(struct footnote_ref *ref)
 {
-	hoedown_buffer_free(ref->contents);
+	sd_buffer_free(ref->contents);
 	free(ref);
 }
 
@@ -409,19 +409,19 @@ is_empty_all(const uint8_t *data, size_t size)
  * case, this collapses a newline with the previous space, if possible.
  */
 static void
-replace_spacing(hoedown_buffer *ob, const uint8_t *data, size_t size)
+replace_spacing(sd_buffer *ob, const uint8_t *data, size_t size)
 {
 	size_t i = 0, mark;
-	hoedown_buffer_grow(ob, size);
+	sd_buffer_grow(ob, size);
 	while (1) {
 		mark = i;
 		while (i < size && data[i] != '\n') i++;
-		hoedown_buffer_put(ob, data + mark, i - mark);
+		sd_buffer_put(ob, data + mark, i - mark);
 
 		if (i >= size) break;
 
 		if (!(i > 0 && data[i-1] == ' '))
-			hoedown_buffer_putc(ob, ' ');
+			sd_buffer_putc(ob, ' ');
 		i++;
 	}
 }
@@ -464,7 +464,7 @@ is_mail_autolink(uint8_t *data, size_t size)
 
 /* tag_length • returns the length of the given tag, or 0 is it's not valid */
 static size_t
-tag_length(uint8_t *data, size_t size, hoedown_autolink_type *autolink)
+tag_length(uint8_t *data, size_t size, sd_autolink_type *autolink)
 {
 	size_t i, j;
 
@@ -493,7 +493,7 @@ tag_length(uint8_t *data, size_t size, hoedown_autolink_type *autolink)
 		return 0;
 
 	/* scheme test */
-	*autolink = HOEDOWN_AUTOLINK_NONE;
+	*autolink = UPSKIRT_AUTOLINK_NONE;
 
 	/* try to find the beginning of an URI */
 	while (i < size && (isalnum(data[i]) || data[i] == '.' || data[i] == '+' || data[i] == '-'))
@@ -501,19 +501,19 @@ tag_length(uint8_t *data, size_t size, hoedown_autolink_type *autolink)
 
 	if (i > 1 && data[i] == '@') {
 		if ((j = is_mail_autolink(data + i, size - i)) != 0) {
-			*autolink = HOEDOWN_AUTOLINK_EMAIL;
+			*autolink = UPSKIRT_AUTOLINK_EMAIL;
 			return i + j;
 		}
 	}
 
 	if (i > 2 && data[i] == ':') {
-		*autolink = HOEDOWN_AUTOLINK_NORMAL;
+		*autolink = UPSKIRT_AUTOLINK_NORMAL;
 		i++;
 	}
 
 	/* completing autolink test: no spacing or ' or " */
 	if (i >= size)
-		*autolink = HOEDOWN_AUTOLINK_NONE;
+		*autolink = UPSKIRT_AUTOLINK_NONE;
 
 	else if (*autolink) {
 		j = i;
@@ -529,7 +529,7 @@ tag_length(uint8_t *data, size_t size, hoedown_autolink_type *autolink)
 		if (i >= size) return 0;
 		if (i > j && data[i] == '>') return i + 1;
 		/* one of the forbidden chars has been found */
-		*autolink = HOEDOWN_AUTOLINK_NONE;
+		*autolink = UPSKIRT_AUTOLINK_NONE;
 	}
 
 	/* looking for something looking like a tag end */
@@ -540,10 +540,10 @@ tag_length(uint8_t *data, size_t size, hoedown_autolink_type *autolink)
 
 /* parse_inline • parses inline markdown elements */
 static void
-parse_inline(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size)
+parse_inline(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size)
 {
 	size_t i = 0, end = 0, consumed = 0;
-	hoedown_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
 	uint8_t *active_char = doc->active_char;
 
 	if (doc->work_bufs[BUFFER_SPAN].size +
@@ -561,7 +561,7 @@ parse_inline(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t si
 			doc->md.normal_text(ob, &work, &doc->data);
 		}
 		else
-			hoedown_buffer_put(ob, data + i, end - i);
+			sd_buffer_put(ob, data + i, end - i);
 
 		if (end >= size) break;
 		i = end;
@@ -685,10 +685,10 @@ find_emph_char(uint8_t *data, size_t size, uint8_t c)
 /* parse_emph1 • parsing single emphase */
 /* closed by a symbol not preceded by spacing and not followed by symbol */
 static size_t
-parse_emph1(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, uint8_t c)
+parse_emph1(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, uint8_t c)
 {
 	size_t i = 0, len;
-	hoedown_buffer *work = 0;
+	sd_buffer *work = 0;
 	int r;
 
 	/* skipping one symbol if coming from emph3 */
@@ -702,7 +702,7 @@ parse_emph1(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 
 		if (data[i] == c && !_isspace(data[i - 1])) {
 
-			if (doc->ext_flags & HOEDOWN_EXT_NO_INTRA_EMPHASIS) {
+			if (doc->ext_flags & UPSKIRT_EXT_NO_INTRA_EMPHASIS) {
 				if (i + 1 < size && isalnum(data[i + 1]))
 					continue;
 			}
@@ -710,7 +710,7 @@ parse_emph1(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 			work = newbuf(doc, BUFFER_SPAN);
 			parse_inline(work, doc, data, i);
 
-			if (doc->ext_flags & HOEDOWN_EXT_UNDERLINE && c == '_')
+			if (doc->ext_flags & UPSKIRT_EXT_UNDERLINE && c == '_')
 				r = doc->md.underline(ob, work, &doc->data);
 			else
 				r = doc->md.emphasis(ob, work, &doc->data);
@@ -725,10 +725,10 @@ parse_emph1(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 
 /* parse_emph2 • parsing single emphase */
 static size_t
-parse_emph2(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, uint8_t c)
+parse_emph2(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, uint8_t c)
 {
 	size_t i = 0, len;
-	hoedown_buffer *work = 0;
+	sd_buffer *work = 0;
 	int r;
 
 	while (i < size) {
@@ -758,7 +758,7 @@ parse_emph2(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 /* parse_emph3 • parsing single emphase */
 /* finds the first closing tag, and delegates to the other emph */
 static size_t
-parse_emph3(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, uint8_t c)
+parse_emph3(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, uint8_t c)
 {
 	size_t i = 0, len;
 	int r;
@@ -774,7 +774,7 @@ parse_emph3(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 
 		if (i + 2 < size && data[i + 1] == c && data[i + 2] == c && doc->md.triple_emphasis) {
 			/* triple symbol found */
-			hoedown_buffer *work = newbuf(doc, BUFFER_SPAN);
+			sd_buffer *work = newbuf(doc, BUFFER_SPAN);
 
 			parse_inline(work, doc, data, i);
 			r = doc->md.triple_emphasis(ob, work, &doc->data);
@@ -799,9 +799,9 @@ parse_emph3(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 
 /* parse_math • parses a math span until the given ending delimiter */
 static size_t
-parse_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size, const char *end, size_t delimsz, int displaymode)
+parse_math(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size, const char *end, size_t delimsz, int displaymode)
 {
-	hoedown_buffer text = { NULL, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer text = { NULL, 0, 0, 0, NULL, NULL, NULL };
 	size_t i = delimsz;
 
 	if (!doc->md.math)
@@ -829,7 +829,7 @@ parse_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 	/* if this is a $$ and MATH_EXPLICIT is not active,
 	 * guess whether displaymode should be enabled from the context */
 	i += delimsz;
-	if (delimsz == 2 && !(doc->ext_flags & HOEDOWN_EXT_MATH_EXPLICIT))
+	if (delimsz == 2 && !(doc->ext_flags & UPSKIRT_EXT_MATH_EXPLICIT))
 		displaymode = is_empty_all(data - offset, offset) && is_empty_all(data + i, size - i);
 
 	/* call callback */
@@ -883,7 +883,7 @@ load_file(const char* path, char* base_folder, size_t * size)
 }
 
 static size_t
-parse_include(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+parse_include(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	/* @include(path) */
 	size_t i = 9;
@@ -915,12 +915,12 @@ parse_include(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t o
 
 /* char_emphasis • single and double emphasis parsing */
 static size_t
-char_emphasis(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_emphasis(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	uint8_t c = data[0];
 	size_t ret;
 
-	if (doc->ext_flags & HOEDOWN_EXT_NO_INTRA_EMPHASIS) {
+	if (doc->ext_flags & UPSKIRT_EXT_NO_INTRA_EMPHASIS) {
 		if (offset > 0 && !_isspace(data[-1]) && data[-1] != '>' && data[-1] != '(')
 			return 0;
 	}
@@ -954,7 +954,7 @@ char_emphasis(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t o
 
 /* char_linebreak • '\n' preceded by two spaces (assuming linebreak != 0) */
 static size_t
-char_linebreak(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_linebreak(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	if (offset < 2 || data[-1] != ' ' || data[-2] != ' ')
 		return 0;
@@ -969,9 +969,9 @@ char_linebreak(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 
 /* char_codespan • '`' parsing a code span (assuming codespan != 0) */
 static size_t
-char_codespan(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_codespan(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
-	hoedown_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
 	size_t end, nb = 0, i, f_begin, f_end;
 
 	/* counting the number of backticks in the delimiter */
@@ -1014,7 +1014,7 @@ char_codespan(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t o
 
 /* char_quote • '"' parsing a quote */
 static size_t
-char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_quote(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	size_t end, nq = 0, i, f_begin, f_end;
 
@@ -1044,7 +1044,7 @@ char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 
 	/* real quote */
 	if (f_begin < f_end) {
-		hoedown_buffer *work = newbuf(doc, BUFFER_SPAN);
+		sd_buffer *work = newbuf(doc, BUFFER_SPAN);
 		parse_inline(work, doc, data + f_begin, f_end - f_begin);
 
 		if (!doc->md.quote(ob, work, &doc->data))
@@ -1061,14 +1061,14 @@ char_quote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 
 /* char_escape • '\\' backslash escape */
 static size_t
-char_escape(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_escape(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	static const char *escape_chars = "\\`*_{}[]()#+-.!:|&<>^~=\"$";
-	hoedown_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
 	size_t w;
 
 	if (size > 1) {
-		if (data[1] == '\\' && (doc->ext_flags & HOEDOWN_EXT_MATH) &&
+		if (data[1] == '\\' && (doc->ext_flags & UPSKIRT_EXT_MATH) &&
 			size > 2 && (data[2] == '(' || data[2] == '[')) {
 			const char *end = (data[2] == '[') ? "\\\\]" : "\\\\)";
 			w = parse_math(ob, doc, data, offset, size, end, 3, data[2] == '[');
@@ -1083,14 +1083,14 @@ char_escape(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t off
 			work.size = 1;
 			doc->md.normal_text(ob, &work, &doc->data);
 		}
-		else hoedown_buffer_putc(ob, data[1]);
+		else sd_buffer_putc(ob, data[1]);
 	} else if (size == 1) {
 		if (doc->md.normal_text) {
 			work.data = data;
 			work.size = 1;
 			doc->md.normal_text(ob, &work, &doc->data);
 		}
-		else hoedown_buffer_putc(ob, data[0]);
+		else sd_buffer_putc(ob, data[0]);
 	}
 
 	return 2;
@@ -1099,10 +1099,10 @@ char_escape(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t off
 /* char_entity • '&' escaped when it doesn't belong to an entity */
 /* valid entities are assumed to be anything matching &#?[A-Za-z0-9]+; */
 static size_t
-char_entity(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_entity(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	size_t end = 1;
-	hoedown_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer work = { 0, 0, 0, 0, NULL, NULL, NULL };
 
 	if (end < size && data[end] == '#')
 		end++;
@@ -1120,17 +1120,17 @@ char_entity(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t off
 		work.size = end;
 		doc->md.entity(ob, &work, &doc->data);
 	}
-	else hoedown_buffer_put(ob, data, end);
+	else sd_buffer_put(ob, data, end);
 
 	return end;
 }
 
 /* char_langle_tag • '<' when tags or autolinks are allowed */
 static size_t
-char_langle_tag(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_langle_tag(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
-	hoedown_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
-	hoedown_autolink_type altype = HOEDOWN_AUTOLINK_NONE;
+	sd_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
+	sd_autolink_type altype = UPSKIRT_AUTOLINK_NONE;
 	size_t end = tag_length(data, size, &altype);
 	int ret = 0;
 
@@ -1138,8 +1138,8 @@ char_langle_tag(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 	work.size = end;
 
 	if (end > 2) {
-		if (doc->md.autolink && altype != HOEDOWN_AUTOLINK_NONE) {
-			hoedown_buffer *u_link = newbuf(doc, BUFFER_SPAN);
+		if (doc->md.autolink && altype != UPSKIRT_AUTOLINK_NONE) {
+			sd_buffer *u_link = newbuf(doc, BUFFER_SPAN);
 			work.data = data + 1;
 			work.size = end - 2;
 			unscape_text(u_link, &work);
@@ -1155,9 +1155,9 @@ char_langle_tag(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 }
 
 static size_t
-char_autolink_www(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_autolink_www(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
-	hoedown_buffer *link, *link_url, *link_text;
+	sd_buffer *link, *link_url, *link_text;
 	size_t link_len, rewind;
 
 	if (!doc->md.link || doc->in_link_body)
@@ -1165,10 +1165,10 @@ char_autolink_www(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size
 
 	link = newbuf(doc, BUFFER_SPAN);
 
-	if ((link_len = hoedown_autolink__www(&rewind, link, data, offset, size, HOEDOWN_AUTOLINK_SHORT_DOMAINS)) > 0) {
+	if ((link_len = sd_autolink__www(&rewind, link, data, offset, size, UPSKIRT_AUTOLINK_SHORT_DOMAINS)) > 0) {
 		link_url = newbuf(doc, BUFFER_SPAN);
-		HOEDOWN_BUFPUTSL(link_url, "http://");
-		hoedown_buffer_put(link_url, link->data, link->size);
+		UPSKIRT_BUFPUTSL(link_url, "http://");
+		sd_buffer_put(link_url, link->data, link->size);
 
 		if (ob->size > rewind)
 			ob->size -= rewind;
@@ -1191,7 +1191,7 @@ char_autolink_www(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size
 }
 
 static size_t
-char_ref(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_ref(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 
 	if (startsWith("(#", (char*)data)){
@@ -1220,7 +1220,7 @@ char_ref(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset
 }
 
 static size_t
-char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_autolink_email(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 
 	if (startsWith("@include(", (char*)data))
@@ -1252,7 +1252,7 @@ char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, si
    		}
    		return i+1;
    	}
-	hoedown_buffer *link;
+	sd_buffer *link;
 	size_t link_len, rewind;
 
 	if (!doc->md.autolink || doc->in_link_body)
@@ -1260,13 +1260,13 @@ char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, si
 
 	link = newbuf(doc, BUFFER_SPAN);
 
-	if ((link_len = hoedown_autolink__email(&rewind, link, data, offset, size, 0)) > 0) {
+	if ((link_len = sd_autolink__email(&rewind, link, data, offset, size, 0)) > 0) {
 		if (ob->size > rewind)
 			ob->size -= rewind;
 		else
 			ob->size = 0;
 
-		doc->md.autolink(ob, link, HOEDOWN_AUTOLINK_EMAIL, &doc->data);
+		doc->md.autolink(ob, link, UPSKIRT_AUTOLINK_EMAIL, &doc->data);
 	}
 
 	popbuf(doc, BUFFER_SPAN);
@@ -1274,9 +1274,9 @@ char_autolink_email(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, si
 }
 
 static size_t
-char_autolink_url(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_autolink_url(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
-	hoedown_buffer *link;
+	sd_buffer *link;
 	size_t link_len, rewind;
 
 	if (!doc->md.autolink || doc->in_link_body)
@@ -1284,13 +1284,13 @@ char_autolink_url(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size
 
 	link = newbuf(doc, BUFFER_SPAN);
 
-	if ((link_len = hoedown_autolink__url(&rewind, link, data, offset, size, 0)) > 0) {
+	if ((link_len = sd_autolink__url(&rewind, link, data, offset, size, 0)) > 0) {
 		if (ob->size > rewind)
 			ob->size -= rewind;
 		else
 			ob->size = 0;
 
-		doc->md.autolink(ob, link, HOEDOWN_AUTOLINK_NORMAL, &doc->data);
+		doc->md.autolink(ob, link, UPSKIRT_AUTOLINK_NORMAL, &doc->data);
 	}
 
 	popbuf(doc, BUFFER_SPAN);
@@ -1298,7 +1298,7 @@ char_autolink_url(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size
 }
 
 static size_t
-char_image(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size) {
+char_image(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size) {
 	size_t ret;
 
 	if (size < 2 || data[1] != '[') return 0;
@@ -1310,15 +1310,15 @@ char_image(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offs
 
 /* char_link • '[': parsing a link, a footnote or an image */
 static size_t
-char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_link(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	int is_img = (offset && data[-1] == '!' && !is_escaped(data - offset, offset - 1));
-	int is_footnote = (doc->ext_flags & HOEDOWN_EXT_FOOTNOTES && data[1] == '^');
+	int is_footnote = (doc->ext_flags & UPSKIRT_EXT_FOOTNOTES && data[1] == '^');
 	size_t i = 1, txt_e, link_b = 0, link_e = 0, title_b = 0, title_e = 0;
-	hoedown_buffer *content = NULL;
-	hoedown_buffer *link = NULL;
-	hoedown_buffer *title = NULL;
-	hoedown_buffer *u_link = NULL;
+	sd_buffer *content = NULL;
+	sd_buffer *link = NULL;
+	sd_buffer *title = NULL;
+	sd_buffer *u_link = NULL;
 	size_t org_work_size = doc->work_bufs[BUFFER_SPAN].size;
 	int ret = 0, in_title = 0, qtype = 0;
 
@@ -1336,7 +1336,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 	/* footnote link */
 	if (is_footnote) {
-		hoedown_buffer id = { NULL, 0, 0, 0, NULL, NULL, NULL };
+		sd_buffer id = { NULL, 0, 0, 0, NULL, NULL, NULL };
 		struct footnote_ref *fr;
 
 		if (txt_e < 3)
@@ -1446,12 +1446,12 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		/* building escaped link and title */
 		if (link_e > link_b) {
 			link = newbuf(doc, BUFFER_SPAN);
-			hoedown_buffer_put(link, data + link_b, link_e - link_b);
+			sd_buffer_put(link, data + link_b, link_e - link_b);
 		}
 
 		if (title_e > title_b) {
 			title = newbuf(doc, BUFFER_SPAN);
-			hoedown_buffer_put(title, data + title_b, title_e - title_b);
+			sd_buffer_put(title, data + title_b, title_e - title_b);
 		}
 
 		i++;
@@ -1459,7 +1459,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 	/* reference style link */
 	else if (i < size && data[i] == '[') {
-		hoedown_buffer *id = newbuf(doc, BUFFER_SPAN);
+		sd_buffer *id = newbuf(doc, BUFFER_SPAN);
 		struct link_ref *lr;
 
 		/* looking for the id */
@@ -1473,7 +1473,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		if (link_b == link_e)
 			replace_spacing(id, data + 1, txt_e - 1);
 		else
-			hoedown_buffer_put(id, data + link_b, link_e - link_b);
+			sd_buffer_put(id, data + link_b, link_e - link_b);
 
 		lr = find_link_ref(doc->refs, id->data, id->size);
 		if (!lr)
@@ -1486,7 +1486,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 	}
 
 	/* ruby text extension */
-	else if (i < size && data[i] == '{' && doc->ext_flags & HOEDOWN_EXT_RUBY) {
+	else if (i < size && data[i] == '{' && doc->ext_flags & UPSKIRT_EXT_RUBY) {
 		/* looking for the enclosing bracket */
 		i++;
 		title_b = i;
@@ -1497,12 +1497,12 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 		/* build up buffer */
 		if (txt_e > 1) {
 			content = newbuf(doc, BUFFER_SPAN);
-			hoedown_buffer_put(content, data + 1, txt_e - 1);
+			sd_buffer_put(content, data + 1, txt_e - 1);
 		}
 
 		if (title_e > title_b) {
 			title = newbuf(doc, BUFFER_SPAN);
-			hoedown_buffer_put(title, data + title_b, title_e - title_b);
+			sd_buffer_put(title, data + title_b, title_e - title_b);
 		}
 
 		ret = doc->md.ruby(ob, content, title, &doc->data);
@@ -1513,11 +1513,11 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 	/* citation extension */
 	else if (txt_e >= 4 && data[1] == '[' && data[txt_e - 1] == ']' &&
-			 doc->ext_flags & HOEDOWN_EXT_CITE) {
+			 doc->ext_flags & UPSKIRT_EXT_CITE) {
 
 		/* building content */
 		content = newbuf(doc, BUFFER_SPAN);
-		hoedown_buffer_put(content, data + 2, txt_e	- 3);
+		sd_buffer_put(content, data + 2, txt_e	- 3);
 
 		if (doc->md.cite)
 			ret = doc->md.cite(ob, content, &doc->data);
@@ -1529,7 +1529,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 
 	/* shortcut reference style link */
 	else {
-		hoedown_buffer *id = newbuf(doc, BUFFER_SPAN);
+		sd_buffer *id = newbuf(doc, BUFFER_SPAN);
 		struct link_ref *lr;
 
 		/* crafting the id */
@@ -1552,7 +1552,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 	if (txt_e > 1) {
 		content = newbuf(doc, BUFFER_SPAN);
 		if (is_img) {
-			hoedown_buffer_put(content, data + 1, txt_e - 1);
+			sd_buffer_put(content, data + 1, txt_e - 1);
 		} else {
 			/* disable autolinking when parsing inline the
 			 * content of a link */
@@ -1581,10 +1581,10 @@ cleanup:
 }
 
 static size_t
-char_superscript(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_superscript(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	size_t sup_start, sup_len;
-	hoedown_buffer *sup;
+	sd_buffer *sup;
 
 	if (!doc->md.superscript)
 		return 0;
@@ -1617,14 +1617,14 @@ char_superscript(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_
 }
 
 static size_t
-char_math(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offset, size_t size)
+char_math(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t offset, size_t size)
 {
 	/* double dollar */
 	if (size > 1 && data[1] == '$')
 		return parse_math(ob, doc, data, offset, size, "$$", 2, 1);
 
 	/* single dollar allowed only with MATH_EXPLICIT flag */
-	if (doc->ext_flags & HOEDOWN_EXT_MATH_EXPLICIT)
+	if (doc->ext_flags & UPSKIRT_EXT_MATH_EXPLICIT)
 		return parse_math(ob, doc, data, offset, size, "$", 1, 0);
 
 	return 0;
@@ -1714,7 +1714,7 @@ is_codefence(uint8_t *data, size_t size, size_t *width, uint8_t *chr)
 
 /* expects single line, checks if it's a codefence and extracts language */
 static size_t
-parse_codefence(uint8_t *data, size_t size, hoedown_buffer *lang, size_t *width, uint8_t *chr)
+parse_codefence(uint8_t *data, size_t size, sd_buffer *lang, size_t *width, uint8_t *chr)
 {
 	size_t i, w, lang_start;
 
@@ -1743,12 +1743,12 @@ parse_codefence(uint8_t *data, size_t size, hoedown_buffer *lang, size_t *width,
 
 /* is_atxheader • returns whether the line is a hash-prefixed header */
 static int
-is_atxheader(hoedown_document *doc, uint8_t *data, size_t size)
+is_atxheader(sd_document *doc, uint8_t *data, size_t size)
 {
 	if (data[0] != '#')
 		return 0;
 
-	if (doc->ext_flags & HOEDOWN_EXT_SPACE_HEADERS) {
+	if (doc->ext_flags & UPSKIRT_EXT_SPACE_HEADERS) {
 		size_t level = 0;
 
 		while (level < size && level < 6 && data[level] == '#')
@@ -1920,17 +1920,17 @@ prefix_float(uint8_t * data, size_t size)
 }
 
 /* parse_block • parsing of one block, returning next uint8_t to parse */
-static void parse_block(hoedown_buffer *ob, hoedown_document *doc,
+static void parse_block(sd_buffer *ob, sd_document *doc,
 			uint8_t *data, size_t size, int position);
 
 
 /* parse_blockquote • handles parsing of a blockquote fragment */
 static size_t
-parse_blockquote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size)
+parse_blockquote(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size)
 {
 	size_t beg, end = 0, pre, work_size = 0;
 	uint8_t *work_data = 0;
-	hoedown_buffer *out = 0;
+	sd_buffer *out = 0;
 
 	out = newbuf(doc, BUFFER_BLOCK);
 	beg = 0;
@@ -1949,7 +1949,7 @@ parse_blockquote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_
 			break;
 
 		if (beg < end) { /* copy into the in-place working buffer */
-			/* hoedown_buffer_put(work, data + beg, end - beg); */
+			/* sd_buffer_put(work, data + beg, end - beg); */
 			if (!work_data)
 				work_data = data + beg;
 			else if (data + beg != work_data + work_size)
@@ -1967,13 +1967,13 @@ parse_blockquote(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_
 }
 
 static size_t
-parse_htmlblock(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, int do_render);
+parse_htmlblock(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, int do_render);
 
 /* parse_blockquote • handles parsing of a regular paragraph */
 static size_t
-parse_paragraph(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size)
+parse_paragraph(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size)
 {
-	hoedown_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
 	size_t i = 0, end = 0;
 	int level = 0;
 
@@ -2003,13 +2003,13 @@ parse_paragraph(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 		work.size--;
 
 	if (!level) {
-		hoedown_buffer *tmp = newbuf(doc, BUFFER_BLOCK);
+		sd_buffer *tmp = newbuf(doc, BUFFER_BLOCK);
 		parse_inline(tmp, doc, work.data, work.size);
 		if (doc->md.paragraph)
 			doc->md.paragraph(ob, tmp, &doc->data);
 		popbuf(doc, BUFFER_BLOCK);
 	} else {
-		hoedown_buffer *header_work;
+		sd_buffer *header_work;
 
 		if (work.size) {
 			size_t beg;
@@ -2024,7 +2024,7 @@ parse_paragraph(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 				work.size -= 1;
 
 			if (work.size > 0) {
-				hoedown_buffer *tmp = newbuf(doc, BUFFER_BLOCK);
+				sd_buffer *tmp = newbuf(doc, BUFFER_BLOCK);
 				parse_inline(tmp, doc, work.data, work.size);
 
 				if (doc->md.paragraph)
@@ -2063,10 +2063,10 @@ parse_paragraph(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 
 /* parse_fencedcode • handles parsing of a block-level code fragment */
 static size_t
-parse_fencedcode(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size)
+parse_fencedcode(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size)
 {
-	hoedown_buffer text = { 0, 0, 0, 0, NULL, NULL, NULL };
-	hoedown_buffer lang = { 0, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer text = { 0, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer lang = { 0, 0, 0, 0, NULL, NULL, NULL };
 	size_t i = 0, text_start, line_start;
 	size_t w, w2;
 	size_t width, width2;
@@ -2105,10 +2105,10 @@ parse_fencedcode(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_
 }
 
 static size_t
-parse_blockcode(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size)
+parse_blockcode(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size)
 {
 	size_t beg, end, pre;
-	hoedown_buffer *work = 0;
+	sd_buffer *work = 0;
 
 	work = newbuf(doc, BUFFER_BLOCK);
 
@@ -2127,8 +2127,8 @@ parse_blockcode(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 			/* verbatim copy to the working buffer,
 				escaping entities */
 			if (is_empty(data + beg, end - beg))
-				hoedown_buffer_putc(work, '\n');
-			else hoedown_buffer_put(work, data + beg, end - beg);
+				sd_buffer_putc(work, '\n');
+			else sd_buffer_put(work, data + beg, end - beg);
 		}
 		beg = end;
 	}
@@ -2136,7 +2136,7 @@ parse_blockcode(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 	while (work->size && work->data[work->size - 1] == '\n')
 		work->size -= 1;
 
-	hoedown_buffer_putc(work, '\n');
+	sd_buffer_putc(work, '\n');
 
 	if (doc->md.blockcode)
 		doc->md.blockcode(ob, work, NULL, &doc->data);
@@ -2150,9 +2150,9 @@ parse_blockcode(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 /* parse_listitem • parsing of a single list item */
 /*	assuming initial prefix is already removed */
 static size_t
-parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, hoedown_list_flags *flags)
+parse_listitem(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, sd_list_flags *flags)
 {
-	hoedown_buffer *work = 0, *inter = 0;
+	sd_buffer *work = 0, *inter = 0;
 	size_t beg = 0, end, pre, sublist = 0, orgpre = 0, i;
 	int in_empty = 0, has_inside_empty = 0, in_fence = 0;
 
@@ -2176,7 +2176,7 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 	while (end < size && data[end - 1] != '\n')
 		end++;
 
-	if (doc->ext_flags & HOEDOWN_EXT_FENCED_CODE) {
+	if (doc->ext_flags & UPSKIRT_EXT_FENCED_CODE) {
 		if (is_codefence(data + beg, end - beg, NULL, NULL)) {
 			in_fence = 1;
 		}
@@ -2187,7 +2187,7 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 	inter = newbuf(doc, BUFFER_SPAN);
 
 	/* putting the first line into the working buffer */
-	hoedown_buffer_put(work, data + beg, end - beg);
+	sd_buffer_put(work, data + beg, end - beg);
 	beg = end;
 
 	/* process the following lines */
@@ -2213,7 +2213,7 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 
 		pre = i;
 
-		if (doc->ext_flags & HOEDOWN_EXT_FENCED_CODE) {
+		if (doc->ext_flags & UPSKIRT_EXT_FENCED_CODE) {
 			if (is_codefence(data + beg + i, end - beg - i, NULL, NULL))
 				in_fence = !in_fence;
 		}
@@ -2234,9 +2234,9 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 			if (pre <= orgpre) {
 				/* if the following item has different list type, we end this list */
 				if (in_empty && (
-					((*flags & HOEDOWN_LIST_ORDERED) && has_next_uli) ||
-					(!(*flags & HOEDOWN_LIST_ORDERED) && has_next_oli)))
-					*flags |= HOEDOWN_LI_END;
+					((*flags & UPSKIRT_LIST_ORDERED) && has_next_uli) ||
+					(!(*flags & UPSKIRT_LIST_ORDERED) && has_next_oli)))
+					*flags |= UPSKIRT_LI_END;
 
 				break;
 			}
@@ -2248,26 +2248,26 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 		 * note that now we only require 1 space of indentation
 		 * to continue a list */
 		else if (in_empty && pre == 0) {
-			*flags |= HOEDOWN_LI_END;
+			*flags |= UPSKIRT_LI_END;
 			break;
 		}
 
 		if (in_empty) {
-			hoedown_buffer_putc(work, '\n');
+			sd_buffer_putc(work, '\n');
 			has_inside_empty = 1;
 			in_empty = 0;
 		}
 
 		/* adding the line without prefix into the working buffer */
-		hoedown_buffer_put(work, data + beg + i, end - beg - i);
+		sd_buffer_put(work, data + beg + i, end - beg - i);
 		beg = end;
 	}
 
 	/* render of li contents */
 	if (has_inside_empty)
-		*flags |= HOEDOWN_LI_BLOCK;
+		*flags |= UPSKIRT_LI_BLOCK;
 
-	if (*flags & HOEDOWN_LI_BLOCK) {
+	if (*flags & UPSKIRT_LI_BLOCK) {
 		/* intermediate render of block li */
 		if (sublist && sublist < work->size) {
 			parse_block(inter, doc, work->data, sublist, -1);
@@ -2297,9 +2297,9 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 
 /* parse_list • parsing ordered or unordered list block */
 static size_t
-parse_list(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, hoedown_list_flags flags)
+parse_list(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, sd_list_flags flags)
 {
-	hoedown_buffer *work = 0;
+	sd_buffer *work = 0;
 	size_t i = 0, j;
 
 	work = newbuf(doc, BUFFER_BLOCK);
@@ -2308,7 +2308,7 @@ parse_list(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size
 		j = parse_listitem(work, doc, data + i, size - i, &flags);
 		i += j;
 
-		if (!j || (flags & HOEDOWN_LI_END))
+		if (!j || (flags & UPSKIRT_LI_END))
 			break;
 	}
 
@@ -2350,7 +2350,7 @@ get_atxheader_info(uint8_t *data, size_t size, size_t * level, size_t * skip)
 
 /* parse_atxheader • parsing of atx-style headers */
 static size_t
-parse_atxheader(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size)
+parse_atxheader(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size)
 {
 	size_t level = 0;
 	size_t skip = 0;
@@ -2372,7 +2372,7 @@ parse_atxheader(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 	}
 
 	if (title) {
-		hoedown_buffer *work = newbuf(doc, BUFFER_SPAN);
+		sd_buffer *work = newbuf(doc, BUFFER_SPAN);
 
 		parse_inline(work, doc, title, strlen((char*)title));
 
@@ -2388,9 +2388,9 @@ parse_atxheader(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 
 /* parse_footnote_def • parse a single footnote definition */
 static void
-parse_footnote_def(hoedown_buffer *ob, hoedown_document *doc, unsigned int num, uint8_t *data, size_t size)
+parse_footnote_def(sd_buffer *ob, sd_document *doc, unsigned int num, uint8_t *data, size_t size)
 {
-	hoedown_buffer *work = 0;
+	sd_buffer *work = 0;
 	work = newbuf(doc, BUFFER_SPAN);
 
 	parse_block(work, doc, data, size, -1);
@@ -2402,9 +2402,9 @@ parse_footnote_def(hoedown_buffer *ob, hoedown_document *doc, unsigned int num, 
 
 /* parse_footnote_list • render the contents of the footnotes */
 static void
-parse_footnote_list(hoedown_buffer *ob, hoedown_document *doc, struct footnote_list *footnotes)
+parse_footnote_list(sd_buffer *ob, sd_document *doc, struct footnote_list *footnotes)
 {
-	hoedown_buffer *work = 0;
+	sd_buffer *work = 0;
 	struct footnote_item *item;
 	struct footnote_ref *ref;
 
@@ -2432,7 +2432,7 @@ static size_t
 htmlblock_is_end(
 	const char *tag,
 	size_t tag_len,
-	hoedown_document *doc,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
@@ -2459,7 +2459,7 @@ static size_t
 htmlblock_find_end(
 	const char *tag,
 	size_t tag_len,
-	hoedown_document *doc,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
@@ -2482,7 +2482,7 @@ static size_t
 htmlblock_find_end_strict(
 	const char *tag,
 	size_t tag_len,
-	hoedown_document *doc,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
@@ -2504,9 +2504,9 @@ htmlblock_find_end_strict(
 
 /* parse_htmlblock • parsing of inline HTML block */
 static size_t
-parse_htmlblock(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, int do_render)
+parse_htmlblock(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, int do_render)
 {
-	hoedown_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
+	sd_buffer work = { NULL, 0, 0, 0, NULL, NULL, NULL };
 	size_t i, j = 0, tag_len, tag_end;
 	const char *curtag = NULL;
 
@@ -2521,7 +2521,7 @@ parse_htmlblock(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 		i++;
 
 	if (i < size)
-		curtag = hoedown_find_block_tag((char *)data + 1, (int)i - 1);
+		curtag = sd_find_block_tag((char *)data + 1, (int)i - 1);
 
 	/* handling of special cases */
 	if (!curtag) {
@@ -2590,16 +2590,16 @@ parse_htmlblock(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t
 
 static void
 parse_table_row(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size,
 	size_t columns,
-	hoedown_table_flags *col_data,
-	hoedown_table_flags header_flag)
+	sd_table_flags *col_data,
+	sd_table_flags header_flag)
 {
 	size_t i = 0, col, len;
-	hoedown_buffer *row_work = 0;
+	sd_buffer *row_work = 0;
 
 	if (!doc->md.table_cell || !doc->md.table_row)
 		return;
@@ -2611,7 +2611,7 @@ parse_table_row(
 
 	for (col = 0; col < columns && i < size; ++col) {
 		size_t cell_start, cell_end;
-		hoedown_buffer *cell_work;
+		sd_buffer *cell_work;
 
 		cell_work = newbuf(doc, BUFFER_SPAN);
 
@@ -2644,7 +2644,7 @@ parse_table_row(
 	}
 
 	for (; col < columns; ++col) {
-		hoedown_buffer empty_cell = { 0, 0, 0, 0, NULL, NULL, NULL };
+		sd_buffer empty_cell = { 0, 0, 0, 0, NULL, NULL, NULL };
 		doc->md.table_cell(row_work, &empty_cell, col_data[col] | header_flag, &doc->data);
 	}
 
@@ -2655,12 +2655,12 @@ parse_table_row(
 
 static size_t
 parse_table_header(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size,
 	size_t *columns,
-	hoedown_table_flags **column_data)
+	sd_table_flags **column_data)
 {
 	int pipes;
 	size_t i = 0, col, header_end, under_end;
@@ -2688,7 +2688,7 @@ parse_table_header(
 		return 0;
 
 	*columns = pipes + 1;
-	*column_data = hoedown_calloc(*columns, sizeof(hoedown_table_flags));
+	*column_data = sd_calloc(*columns, sizeof(sd_table_flags));
 
 	/* Parse the header underline */
 	i++;
@@ -2706,7 +2706,7 @@ parse_table_header(
 			i++;
 
 		if (data[i] == ':') {
-			i++; (*column_data)[col] |= HOEDOWN_TABLE_ALIGN_LEFT;
+			i++; (*column_data)[col] |= UPSKIRT_TABLE_ALIGN_LEFT;
 			dashes++;
 		}
 
@@ -2715,7 +2715,7 @@ parse_table_header(
 		}
 
 		if (i < under_end && data[i] == ':') {
-			i++; (*column_data)[col] |= HOEDOWN_TABLE_ALIGN_RIGHT;
+			i++; (*column_data)[col] |= UPSKIRT_TABLE_ALIGN_RIGHT;
 			dashes++;
 		}
 
@@ -2739,7 +2739,7 @@ parse_table_header(
 		header_end,
 		*columns,
 		*column_data,
-		HOEDOWN_TABLE_HEADER
+		UPSKIRT_TABLE_HEADER
 	);
 
 	return under_end + 1;
@@ -2747,19 +2747,19 @@ parse_table_header(
 
 static size_t
 parse_table(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
 	size_t i;
 
-	hoedown_buffer *work = 0;
-	hoedown_buffer *header_work = 0;
-	hoedown_buffer *body_work = 0;
+	sd_buffer *work = 0;
+	sd_buffer *header_work = 0;
+	sd_buffer *body_work = 0;
 
 	size_t columns;
-	hoedown_table_flags *col_data = NULL;
+	sd_table_flags *col_data = NULL;
 
 	work = newbuf(doc, BUFFER_BLOCK);
 	header_work = newbuf(doc, BUFFER_SPAN);
@@ -2814,8 +2814,8 @@ parse_table(
 
 static size_t
 parse_abstract(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
@@ -2832,10 +2832,10 @@ parse_abstract(
 		parse_block(ob, doc, data, skip, -1);
 		if (doc->md.keywords && doc->document_metadata->keywords)
 		{
-			hoedown_buffer * b = hoedown_buffer_new(1);
-			hoedown_buffer_puts(b, doc->document_metadata->keywords);
+			sd_buffer * b = sd_buffer_new(1);
+			sd_buffer_puts(b, doc->document_metadata->keywords);
 			doc->md.keywords(ob,b,NULL);
-			hoedown_buffer_free(b);
+			sd_buffer_free(b);
 
 		}
 		doc->md.close(ob);
@@ -2847,7 +2847,7 @@ parse_abstract(
 	return skip;
 }
 uint8_t *
-parse_caption(hoedown_document *doc,
+parse_caption(sd_document *doc,
               uint8_t *data,
               size_t size)
 {
@@ -2860,14 +2860,14 @@ parse_caption(hoedown_document *doc,
 		i++;
 	}
 	if (i) {
-		hoedown_buffer * buf = hoedown_buffer_new(1);
+		sd_buffer * buf = sd_buffer_new(1);
 		parse_inline(buf, doc, data, i);
 		uint8_t * tmp = malloc(sizeof(uint8_t) * (buf->size+1));
 		tmp[buf->size] = 0;
 		memcpy(tmp, buf->data, buf->size);
 		// clean escape chars 
 		tmp = (uint8_t*)clean_string((char*)tmp, buf->size);
-		hoedown_buffer_free(buf);
+		sd_buffer_free(buf);
 		return tmp;
 	}
 	return NULL;
@@ -2875,8 +2875,8 @@ parse_caption(hoedown_document *doc,
 
 static size_t
 parse_fl(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size,
     float_type type)
@@ -2926,8 +2926,8 @@ parse_fl(
 
 static size_t
 parse_eq(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
@@ -2955,8 +2955,8 @@ parse_eq(
 	if (doc->md.opn_equation && skip)
 	{
 		doc->md.opn_equation(ob, args.id, &doc->data);
-		hoedown_buffer * text = hoedown_buffer_new(skip);
-		hoedown_buffer_put(text, data+begin, skip);
+		sd_buffer * text = sd_buffer_new(skip);
+		sd_buffer_put(text, data+begin, skip);
 		if (doc->md.eq_math)
 			doc->md.eq_math(ob, text, 2, &doc->data);
 		doc->md.cls_equation(ob, &doc->data);
@@ -2971,8 +2971,8 @@ parse_eq(
 
 static size_t
 parse_float(
-	hoedown_buffer *ob,
-	hoedown_document *doc,
+	sd_buffer *ob,
+	sd_document *doc,
 	uint8_t *data,
 	size_t size)
 {
@@ -3002,7 +3002,7 @@ parse_float(
 }
 
 static void
-parse_position(hoedown_buffer *ob, hoedown_document *doc){
+parse_position(sd_buffer *ob, sd_document *doc){
 	if (doc->md.position){
 		doc->md.position(ob);
 	}
@@ -3010,7 +3010,7 @@ parse_position(hoedown_buffer *ob, hoedown_document *doc){
 
 /* parse_block • parsing of one block, returning next uint8_t to parse */
 static void
-parse_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t size, int position)
+parse_block(sd_buffer *ob, sd_document *doc, uint8_t *data, size_t size, int position)
 {
 	size_t beg, end, i;
 	uint8_t *txt_data;
@@ -3048,18 +3048,18 @@ parse_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 			beg++;
 		}
 
-		else if ((doc->ext_flags & HOEDOWN_EXT_FENCED_CODE) != 0 &&
+		else if ((doc->ext_flags & UPSKIRT_EXT_FENCED_CODE) != 0 &&
 			(i = parse_fencedcode(ob, doc, txt_data, end)) != 0)
 			beg += i;
 
-		else if ((doc->ext_flags & HOEDOWN_EXT_TABLES) != 0 &&
+		else if ((doc->ext_flags & UPSKIRT_EXT_TABLES) != 0 &&
 			(i = parse_table(ob, doc, txt_data, end)) != 0)
 			beg += i;
 
 		else if (prefix_quote(txt_data, end))
 			beg += parse_blockquote(ob, doc, txt_data, end);
 
-		else if (!(doc->ext_flags & HOEDOWN_EXT_DISABLE_INDENTED_CODE) && prefix_code(txt_data, end))
+		else if (!(doc->ext_flags & UPSKIRT_EXT_DISABLE_INDENTED_CODE) && prefix_code(txt_data, end))
 			beg += parse_blockcode(ob, doc, txt_data, end);
 
 		else if (prefix_float(txt_data, end))
@@ -3069,7 +3069,7 @@ parse_block(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t siz
 			beg += parse_list(ob, doc, txt_data, end, 0);
 
 		else if (prefix_oli(txt_data, end))
-			beg += parse_list(ob, doc, txt_data, end, HOEDOWN_LIST_ORDERED);
+			beg += parse_list(ob, doc, txt_data, end, UPSKIRT_LIST_ORDERED);
 
 		else
 			beg += parse_paragraph(ob, doc, txt_data, end);
@@ -3124,7 +3124,7 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, char* bas
 			return 1;
 		}
 	size_t i = 0;
-	hoedown_buffer *contents = 0;
+	sd_buffer *contents = 0;
 	size_t ind = 0;
 	int in_empty = 0;
 	size_t start = 0;
@@ -3156,7 +3156,7 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, char* bas
 	i++;
 
 	/* getting content buffer */
-	contents = hoedown_buffer_new(64);
+	contents = sd_buffer_new(64);
 
 	start = i;
 
@@ -3188,16 +3188,16 @@ is_footnote(const uint8_t *data, size_t beg, size_t end, size_t *last, char* bas
 			else break;
 		}
 		else if (in_empty) {
-			hoedown_buffer_putc(contents, '\n');
+			sd_buffer_putc(contents, '\n');
 		}
 
 		in_empty = 0;
 
 		/* adding the line into the content buffer */
-		hoedown_buffer_put(contents, data + start + ind, i - start - ind);
+		sd_buffer_put(contents, data + start + ind, i - start - ind);
 		/* add carriage return */
 		if (i < end) {
-			hoedown_buffer_putc(contents, '\n');
+			sd_buffer_putc(contents, '\n');
 			if (i < end && (data[i] == '\n' || data[i] == '\r')) {
 				i++;
 				if (i < end && data[i] == '\n' && data[i - 1] == '\r') i++;
@@ -3327,12 +3327,12 @@ is_ref(const uint8_t *data, size_t beg, size_t end, size_t *last, struct link_re
 		if (!ref)
 			return 0;
 
-		ref->link = hoedown_buffer_new(link_end - link_offset);
-		hoedown_buffer_put(ref->link, data + link_offset, link_end - link_offset);
+		ref->link = sd_buffer_new(link_end - link_offset);
+		sd_buffer_put(ref->link, data + link_offset, link_end - link_offset);
 
 		if (title_end > title_offset) {
-			ref->title = hoedown_buffer_new(title_end - title_offset);
-			hoedown_buffer_put(ref->title, data + title_offset, title_end - title_offset);
+			ref->title = sd_buffer_new(title_end - title_offset);
+			sd_buffer_put(ref->title, data + title_offset, title_end - title_offset);
 		}
 	}
 
@@ -3367,7 +3367,7 @@ load_notes(const uint8_t * data, size_t size,  char* base_folder, struct footnot
 		}
 	}
 }
-static void expand_tabs(hoedown_buffer *ob, const uint8_t *line, size_t size)
+static void expand_tabs(sd_buffer *ob, const uint8_t *line, size_t size)
 {
 	/* This code makes two assumptions:
 	 * - Input is valid UTF-8.  (Any byte with top two bits 10 is skipped,
@@ -3388,13 +3388,13 @@ static void expand_tabs(hoedown_buffer *ob, const uint8_t *line, size_t size)
 		}
 
 		if (i > org)
-			hoedown_buffer_put(ob, line + org, i - org);
+			sd_buffer_put(ob, line + org, i - org);
 
 		if (i >= size)
 			break;
 
 		do {
-			hoedown_buffer_putc(ob, ' '); tab++;
+			sd_buffer_putc(ob, ' '); tab++;
 		} while (tab % 4);
 
 		i++;
@@ -3405,20 +3405,20 @@ static void expand_tabs(hoedown_buffer *ob, const uint8_t *line, size_t size)
  * EXPORTED FUNCTIONS *
  **********************/
 
-hoedown_document *
-hoedown_document_new(
-	const hoedown_renderer *renderer,
-	hoedown_extensions extensions,
+sd_document *
+sd_document_new(
+	const sd_renderer *renderer,
+	sd_extensions extensions,
     ext_definition * user_ext,
     const char * base_folder,
 	size_t max_nesting)
 {
-	hoedown_document *doc = NULL;
+	sd_document *doc = NULL;
 
 	assert(max_nesting > 0 && renderer);
 
-	doc = hoedown_malloc(sizeof(hoedown_document));
-	memcpy(&doc->md, renderer, sizeof(hoedown_renderer));
+	doc = sd_malloc(sizeof(sd_document));
+	memcpy(&doc->md, renderer, sizeof(sd_renderer));
 
 	doc->extensions = user_ext;
 	doc->base_folder = (base_folder != NULL) ? strdup (base_folder) : NULL;
@@ -3431,21 +3431,21 @@ hoedown_document_new(
 	doc->data.opaque = renderer->opaque;
 	doc->data.meta = NULL;
 
-	hoedown_stack_init(&doc->work_bufs[BUFFER_BLOCK], 4);
-	hoedown_stack_init(&doc->work_bufs[BUFFER_SPAN], 8);
+	sd_stack_init(&doc->work_bufs[BUFFER_BLOCK], 4);
+	sd_stack_init(&doc->work_bufs[BUFFER_SPAN], 8);
 
 	memset(doc->active_char, 0x0, 256);
 
-	if (extensions & HOEDOWN_EXT_UNDERLINE && doc->md.underline) {
+	if (extensions & UPSKIRT_EXT_UNDERLINE && doc->md.underline) {
 		doc->active_char['_'] = MD_CHAR_EMPHASIS;
 	}
 
 	if (doc->md.emphasis || doc->md.double_emphasis || doc->md.triple_emphasis) {
 		doc->active_char['*'] = MD_CHAR_EMPHASIS;
 		doc->active_char['_'] = MD_CHAR_EMPHASIS;
-		if (extensions & HOEDOWN_EXT_STRIKETHROUGH)
+		if (extensions & UPSKIRT_EXT_STRIKETHROUGH)
 			doc->active_char['~'] = MD_CHAR_EMPHASIS;
-		if (extensions & HOEDOWN_EXT_HIGHLIGHT)
+		if (extensions & UPSKIRT_EXT_HIGHLIGHT)
 			doc->active_char['='] = MD_CHAR_EMPHASIS;
 	}
 
@@ -3464,19 +3464,19 @@ hoedown_document_new(
 	doc->active_char['\\'] = MD_CHAR_ESCAPE;
 	doc->active_char['&'] = MD_CHAR_ENTITY;
 
-	if (extensions & HOEDOWN_EXT_AUTOLINK) {
+	if (extensions & UPSKIRT_EXT_AUTOLINK) {
 		doc->active_char[':'] = MD_CHAR_AUTOLINK_URL;
 		doc->active_char['@'] = MD_CHAR_AUTOLINK_EMAIL;
 		doc->active_char['w'] = MD_CHAR_AUTOLINK_WWW;
 	}
 
-	if (extensions & HOEDOWN_EXT_SUPERSCRIPT)
+	if (extensions & UPSKIRT_EXT_SUPERSCRIPT)
 		doc->active_char['^'] = MD_CHAR_SUPERSCRIPT;
 
-	if (extensions & HOEDOWN_EXT_QUOTE)
+	if (extensions & UPSKIRT_EXT_QUOTE)
 		doc->active_char['"'] = MD_CHAR_QUOTE;
 
-	if (extensions & HOEDOWN_EXT_MATH)
+	if (extensions & UPSKIRT_EXT_MATH)
 		doc->active_char['$'] = MD_CHAR_MATH;
 
 	doc->active_char['('] = MD_CHAR_REF;
@@ -3489,7 +3489,7 @@ hoedown_document_new(
 	return doc;
 }
 size_t
-skip_yaml(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size)
+skip_yaml(sd_document *doc, sd_buffer *ob, const uint8_t *data, size_t size)
 {
 	size_t skip = 0;
 	if (startsWith("---", (char*)data) && is_separator(data[3])){
@@ -3507,20 +3507,20 @@ skip_yaml(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t
 }
 
 void
-sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size, int position)
+sub_render(sd_document *doc, sd_buffer *ob, const uint8_t *data, size_t size, int position)
 {
 	static const uint8_t UTF8_BOM[] = {0xEF, 0xBB, 0xBF};
 
-	hoedown_buffer *text;
+	sd_buffer *text;
 	size_t beg, end;
-	text = hoedown_buffer_new(64);
+	text = sd_buffer_new(64);
 
 	/* Preallocate enough space for our buffer to avoid expanding while copying */
-	hoedown_buffer_grow(text, size);
+	sd_buffer_grow(text, size);
 	/* first pass: looking for references, copying everything else */
 	beg = 0;
 
-	int footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
+	int footnotes_enabled = doc->ext_flags & UPSKIRT_EXT_FOOTNOTES;
 
 	/* Skip a possible UTF-8 BOM, even though the Unicode standard
 	 * discourages having these in UTF-8 documents */
@@ -3544,7 +3544,7 @@ sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_
 			while (end < size && (data[end] == '\n' || data[end] == '\r')) {
 				/* add one \n per newline */
 				if (data[end] == '\n' || (end + 1 < size && data[end + 1] != '\n'))
-					hoedown_buffer_putc(text, '\n');
+					sd_buffer_putc(text, '\n');
 				end++;
 			}
 
@@ -3552,7 +3552,7 @@ sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_
 		}
 
 	/* pre-grow the output buffer to minimize allocations */
-	hoedown_buffer_grow(ob, text->size + (text->size >> 1));
+	sd_buffer_grow(ob, text->size + (text->size >> 1));
 
 	/* second pass: actual rendering */
 	if (doc->md.doc_header)
@@ -3562,11 +3562,11 @@ sub_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_
 		size_t skip = skip_yaml(doc, ob, text->data, text->size);
 		/* adding a final newline if not already present */
 		if (text->data[text->size - 1] != '\n' &&  text->data[text->size - 1] != '\r')
-			hoedown_buffer_putc(text, '\n');
+			sd_buffer_putc(text, '\n');
 
 		parse_block(ob, doc, text->data+skip, text->size-skip, position-skip);
 	}
-	hoedown_buffer_free(text);
+	sd_buffer_free(text);
 }
 
 int parse_keyword(char * keyword, metadata * meta,  const uint8_t *data, size_t size)
@@ -3684,29 +3684,29 @@ parse_yaml(const uint8_t *data, size_t size)
 }
 
 void
-render_metadata(hoedown_document *doc, hoedown_buffer *ob, metadata * meta)
+render_metadata(sd_document *doc, sd_buffer *ob, metadata * meta)
 {
 
 	if (meta->title != NULL && doc->md.title)
 	{
-		hoedown_buffer * b = hoedown_buffer_new(1);
-		hoedown_buffer_puts(b, meta->title);
+		sd_buffer * b = sd_buffer_new(1);
+		sd_buffer_puts(b, meta->title);
 		doc->md.title(ob,b, meta);
-		hoedown_buffer_free(b);
+		sd_buffer_free(b);
 	}
 	if (meta->authors != NULL && doc->md.authors)
 	{
-		hoedown_buffer * b = hoedown_buffer_new(1);
+		sd_buffer * b = sd_buffer_new(1);
 
 		doc->md.authors(ob,meta->authors);
-		hoedown_buffer_free(b);
+		sd_buffer_free(b);
 	}
 	if (meta->affiliation != NULL && doc->md.affiliation)
 	{
-		hoedown_buffer * b = hoedown_buffer_new(1);
-		hoedown_buffer_puts(b, meta->affiliation);
+		sd_buffer * b = sd_buffer_new(1);
+		sd_buffer_puts(b, meta->affiliation);
 		doc->md.affiliation(ob,b,NULL);
-		hoedown_buffer_free(b);
+		sd_buffer_free(b);
 	}
 
 }
@@ -3725,7 +3725,7 @@ int find_ref(reference * refs, char*id, int *counter)
 }
 
 void
-check_for_ref(hoedown_document *doc, const uint8_t *data, size_t size, html_counter * counter, float_type type)
+check_for_ref(sd_document *doc, const uint8_t *data, size_t size, html_counter * counter, float_type type)
 {
 	int caption = 0;
 	size_t i = 0;
@@ -3772,7 +3772,7 @@ check_for_ref(hoedown_document *doc, const uint8_t *data, size_t size, html_coun
 
 
 void
-look_for_ref(hoedown_document *doc, const uint8_t *data, size_t size, html_counter * counter)
+look_for_ref(sd_document *doc, const uint8_t *data, size_t size, html_counter * counter)
 {
 
 	if (startsWith("@figure", (char*)data))
@@ -3826,7 +3826,7 @@ load_text(uint8_t *data, size_t size, char* base_folder, size_t * new_size)
 
 
 void
-find_references(hoedown_document *doc, const uint8_t *data, size_t size, html_counter * counter)
+find_references(sd_document *doc, const uint8_t *data, size_t size, html_counter * counter)
 {
 	size_t i;
 	for (i = 0; i < size; i++)
@@ -3849,7 +3849,7 @@ find_references(hoedown_document *doc, const uint8_t *data, size_t size, html_co
 }
 
 toc *
-generate_toc(hoedown_document * doc, const uint8_t * data, size_t size, toc* parent)
+generate_toc(sd_document * doc, const uint8_t * data, size_t size, toc* parent)
 {
 	if (!data || !size)
 		return parent;
@@ -3955,7 +3955,7 @@ metadata* document_metadata(const uint8_t *data, size_t size)
 }
 
 void
-hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size, int position)
+sd_document_render(sd_document *doc, sd_buffer *ob, const uint8_t *data, size_t size, int position)
 {
 
 	int footnotes_enabled;
@@ -3963,7 +3963,7 @@ hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t
 	/* reset the references table */
 	memset(&doc->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
 
-	footnotes_enabled = doc->ext_flags & HOEDOWN_EXT_FOOTNOTES;
+	footnotes_enabled = doc->ext_flags & UPSKIRT_EXT_FOOTNOTES;
 
 	/* reset the footnotes lists */
 	if (footnotes_enabled) {
@@ -4011,16 +4011,16 @@ hoedown_document_render(hoedown_document *doc, hoedown_buffer *ob, const uint8_t
 }
 
 void
-hoedown_document_render_inline(hoedown_document *doc, hoedown_buffer *ob, const uint8_t *data, size_t size, int position)
+sd_document_render_inline(sd_document *doc, sd_buffer *ob, const uint8_t *data, size_t size, int position)
 {
 	size_t i = 0, mark;
-	hoedown_buffer *text = hoedown_buffer_new(64);
+	sd_buffer *text = sd_buffer_new(64);
 
 	/* reset the references table */
 	memset(&doc->refs, 0x0, REF_TABLE_SIZE * sizeof(void *));
 
 	/* first pass: expand tabs and process newlines */
-	hoedown_buffer_grow(text, size);
+	sd_buffer_grow(text, size);
 	while (1) {
 		mark = i;
 		while (i < size && data[i] != '\n' && data[i] != '\r')
@@ -4034,13 +4034,13 @@ hoedown_document_render_inline(hoedown_document *doc, hoedown_buffer *ob, const 
 		while (i < size && (data[i] == '\n' || data[i] == '\r')) {
 			/* add one \n per newline */
 			if (data[i] == '\n' || (i + 1 < size && data[i + 1] != '\n'))
-				hoedown_buffer_putc(text, '\n');
+				sd_buffer_putc(text, '\n');
 			i++;
 		}
 	}
 
 	/* second pass: actual rendering */
-	hoedown_buffer_grow(ob, text->size + (text->size >> 1));
+	sd_buffer_grow(ob, text->size + (text->size >> 1));
 
 	if (doc->md.doc_header)
 		doc->md.doc_header(ob, 1, &doc->data);
@@ -4051,7 +4051,7 @@ hoedown_document_render_inline(hoedown_document *doc, hoedown_buffer *ob, const 
 		doc->md.doc_footer(ob, 1, &doc->data);
 
 	/* clean-up */
-	hoedown_buffer_free(text);
+	sd_buffer_free(text);
 	assert(doc->work_bufs[BUFFER_SPAN].size == 0);
 	assert(doc->work_bufs[BUFFER_BLOCK].size == 0);
 }
@@ -4096,18 +4096,18 @@ free_meta(metadata * meta)
 }
 
 void
-hoedown_document_free(hoedown_document *doc)
+sd_document_free(sd_document *doc)
 {
 	size_t i;
 
 	for (i = 0; i < (size_t)doc->work_bufs[BUFFER_SPAN].asize; ++i)
-		hoedown_buffer_free(doc->work_bufs[BUFFER_SPAN].item[i]);
+		sd_buffer_free(doc->work_bufs[BUFFER_SPAN].item[i]);
 
 	for (i = 0; i < (size_t)doc->work_bufs[BUFFER_BLOCK].asize; ++i)
-		hoedown_buffer_free(doc->work_bufs[BUFFER_BLOCK].item[i]);
+		sd_buffer_free(doc->work_bufs[BUFFER_BLOCK].item[i]);
 
-	hoedown_stack_uninit(&doc->work_bufs[BUFFER_SPAN]);
-	hoedown_stack_uninit(&doc->work_bufs[BUFFER_BLOCK]);
+	sd_stack_uninit(&doc->work_bufs[BUFFER_SPAN]);
+	sd_stack_uninit(&doc->work_bufs[BUFFER_BLOCK]);
 	free_references(doc->floating_references);
 	free_toc(doc->table_of_contents);
 	free_meta(doc->document_metadata);

@@ -1,7 +1,7 @@
 /* html.h - HTML renderer and utilities */
 
-#ifndef SCIDOWN_UTILS_H
-#define SCIDOWN_UTILS_H
+#ifndef UPSKIRT_UTILS_H
+#define UPSKIRT_UTILS_H
 
 #include <string.h>
 
@@ -15,21 +15,21 @@ extern "C" {
  *************/
 
 typedef enum scidown_render_flags {
-	SCIDOWN_RENDER_SKIP_HTML  = (1 << 0),
-  	SCIDOWN_RENDER_ESCAPE     = (1 << 1),
-	SCIDOWN_RENDER_HARD_WRAP  = (1 << 2),
-	SCIDOWN_RENDER_USE_XHTML  = (1 << 3),
+	UPSKIRT_RENDER_SKIP_HTML  = (1 << 0),
+  	UPSKIRT_RENDER_ESCAPE     = (1 << 1),
+	UPSKIRT_RENDER_HARD_WRAP  = (1 << 2),
+	UPSKIRT_RENDER_USE_XHTML  = (1 << 3),
 	/* -- experimental flags -- */
-	SCIDOWN_RENDER_MERMAID    = (1 << 4),
-	SCIDOWN_RENDER_CHARTER    = (1 << 5),
-	SCIDOWN_RENDER_GNUPLOT    = (1 << 6),
-	SCIDOWN_RENDER_CSS        = (1 << 7),
+	UPSKIRT_RENDER_MERMAID    = (1 << 4),
+	UPSKIRT_RENDER_CHARTER    = (1 << 5),
+	UPSKIRT_RENDER_GNUPLOT    = (1 << 6),
+	UPSKIRT_RENDER_CSS        = (1 << 7),
 } scidown_render_flags;
 
 typedef enum scidown_render_tag {
-	SCIDOWN_RENDER_TAG_NONE = 0,
-	SCIDOWN_RENDER_TAG_OPEN,
-	SCIDOWN_RENDER_TAG_CLOSE
+	UPSKIRT_RENDER_TAG_NONE = 0,
+	UPSKIRT_RENDER_TAG_OPEN,
+	UPSKIRT_RENDER_TAG_CLOSE
 } scidown_render_tag;
 
 
@@ -63,4 +63,4 @@ char*    clean_string (char    *string,
 }
 #endif
 
-#endif /** SCIDOWN_UTILS_H **/
+#endif /** UPSKIRT_UTILS_H **/

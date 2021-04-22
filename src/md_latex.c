@@ -19,7 +19,7 @@ scidown_latex_is_tag(const uint8_t *data, size_t size, const char *tagname)
 	int closed = 0;
 
 	if (size < 3 || data[0] != '<')
-		return SCIDOWN_RENDER_TAG_NONE;
+		return UPSKIRT_RENDER_TAG_NONE;
 
 	i = 1;
 
@@ -33,46 +33,46 @@ scidown_latex_is_tag(const uint8_t *data, size_t size, const char *tagname)
 			break;
 
 		if (data[i] != *tagname)
-			return SCIDOWN_RENDER_TAG_NONE;
+			return UPSKIRT_RENDER_TAG_NONE;
 	}
 
 	if (i == size)
-		return SCIDOWN_RENDER_TAG_NONE;
+		return UPSKIRT_RENDER_TAG_NONE;
 
 	if (isspace(data[i]) || data[i] == '>')
-		return closed ? SCIDOWN_RENDER_TAG_CLOSE : SCIDOWN_RENDER_TAG_OPEN;
+		return closed ? UPSKIRT_RENDER_TAG_CLOSE : UPSKIRT_RENDER_TAG_OPEN;
 
-	return SCIDOWN_RENDER_TAG_NONE;
+	return UPSKIRT_RENDER_TAG_NONE;
 }
 
 
-static void escape_href(hoedown_buffer *ob, const uint8_t *source, size_t length)
+static void escape_href(sd_buffer *ob, const uint8_t *source, size_t length)
 {
-	hoedown_escape_href(ob, source, length);
+	sd_escape_href(ob, source, length);
 }
 
 /********************
  * GENERIC RENDERER *
  ********************/
 static int
-rndr_autolink(hoedown_buffer *ob, const hoedown_buffer *link, hoedown_autolink_type type, const hoedown_renderer_data *data)
+rndr_autolink(sd_buffer *ob, const sd_buffer *link, sd_autolink_type type, const sd_renderer_data *data)
 {
 	scidown_latex_renderer_state *state = data->opaque;
 
 	if (!link || !link->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "\\href{");
-	if (type == HOEDOWN_AUTOLINK_EMAIL)
-		HOEDOWN_BUFPUTSL(ob, "mailto:");
+	UPSKIRT_BUFPUTSL(ob, "\\href{");
+	if (type == UPSKIRT_AUTOLINK_EMAIL)
+		UPSKIRT_BUFPUTSL(ob, "mailto:");
 	escape_href(ob, link->data, link->size);
 
 	if (state->link_attributes) {
-		hoedown_buffer_putc(ob, '\"');
+		sd_buffer_putc(ob, '\"');
 		state->link_attributes(ob, link, data);
-		hoedown_buffer_puts(ob, "}{");
+		sd_buffer_puts(ob, "}{");
 	} else {
-		HOEDOWN_BUFPUTSL(ob, "\"}{");
+		UPSKIRT_BUFPUTSL(ob, "\"}{");
 	}
 
 	/*
@@ -80,25 +80,25 @@ rndr_autolink(hoedown_buffer *ob, const hoedown_buffer *link, hoedown_autolink_t
 	 * an actual URI, e.g. `mailto:foo@bar.com`, we don't
 	 * want to print the `mailto:` prefix
 	 */
-	if (hoedown_buffer_prefix(link, "mailto:") == 0) {
-		hoedown_buffer_put(ob, link->data + 7, link->size - 7);
+	if (sd_buffer_prefix(link, "mailto:") == 0) {
+		sd_buffer_put(ob, link->data + 7, link->size - 7);
 	} else {
-		hoedown_buffer_put(ob, link->data, link->size);
+		sd_buffer_put(ob, link->data, link->size);
 	}
 
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "}");
 
 	return 1;
 }
 
 static void
-rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buffer *lang, const hoedown_renderer_data *data)
+rndr_blockcode(sd_buffer *ob, const sd_buffer *text, const sd_buffer *lang, const sd_renderer_data *data)
 {
-	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	if (ob->size) sd_buffer_putc(ob, '\n');
 
 
     scidown_latex_renderer_state *state = data->opaque;
-	if (lang && (state->flags & SCIDOWN_RENDER_CHARTER) != 0 && hoedown_buffer_eqs(lang, "charter") != 0){
+	if (lang && (state->flags & UPSKIRT_RENDER_CHARTER) != 0 && sd_buffer_eqs(lang, "charter") != 0){
 		if (text){
 
 			char * copy = malloc((text->size + 1)*sizeof(char));
@@ -109,7 +109,7 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 			char * tex = chart_to_latex(c);
 
 			int n = strlen(tex);
-			hoedown_buffer_printf(ob, tex, n);
+			sd_buffer_printf(ob, tex, n);
 
 			free(copy);
 			chart_free(c);
@@ -119,120 +119,120 @@ rndr_blockcode(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_buf
 	}
 
 	if (lang) {
-		HOEDOWN_BUFPUTSL(ob, "\\begin{lstlisting}[language=");
-		hoedown_buffer_put(ob, lang->data, lang->size);
-		HOEDOWN_BUFPUTSL(ob, "]\n");
+		UPSKIRT_BUFPUTSL(ob, "\\begin{lstlisting}[language=");
+		sd_buffer_put(ob, lang->data, lang->size);
+		UPSKIRT_BUFPUTSL(ob, "]\n");
 	} else {
-		HOEDOWN_BUFPUTSL(ob, "\\begin{lstlisting}\n");
+		UPSKIRT_BUFPUTSL(ob, "\\begin{lstlisting}\n");
 	}
 
 	if (text)
-		hoedown_buffer_put(ob, text->data, text->size);
+		sd_buffer_put(ob, text->data, text->size);
 
-	HOEDOWN_BUFPUTSL(ob, "\\end{lstlisting}\n");
+	UPSKIRT_BUFPUTSL(ob, "\\end{lstlisting}\n");
 }
 
 static void
-rndr_blockquote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_blockquote(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
-	if (ob->size) hoedown_buffer_putc(ob, '\n');
-	HOEDOWN_BUFPUTSL(ob, "\\begin{quote}\n");
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "\\end{quote}\n");
+	if (ob->size) sd_buffer_putc(ob, '\n');
+	UPSKIRT_BUFPUTSL(ob, "\\begin{quote}\n");
+	if (content) sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "\\end{quote}\n");
 }
 
 static int
-rndr_codespan(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data)
+rndr_codespan(sd_buffer *ob, const sd_buffer *text, const sd_renderer_data *data)
 {
-	HOEDOWN_BUFPUTSL(ob, "\\texttt{");
-	if (text) hoedown_buffer_put(ob, text->data, text->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "\\texttt{");
+	if (text) sd_buffer_put(ob, text->data, text->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 	return 1;
 }
 
 static int
-rndr_strikethrough(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_strikethrough(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "\\st{");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "\\st{");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 	return 1;
 }
 
 static int
-rndr_double_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_double_emphasis(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "{\\bf ");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "{\\bf ");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 
 	return 1;
 }
 
 static int
-rndr_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_emphasis(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size) return 0;
-	HOEDOWN_BUFPUTSL(ob, "{\\em ");
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "{\\em ");
+	if (content) sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 	return 1;
 }
 
 static int
-rndr_underline(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_underline(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "\\underline{");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "\\underline{");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 
 	return 1;
 }
 
 static int
-rndr_highlight(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_highlight(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "\\hl{");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "\\hl{");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 
 	return 1;
 }
 
 static int
-rndr_quote(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_quote(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size)
 		return 0;
 
-	HOEDOWN_BUFPUTSL(ob, "\"");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "\"");
+	UPSKIRT_BUFPUTSL(ob, "\"");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "\"");
 
 	return 1;
 }
 
 static int
-rndr_linebreak(hoedown_buffer *ob, const hoedown_renderer_data *data)
+rndr_linebreak(sd_buffer *ob, const sd_renderer_data *data)
 {
-	hoedown_buffer_puts(ob, "\n");
+	sd_buffer_puts(ob, "\n");
 	return 1;
 }
 
 static void
-rndr_header(hoedown_buffer *ob, const hoedown_buffer *content, int level, const hoedown_renderer_data *data, h_counter counter, int numbering)
+rndr_header(sd_buffer *ob, const sd_buffer *content, int level, const sd_renderer_data *data, h_counter counter, int numbering)
 {
 
 	if (data->meta->doc_class == CLASS_BOOK || data->meta->doc_class == CLASS_REPORT) {
@@ -240,89 +240,89 @@ rndr_header(hoedown_buffer *ob, const hoedown_buffer *content, int level, const 
 	}
 
 	if (ob->size)
-		hoedown_buffer_putc(ob, '\n');
+		sd_buffer_putc(ob, '\n');
 
 	if (!content)
 	  return;
 
   	if (level == 0) {
-	  hoedown_buffer_puts(ob, "\\chapter{");
+	  sd_buffer_puts(ob, "\\chapter{");
 	} else if (level == 1) {
 		  if (data->meta->doc_class == CLASS_BEAMER)
-	  	hoedown_buffer_puts(ob, "\\frametitle{");
+	  	sd_buffer_puts(ob, "\\frametitle{");
 	  else
-  	    hoedown_buffer_puts(ob, "\\section{");
+  	    sd_buffer_puts(ob, "\\section{");
 	} else if (level == 2) {
-	  hoedown_buffer_puts(ob, "\\subsection{");
+	  sd_buffer_puts(ob, "\\subsection{");
 	} else if (level == 3) {
- 	  hoedown_buffer_puts(ob, "\\subsubsection{");
+ 	  sd_buffer_puts(ob, "\\subsubsection{");
 	} else if (level == 4) {
-	  hoedown_buffer_puts(ob, "\\paragraph{");
+	  sd_buffer_puts(ob, "\\paragraph{");
 	} else if (level == 5) {
-	  hoedown_buffer_puts(ob, "\\subparagraph{");
+	  sd_buffer_puts(ob, "\\subparagraph{");
 	}
 
-	hoedown_buffer_put(ob, content->data, content->size);
-    hoedown_buffer_puts(ob, "}\n");
+	sd_buffer_put(ob, content->data, content->size);
+    sd_buffer_puts(ob, "}\n");
 }
 
 static int
-rndr_link(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_renderer_data *data)
+rndr_link(sd_buffer *ob, const sd_buffer *content, const sd_buffer *link, const sd_buffer *title, const sd_renderer_data *data)
 {
 	scidown_latex_renderer_state *state = data->opaque;
 
-	HOEDOWN_BUFPUTSL(ob, "\\href{");
+	UPSKIRT_BUFPUTSL(ob, "\\href{");
 
 	if (link && link->size)
 		escape_href(ob, link->data, link->size);
 
 	if (title && title->size) {
-		HOEDOWN_BUFPUTSL(ob, "\" title=\"");
-		hoedown_buffer_put(ob, title->data, title->size);
+		UPSKIRT_BUFPUTSL(ob, "\" title=\"");
+		sd_buffer_put(ob, title->data, title->size);
 	}
 
 	if (state->link_attributes) {
-		hoedown_buffer_putc(ob, '\"');
+		sd_buffer_putc(ob, '\"');
 		state->link_attributes(ob, link, data);
-		hoedown_buffer_puts(ob, "}{");
+		sd_buffer_puts(ob, "}{");
 	} else {
-		HOEDOWN_BUFPUTSL(ob, "\"}{");
+		UPSKIRT_BUFPUTSL(ob, "\"}{");
 	}
 
-	if (content && content->size) hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	if (content && content->size) sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 	return 1;
 }
 
 static void
-rndr_list(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_list_flags flags, const hoedown_renderer_data *data)
+rndr_list(sd_buffer *ob, const sd_buffer *content, sd_list_flags flags, const sd_renderer_data *data)
 {
-	if (ob->size) hoedown_buffer_putc(ob, '\n');
-	hoedown_buffer_puts(ob, (flags & HOEDOWN_LIST_ORDERED ? "\\begin{enumerate}" : "\\begin{itemize}"));
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	hoedown_buffer_puts(ob, (flags & HOEDOWN_LIST_ORDERED ? "\\end{enumerate}\n" : "\\end{itemize}\n"));
+	if (ob->size) sd_buffer_putc(ob, '\n');
+	sd_buffer_puts(ob, (flags & UPSKIRT_LIST_ORDERED ? "\\begin{enumerate}" : "\\begin{itemize}"));
+	if (content) sd_buffer_put(ob, content->data, content->size);
+	sd_buffer_puts(ob, (flags & UPSKIRT_LIST_ORDERED ? "\\end{enumerate}\n" : "\\end{itemize}\n"));
 }
 
 static void
-rndr_listitem(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_list_flags flags, const hoedown_renderer_data *data)
+rndr_listitem(sd_buffer *ob, const sd_buffer *content, sd_list_flags flags, const sd_renderer_data *data)
 {
-	HOEDOWN_BUFPUTSL(ob, "\n\\item ");
+	UPSKIRT_BUFPUTSL(ob, "\n\\item ");
 	if (content) {
 		size_t size = content->size;
 		while (size && content->data[size - 1] == '\n')
 			size--;
 
-		hoedown_buffer_put(ob, content->data, size);
+		sd_buffer_put(ob, content->data, size);
 	}
 }
 
 static void
-rndr_paragraph(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_paragraph(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	scidown_latex_renderer_state *state = data->opaque;
 	size_t i = 0;
 
-	if (ob->size) hoedown_buffer_puts(ob, "\n");
+	if (ob->size) sd_buffer_puts(ob, "\n");
 
 	if (!content || !content->size)
 		return;
@@ -340,7 +340,7 @@ rndr_paragraph(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_
 				i++;
 
 			if (i > org)
-				hoedown_buffer_put(ob, content->data + org, i - org);
+				sd_buffer_put(ob, content->data + org, i - org);
 
 			/*
 			 * do not insert a line break if this newline
@@ -353,13 +353,13 @@ rndr_paragraph(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_
 			i++;
 		}
 	} else {
-		hoedown_buffer_put(ob, content->data + i, content->size - i);
+		sd_buffer_put(ob, content->data + i, content->size - i);
 	}
-	HOEDOWN_BUFPUTSL(ob, "\n\n");
+	UPSKIRT_BUFPUTSL(ob, "\n\n");
 }
 
 static void
-rndr_raw_block(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data)
+rndr_raw_block(sd_buffer *ob, const sd_buffer *text, const sd_renderer_data *data)
 {
 	size_t org, sz;
 
@@ -379,167 +379,167 @@ rndr_raw_block(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_ren
 		return;
 
 	if (ob->size)
-		hoedown_buffer_putc(ob, '\n');
+		sd_buffer_putc(ob, '\n');
 
-	hoedown_buffer_put(ob, text->data + org, sz - org);
-	hoedown_buffer_putc(ob, '\n');
+	sd_buffer_put(ob, text->data + org, sz - org);
+	sd_buffer_putc(ob, '\n');
 }
 
 static int
-rndr_triple_emphasis(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_triple_emphasis(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size) return 0;
-	HOEDOWN_BUFPUTSL(ob, "{\\bf{\\em ");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}}");
+	UPSKIRT_BUFPUTSL(ob, "{\\bf{\\em ");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}}");
 	return 1;
 }
 
 static void
-rndr_hrule(hoedown_buffer *ob, const hoedown_renderer_data *data)
+rndr_hrule(sd_buffer *ob, const sd_renderer_data *data)
 {
 
-	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	if (ob->size) sd_buffer_putc(ob, '\n');
 	if (data->meta->doc_class == CLASS_BEAMER) {
-		hoedown_buffer_puts(ob, "\\end{frame}\n");
-		hoedown_buffer_puts(ob, "\\begin{frame}\n");
+		sd_buffer_puts(ob, "\\end{frame}\n");
+		sd_buffer_puts(ob, "\\begin{frame}\n");
 	} else {
-		hoedown_buffer_puts(ob, "\\rule{\\linewidth}{.1pt}\n");
+		sd_buffer_puts(ob, "\\rule{\\linewidth}{.1pt}\n");
 	}
 }
 
 static int
-rndr_image(hoedown_buffer *ob, const hoedown_buffer *link, const hoedown_buffer *title, const hoedown_buffer *alt, const hoedown_renderer_data *data)
+rndr_image(sd_buffer *ob, const sd_buffer *link, const sd_buffer *title, const sd_buffer *alt, const sd_renderer_data *data)
 {
 	/*scidown_latex_renderer_state *state = data->opaque;*/
 	if (!link || !link->size) return 0;
 
 
-	HOEDOWN_BUFPUTSL(ob, "\\includegraphics[width=\\linewidth]{");
+	UPSKIRT_BUFPUTSL(ob, "\\includegraphics[width=\\linewidth]{");
 	escape_href(ob, link->data, link->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "}");
 
 	return 1;
 }
 
 static int
-rndr_raw_html(hoedown_buffer *ob, const hoedown_buffer *text, const hoedown_renderer_data *data)
+rndr_raw_html(sd_buffer *ob, const sd_buffer *text, const sd_renderer_data *data)
 {
 	scidown_latex_renderer_state *state = data->opaque;
 
 	/* ESCAPE overrides SKIP_HTML. It doesn't look to see if
 	 * there are any valid tags, just escapes all of them. */
 	if((state->flags) != 0) {
-		hoedown_buffer_put(ob, text->data, text->size);
+		sd_buffer_put(ob, text->data, text->size);
 		return 1;
 	}
 
 	if ((state->flags) != 0)
 		return 1;
 
-	hoedown_buffer_put(ob, text->data, text->size);
+	sd_buffer_put(ob, text->data, text->size);
 	return 1;
 }
 
 static void
-rndr_table(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data,  hoedown_table_flags *flags, int cols)
+rndr_table(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data,  sd_table_flags *flags, int cols)
 {
-	if (ob->size) hoedown_buffer_putc(ob, '\n');
-	HOEDOWN_BUFPUTSL(ob, "\\begin{tabular}{");
+	if (ob->size) sd_buffer_putc(ob, '\n');
+	UPSKIRT_BUFPUTSL(ob, "\\begin{tabular}{");
 	int i;
 	for (i = 0;i < cols;i++)
 	{
-		hoedown_buffer_puts(ob, " | ");
-		switch(flags[i]  & HOEDOWN_TABLE_ALIGNMASK)
+		sd_buffer_puts(ob, " | ");
+		switch(flags[i]  & UPSKIRT_TABLE_ALIGNMASK)
 		{
-		case HOEDOWN_TABLE_ALIGN_RIGHT:
-			hoedown_buffer_putc(ob, 'r');
+		case UPSKIRT_TABLE_ALIGN_RIGHT:
+			sd_buffer_putc(ob, 'r');
 			break;
-		case HOEDOWN_TABLE_ALIGN_CENTER:
-			hoedown_buffer_putc(ob, 'c');
+		case UPSKIRT_TABLE_ALIGN_CENTER:
+			sd_buffer_putc(ob, 'c');
 			break;
 		default:
-			hoedown_buffer_putc(ob, 'l');
+			sd_buffer_putc(ob, 'l');
 		}
 	}
 
-	hoedown_buffer_puts(ob, " | }\n\\hline\n");
-    hoedown_buffer_put(ob, content->data, content->size);
-    HOEDOWN_BUFPUTSL(ob, "\\hline\n\\end{tabular}\n");
+	sd_buffer_puts(ob, " | }\n\\hline\n");
+    sd_buffer_put(ob, content->data, content->size);
+    UPSKIRT_BUFPUTSL(ob, "\\hline\n\\end{tabular}\n");
 
 }
 
 static void
-rndr_table_header(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_table_header(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	/* TODO implement */
-    if (ob->size) hoedown_buffer_putc(ob, '\n');
-    hoedown_buffer_put(ob, content->data, content->size);
-    HOEDOWN_BUFPUTSL(ob, "\\hline\n");
+    if (ob->size) sd_buffer_putc(ob, '\n');
+    sd_buffer_put(ob, content->data, content->size);
+    UPSKIRT_BUFPUTSL(ob, "\\hline\n");
 }
 
 static void
-rndr_table_body(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_table_body(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	/* TODO implement */
-    hoedown_buffer_put(ob, content->data, content->size);
+    sd_buffer_put(ob, content->data, content->size);
 }
 
 static void
-rndr_tablerow(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_tablerow(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	/* TODO implement */
 
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	hoedown_buffer_replace_last(ob, "\\\\\n");
+	if (content) sd_buffer_put(ob, content->data, content->size);
+	sd_buffer_replace_last(ob, "\\\\\n");
 }
 
 static void
-rndr_tablecell(hoedown_buffer *ob, const hoedown_buffer *content, hoedown_table_flags flags, const hoedown_renderer_data *data)
+rndr_tablecell(sd_buffer *ob, const sd_buffer *content, sd_table_flags flags, const sd_renderer_data *data)
 {
 	/* TODO implement */
-	if (flags & HOEDOWN_TABLE_HEADER) {
-		HOEDOWN_BUFPUTSL(ob, "{\\bf ");
+	if (flags & UPSKIRT_TABLE_HEADER) {
+		UPSKIRT_BUFPUTSL(ob, "{\\bf ");
 	}
 
 	if (content)
-		hoedown_buffer_put(ob, content->data, content->size);
-	if (flags & HOEDOWN_TABLE_HEADER) {
-		hoedown_buffer_putc(ob, '}');
+		sd_buffer_put(ob, content->data, content->size);
+	if (flags & UPSKIRT_TABLE_HEADER) {
+		sd_buffer_putc(ob, '}');
 	}
 
-	HOEDOWN_BUFPUTSL(ob, " & ");
+	UPSKIRT_BUFPUTSL(ob, " & ");
 }
 
 static int
-rndr_superscript(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_superscript(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (!content || !content->size) return 0;
-	HOEDOWN_BUFPUTSL(ob, "\\textsuperscript{");
-	hoedown_buffer_put(ob, content->data, content->size);
-	HOEDOWN_BUFPUTSL(ob, "}");
+	UPSKIRT_BUFPUTSL(ob, "\\textsuperscript{");
+	sd_buffer_put(ob, content->data, content->size);
+	UPSKIRT_BUFPUTSL(ob, "}");
 	return 1;
 }
 
 static void
-rndr_normal_text(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_normal_text(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	if (content)
-		hoedown_buffer_put(ob, content->data, content->size);
+		sd_buffer_put(ob, content->data, content->size);
 }
 
 static void
-rndr_footnotes(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
+rndr_footnotes(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	/*TOOD fix that*/
 	/*scidown_latex_renderer_state *state = data->opaque;*/
-	hoedown_buffer_puts(ob, "\\begin{thebibliography}{00}\n");
-	if (content) hoedown_buffer_put(ob, content->data, content->size);
-	hoedown_buffer_puts(ob, "\\end{thebibliography}\n");
+	sd_buffer_puts(ob, "\\begin{thebibliography}{00}\n");
+	if (content) sd_buffer_put(ob, content->data, content->size);
+	sd_buffer_puts(ob, "\\end{thebibliography}\n");
 }
 
 static void
-rndr_footnote_def(hoedown_buffer *ob, const hoedown_buffer *content, unsigned int num, const hoedown_renderer_data *data)
+rndr_footnote_def(sd_buffer *ob, const sd_buffer *content, unsigned int num, const sd_renderer_data *data)
 {
 	/*TODO fix that*/
 	if (!content)
@@ -548,44 +548,44 @@ rndr_footnote_def(hoedown_buffer *ob, const hoedown_buffer *content, unsigned in
 	char * tmp = malloc(content->size+1);
 	tmp[content->size] = 0;
 	memcpy(tmp, content->data, content->size);
-	hoedown_buffer_printf(ob, "\\bibitem{fnref:%d}%s\n", num, tmp);
+	sd_buffer_printf(ob, "\\bibitem{fnref:%d}%s\n", num, tmp);
 	free(tmp);
 }
 
 static int
-rndr_footnote_ref(hoedown_buffer *ob, int num, const hoedown_renderer_data *data)
+rndr_footnote_ref(sd_buffer *ob, int num, const sd_renderer_data *data)
 {
 	if (num > 0)
-		hoedown_buffer_printf(ob, "\\cite{fnref:%d}", num);
+		sd_buffer_printf(ob, "\\cite{fnref:%d}", num);
 
 	return 1;
 }
 
 static int
-rndr_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data)
+rndr_math(sd_buffer *ob, const sd_buffer *text, int displaymode, const sd_renderer_data *data)
 {
-	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\[" : "\\("), 2);
+	sd_buffer_put(ob, (const uint8_t *)(displaymode ? "\\[" : "\\("), 2);
 
-	hoedown_buffer_put(ob, text->data, text->size);
-	hoedown_buffer_put(ob, (const uint8_t *)(displaymode ? "\\]" : "\\)"), 2);
+	sd_buffer_put(ob, text->data, text->size);
+	sd_buffer_put(ob, (const uint8_t *)(displaymode ? "\\]" : "\\)"), 2);
 	return 1;
 }
 
 static int
-rndr_eq_math(hoedown_buffer *ob, const hoedown_buffer *text, int displaymode, const hoedown_renderer_data *data)
+rndr_eq_math(sd_buffer *ob, const sd_buffer *text, int displaymode, const sd_renderer_data *data)
 {
-	hoedown_buffer_put(ob, text->data+1, text->size-1);
+	sd_buffer_put(ob, text->data+1, text->size-1);
 	return 1;
 }
 
 static void
-rndr_head(hoedown_buffer *ob, metadata * doc_meta, ext_definition * extension)
+rndr_head(sd_buffer *ob, metadata * doc_meta, ext_definition * extension)
 {
-	hoedown_buffer_printf(ob, "\\documentclass[%s, %dpt]{%s}\n",
+	sd_buffer_printf(ob, "\\documentclass[%s, %dpt]{%s}\n",
 	                      paper_to_latex(doc_meta->paper_size),
 	                      doc_meta->font_size,
 	                      class_to_string(doc_meta->doc_class));
-	hoedown_buffer_puts(ob, "\\usepackage[utf8]{inputenc}\n"
+	sd_buffer_puts(ob, "\\usepackage[utf8]{inputenc}\n"
 		                    "\\usepackage{cite}\n"
 		                    "\\usepackage{amsmath,amssymb,amsfonts}\n"
 		                    "\\usepackage{algorithmic}\n"
@@ -603,176 +603,176 @@ rndr_head(hoedown_buffer *ob, metadata * doc_meta, ext_definition * extension)
 						);
 
 	if (doc_meta->title){
-		hoedown_buffer_printf(ob, "\\title{%s}\n\\date{}\n", doc_meta->title);
+		sd_buffer_printf(ob, "\\title{%s}\n\\date{}\n", doc_meta->title);
 	}
 
 	if (doc_meta->authors)
 	{
-		hoedown_buffer_puts(ob, "\\author{");
+		sd_buffer_puts(ob, "\\author{");
 		Strings* it;
 		for (it = doc_meta->authors; it != NULL; it = it->next){
 			if (it->size == 1) {
-				hoedown_buffer_puts(ob, it->str);
+				sd_buffer_puts(ob, it->str);
 			} else {
-				hoedown_buffer_printf(ob, "%s \\and ", it->str);
+				sd_buffer_printf(ob, "%s \\and ", it->str);
 			}
 		}
-		hoedown_buffer_puts(ob, "}\n");
+		sd_buffer_puts(ob, "}\n");
 	}
 
 	if (extension && extension->extra_header)
 	{
-		hoedown_buffer_puts(ob, extension->extra_header);
+		sd_buffer_puts(ob, extension->extra_header);
 	}
 
-	hoedown_buffer_puts(ob,"\n\\begin{document}\n");
+	sd_buffer_puts(ob,"\n\\begin{document}\n");
 }
 
 static void
-rndr_title(hoedown_buffer *ob, const hoedown_buffer *content, const metadata *data)
+rndr_title(sd_buffer *ob, const sd_buffer *content, const metadata *data)
 {
 	if (data->doc_class == CLASS_BEAMER) {
-		hoedown_buffer_puts(ob, "\\frame{\\titlepage}");
+		sd_buffer_puts(ob, "\\frame{\\titlepage}");
 	} else {
-		hoedown_buffer_puts(ob, "\\maketitle");
+		sd_buffer_puts(ob, "\\maketitle");
 	}
 }
 
 static void
-rndr_authors(hoedown_buffer *ob, Strings *authors)
+rndr_authors(sd_buffer *ob, Strings *authors)
 {
 }
 
 static void
-rndr_affiliation(hoedown_buffer *ob, const hoedown_buffer *content,  const hoedown_renderer_data *data)
-{
-
-}
-
-static void
-rndr_keywords(hoedown_buffer *ob, const hoedown_buffer *content, const hoedown_renderer_data *data)
-{
-	hoedown_buffer_puts(ob, "\\keywords{");
-	hoedown_buffer_put(ob, content->data, content->size);
-	hoedown_buffer_puts(ob, "}\n");
-}
-
-static void
-rndr_begin(hoedown_buffer *ob, const hoedown_renderer_data *data)
+rndr_affiliation(sd_buffer *ob, const sd_buffer *content,  const sd_renderer_data *data)
 {
 
 }
 
 static void
-rndr_inner(hoedown_buffer *ob , const hoedown_renderer_data *data)
+rndr_keywords(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
+{
+	sd_buffer_puts(ob, "\\keywords{");
+	sd_buffer_put(ob, content->data, content->size);
+	sd_buffer_puts(ob, "}\n");
+}
+
+static void
+rndr_begin(sd_buffer *ob, const sd_renderer_data *data)
+{
+
+}
+
+static void
+rndr_inner(sd_buffer *ob , const sd_renderer_data *data)
 {
 	if (data->meta->doc_class == CLASS_BEAMER)
-		hoedown_buffer_puts(ob, "\\begin{frame}\n");
+		sd_buffer_puts(ob, "\\begin{frame}\n");
 }
 
 static void
-rndr_end(hoedown_buffer *ob, ext_definition * extension, const hoedown_renderer_data *data)
+rndr_end(sd_buffer *ob, ext_definition * extension, const sd_renderer_data *data)
 {
-	if (ob->size) hoedown_buffer_putc(ob, '\n');
+	if (ob->size) sd_buffer_putc(ob, '\n');
 
 	if (data->meta->doc_class == CLASS_BEAMER) {
-		hoedown_buffer_puts(ob, "\\end{frame}\n");
+		sd_buffer_puts(ob, "\\end{frame}\n");
 	}
 
 	if (extension && extension->extra_closing)
 	{
-		hoedown_buffer_puts(ob, extension->extra_closing);
+		sd_buffer_puts(ob, extension->extra_closing);
 	}
-	hoedown_buffer_puts(ob, "\\end{document}\n");
+	sd_buffer_puts(ob, "\\end{document}\n");
 }
 
 static void
-rndr_pagebreak(hoedown_buffer *ob)
+rndr_pagebreak(sd_buffer *ob)
 {
-	hoedown_buffer_puts(ob, "\\newpage\n");
+	sd_buffer_puts(ob, "\\newpage\n");
 }
 
 
 static void
-rndr_abstract(hoedown_buffer *ob){
-	hoedown_buffer_puts(ob, "\\begin{abstract}\n");
+rndr_abstract(sd_buffer *ob){
+	sd_buffer_puts(ob, "\\begin{abstract}\n");
 }
 
 static void
-rndr_close(hoedown_buffer *ob){
-	hoedown_buffer_puts(ob, "\\end{abstract}");
+rndr_close(sd_buffer *ob){
+	sd_buffer_puts(ob, "\\end{abstract}");
 }
 
-static int rndr_ref (hoedown_buffer *ob, char * id, int count)
+static int rndr_ref (sd_buffer *ob, char * id, int count)
 {
-	hoedown_buffer_printf(ob, "(\\ref{%s})", id);
+	sd_buffer_printf(ob, "(\\ref{%s})", id);
 	return 1;
 }
 
-static void rndr_open_equation(hoedown_buffer *ob, const char * ref, const hoedown_renderer_data *data)
+static void rndr_open_equation(sd_buffer *ob, const char * ref, const sd_renderer_data *data)
 {
-    hoedown_buffer_puts(ob,"\\begin{equation}\n");
+    sd_buffer_puts(ob,"\\begin{equation}\n");
 	if (ref){
-		hoedown_buffer_puts(ob,"\\label{");
-		hoedown_buffer_puts(ob, ref);
-		hoedown_buffer_puts(ob, "}\n");
+		sd_buffer_puts(ob,"\\label{");
+		sd_buffer_puts(ob, ref);
+		sd_buffer_puts(ob, "}\n");
 	}
 }
 
-static void rndr_close_equation(hoedown_buffer *ob, const hoedown_renderer_data *data)
+static void rndr_close_equation(sd_buffer *ob, const sd_renderer_data *data)
 {
 	/* scidown_latex_renderer_state *state = data->opaque; */
-	hoedown_buffer_puts(ob, "\n\\end{equation}");
+	sd_buffer_puts(ob, "\n\\end{equation}");
 }
 
-static void rndr_open_float(hoedown_buffer *ob, float_args args, const hoedown_renderer_data *data)
+static void rndr_open_float(sd_buffer *ob, float_args args, const sd_renderer_data *data)
 {
 	switch (args.type)
 	{
 	case FIGURE:
-		hoedown_buffer_puts(ob,  "\\begin{figure}[ht!]\n");
+		sd_buffer_puts(ob,  "\\begin{figure}[ht!]\n");
 		break;
 	case LISTING:
 		/**TODO make it better**/
-		hoedown_buffer_puts(ob,  "\\begin{program}\n");
+		sd_buffer_puts(ob,  "\\begin{program}\n");
 		break;
 	case TABLE:
 
-		hoedown_buffer_puts(ob,  "\\begin{table}\n");
+		sd_buffer_puts(ob,  "\\begin{table}\n");
 		break;
 	default:
 		break;
 	}
-	hoedown_buffer_puts(ob, "\\begin{center}\n");
+	sd_buffer_puts(ob, "\\begin{center}\n");
 }
 
-static void rnrd_close_float(hoedown_buffer *ob, float_args args, const hoedown_renderer_data *data)
+static void rnrd_close_float(sd_buffer *ob, float_args args, const sd_renderer_data *data)
 {
 	if (args.caption){
-		hoedown_buffer_puts(ob, "\\caption{");
-		hoedown_buffer_puts(ob, args.caption);
-		hoedown_buffer_puts(ob, "}\n");
+		sd_buffer_puts(ob, "\\caption{");
+		sd_buffer_puts(ob, args.caption);
+		sd_buffer_puts(ob, "}\n");
 	}
 	if (args.id)
 	{
-		hoedown_buffer_puts(ob, "\\label{");
-		hoedown_buffer_puts(ob, args.id);
-		hoedown_buffer_puts(ob, "}\n");
+		sd_buffer_puts(ob, "\\label{");
+		sd_buffer_puts(ob, args.id);
+		sd_buffer_puts(ob, "}\n");
 	}
 
-	hoedown_buffer_puts(ob,  "\\end{center}\n");
+	sd_buffer_puts(ob,  "\\end{center}\n");
 	switch (args.type)
 	{
 	case FIGURE:
-		hoedown_buffer_puts(ob,  "\\end{figure}\n");
+		sd_buffer_puts(ob,  "\\end{figure}\n");
 		break;
 	case LISTING:
 		/**TODO make it better**/
-		hoedown_buffer_puts(ob,  "\\end{program}\n");
+		sd_buffer_puts(ob,  "\\end{program}\n");
 		break;
 	case TABLE:
 
-		hoedown_buffer_puts(ob,  "\\end{table}\n");
+		sd_buffer_puts(ob,  "\\end{table}\n");
 		break;
 	default:
 		break;
@@ -781,15 +781,15 @@ static void rnrd_close_float(hoedown_buffer *ob, float_args args, const hoedown_
 
 
 static void
-rndr_toc(hoedown_buffer *ob, toc * tree, int numbering)
+rndr_toc(sd_buffer *ob, toc * tree, int numbering)
 {
-	hoedown_buffer_puts(ob, "\\tableofcontents");
+	sd_buffer_puts(ob, "\\tableofcontents");
 }
 
-hoedown_renderer *
+sd_renderer *
 scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level, localization local)
 {
-	static const hoedown_renderer cb_default = {
+	static const sd_renderer cb_default = {
 		NULL,
 
 		rndr_head,
@@ -853,10 +853,10 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 	};
 
 	scidown_latex_renderer_state *state;
-	hoedown_renderer *renderer;
+	sd_renderer *renderer;
 
 	/* Prepare the state pointer */
-	state = hoedown_malloc(sizeof(scidown_latex_renderer_state));
+	state = sd_malloc(sizeof(scidown_latex_renderer_state));
 	memset(state, 0x0, sizeof(scidown_latex_renderer_state));
 
 	state->flags = render_flags;
@@ -870,15 +870,15 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
   state->toc_data.nesting_level = nesting_level;
 
 	/* Prepare the renderer */
-	renderer = hoedown_malloc(sizeof(hoedown_renderer));
-	memcpy(renderer, &cb_default, sizeof(hoedown_renderer));
+	renderer = sd_malloc(sizeof(sd_renderer));
+	memcpy(renderer, &cb_default, sizeof(sd_renderer));
 
 	renderer->opaque = state;
 	return renderer;
 }
 
 void
-scidown_latex_renderer_free(hoedown_renderer *renderer)
+scidown_latex_renderer_free(sd_renderer *renderer)
 {
 	free(renderer->opaque);
 	free(renderer);

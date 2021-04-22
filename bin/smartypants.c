@@ -57,7 +57,7 @@ static int
 parse_short_option(char opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
-	long int num;
+	long int num = 0;
 	int isNum = next ? parseint(next, &num) : 0;
 
 	if (opt == 'h') {
@@ -98,7 +98,7 @@ static int
 parse_long_option(char *opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
-	long int num;
+	long int num = 0;
 	int isNum = next ? parseint(next, &num) : 0;
 
 	if (strcmp(opt, "help")==0) {
@@ -160,7 +160,7 @@ int main(int argc, char* argv[])
 	struct option_data data;
 	/*struct timespec start, end;*/
 	FILE *file = stdin;
-	hoedown_buffer *ib, *ob;
+	sd_buffer *ib, *ob;
 
 	/* Parse options */
 	data.basename = argv[0];
@@ -184,24 +184,24 @@ int main(int argc, char* argv[])
 	}
 
 	/* Read everything */
-	ib = hoedown_buffer_new(data.iunit);
+	ib = sd_buffer_new(data.iunit);
 
 	while (!feof(file)) {
 		if (ferror(file)) {
 			fprintf(stderr, "I/O errors found while reading input.\n");
 			return 5;
 		}
-		hoedown_buffer_grow(ib, ib->size + data.iunit);
+		sd_buffer_grow(ib, ib->size + data.iunit);
 		ib->size += fread(ib->data + ib->size, 1, data.iunit, file);
 	}
 
 	if (file != stdin) fclose(file);
 
 	/* Perform SmartyPants processing */
-	ob = hoedown_buffer_new(data.ounit);
+	ob = sd_buffer_new(data.ounit);
 
 	/*clock_gettime(CLOCK_MONOTONIC, &start);*/
-	hoedown_html_smartypants(ob, ib->data, ib->size);
+	sd_html_smartypants(ob, ib->data, ib->size);
 	/*clock_gettime(CLOCK_MONOTONIC, &end);*/
 
 	/* Write the result to stdout */
@@ -219,8 +219,8 @@ int main(int argc, char* argv[])
 	}
 
 	/* Cleanup */
-	hoedown_buffer_free(ib);
-	hoedown_buffer_free(ob);
+	sd_buffer_free(ib);
+	sd_buffer_free(ob);
 
 	if (ferror(stdout)) {
 		fprintf(stderr, "I/O errors found while writing output.\n");

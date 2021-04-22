@@ -7,7 +7,7 @@
 #include <assert.h>
 
 void
-hoedown_stack_init(hoedown_stack *st, size_t initial_size)
+sd_stack_init(sd_stack *st, size_t initial_size)
 {
 	assert(st);
 
@@ -17,11 +17,11 @@ hoedown_stack_init(hoedown_stack *st, size_t initial_size)
 	if (!initial_size)
 		initial_size = 8;
 
-	hoedown_stack_grow(st, initial_size);
+	sd_stack_grow(st, initial_size);
 }
 
 void
-hoedown_stack_uninit(hoedown_stack *st)
+sd_stack_uninit(sd_stack *st)
 {
 	assert(st);
 
@@ -29,14 +29,14 @@ hoedown_stack_uninit(hoedown_stack *st)
 }
 
 void
-hoedown_stack_grow(hoedown_stack *st, size_t neosz)
+sd_stack_grow(sd_stack *st, size_t neosz)
 {
 	assert(st);
 
 	if (st->asize >= neosz)
 		return;
 
-	st->item = hoedown_realloc(st->item, neosz * sizeof(void *));
+	st->item = sd_realloc(st->item, neosz * sizeof(void *));
 	memset(st->item + st->asize, 0x0, (neosz - st->asize) * sizeof(void *));
 
 	st->asize = neosz;
@@ -46,18 +46,18 @@ hoedown_stack_grow(hoedown_stack *st, size_t neosz)
 }
 
 void
-hoedown_stack_push(hoedown_stack *st, void *item)
+sd_stack_push(sd_stack *st, void *item)
 {
 	assert(st);
 
 	if (st->size >= st->asize)
-		hoedown_stack_grow(st, st->size * 2);
+		sd_stack_grow(st, st->size * 2);
 
 	st->item[st->size++] = item;
 }
 
 void *
-hoedown_stack_pop(hoedown_stack *st)
+sd_stack_pop(sd_stack *st)
 {
 	assert(st);
 
@@ -68,7 +68,7 @@ hoedown_stack_pop(hoedown_stack *st)
 }
 
 void *
-hoedown_stack_top(const hoedown_stack *st)
+sd_stack_top(const sd_stack *st)
 {
 	assert(st);
 

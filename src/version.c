@@ -1,9 +1,9 @@
 #include "version.h"
 
 void
-hoedown_version(int *major, int *minor, int *revision)
+sd_version(int *major, int *minor, int *revision)
 {
-	*major = HOEDOWN_VERSION_MAJOR;
-	*minor = HOEDOWN_VERSION_MINOR;
-	*revision = HOEDOWN_VERSION_REVISION;
+	*major = UPSKIRT_VERSION_MAJOR;
+	*minor = UPSKIRT_VERSION_MINOR;
+	*revision = UPSKIRT_VERSION_REVISION;
 }

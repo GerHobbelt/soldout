@@ -1,5 +1,5 @@
 /* ANSI-C code produced by gperf version 3.0.3 */
-/* Command-line: gperf -L ANSI-C -N hoedown_find_block_tag -c -C -E -S 1 --ignore-case -m100 html_block_names.gperf  */
+/* Command-line: gperf -L ANSI-C -N sd_find_block_tag -c -C -E -S 1 --ignore-case -m100 html_block_names.gperf  */
 /* Computed positions: -k'1,$' */
 
 #if !((' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
@@ -115,7 +115,7 @@ hash (register const char* str, register unsigned int len)
 }
 
 const char*
-hoedown_find_block_tag (register const char* str, register unsigned int len)
+sd_find_block_tag (register const char* str, register unsigned int len)
 {
     enum {
         TOTAL_KEYWORDS = 34,

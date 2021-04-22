@@ -1,6 +1,6 @@
 
-#ifndef __SCIDOWN_CONSTANT_H__
-#define __SCIDOWN_CONSTANT_H__
+#ifndef __UPSKIRT_CONSTANT_H__
+#define __UPSKIRT_CONSTANT_H__
 
 
 #define A0_STRING    "a0paper"

@@ -12,7 +12,7 @@
 #endif
 
 int
-hoedown_autolink_is_safe(const uint8_t *data, size_t size)
+sd_autolink_is_safe(const uint8_t *data, size_t size)
 {
 	static const size_t valid_uris_count = 6;
 	static const char *valid_uris[] = {
@@ -148,9 +148,9 @@ check_domain(uint8_t *data, size_t size, int allow_short)
 }
 
 size_t
-hoedown_autolink__www(
+sd_autolink__www(
 	size_t *rewind_p,
-	hoedown_buffer *link,
+	sd_buffer *link,
 	uint8_t *data,
 	size_t max_rewind,
 	size_t size,
@@ -177,16 +177,16 @@ hoedown_autolink__www(
 	if (link_end == 0)
 		return 0;
 	if (link)
-		hoedown_buffer_put(link, data, link_end);
+		sd_buffer_put(link, data, link_end);
 	*rewind_p = 0;
 
 	return (int)link_end;
 }
 
 size_t
-hoedown_autolink__email(
+sd_autolink__email(
 	size_t *rewind_p,
-	hoedown_buffer *link,
+	sd_buffer *link,
 	uint8_t *data,
 	size_t max_rewind,
 	size_t size,
@@ -233,16 +233,16 @@ hoedown_autolink__email(
 	if (link_end == 0)
 		return 0;
 	if (link)
-		hoedown_buffer_put(link, data - rewind, link_end + rewind);
+		sd_buffer_put(link, data - rewind, link_end + rewind);
 	*rewind_p = rewind;
 
 	return link_end;
 }
 
 size_t
-hoedown_autolink__url(
+sd_autolink__url(
 	size_t *rewind_p,
-	hoedown_buffer *link,
+	sd_buffer *link,
 	uint8_t *data,
 	size_t max_rewind,
 	size_t size,
@@ -256,7 +256,7 @@ hoedown_autolink__url(
 	while (rewind < max_rewind && isalpha(data[-1 - rewind]))
 		rewind++;
 
-	if (!hoedown_autolink_is_safe(data - rewind, size + rewind))
+	if (!sd_autolink_is_safe(data - rewind, size + rewind))
 		return 0;
 
 	link_end = strlen("://");
@@ -264,7 +264,7 @@ hoedown_autolink__url(
 	domain_len = check_domain(
 		data + link_end,
 		size - link_end,
-		flags & HOEDOWN_AUTOLINK_SHORT_DOMAINS);
+		flags & UPSKIRT_AUTOLINK_SHORT_DOMAINS);
 
 	if (domain_len == 0)
 		return 0;
@@ -278,7 +278,7 @@ hoedown_autolink__url(
 	if (link_end == 0)
 		return 0;
 	if (link)
-		hoedown_buffer_put(link, data - rewind, link_end + rewind);
+		sd_buffer_put(link, data - rewind, link_end + rewind);
 	*rewind_p = rewind;
 	return link_end;
 }

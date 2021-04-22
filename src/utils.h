@@ -14,7 +14,7 @@ extern "C" {
  * CONSTANTS *
  *************/
 
-typedef enum scidown_render_flags {
+typedef enum sd_render_flags {
 	UPSKIRT_RENDER_SKIP_HTML  = (1 << 0),
   	UPSKIRT_RENDER_ESCAPE     = (1 << 1),
 	UPSKIRT_RENDER_HARD_WRAP  = (1 << 2),
@@ -24,13 +24,13 @@ typedef enum scidown_render_flags {
 	UPSKIRT_RENDER_CHARTER    = (1 << 5),
 	UPSKIRT_RENDER_GNUPLOT    = (1 << 6),
 	UPSKIRT_RENDER_CSS        = (1 << 7),
-} scidown_render_flags;
+} sd_render_flags;
 
-typedef enum scidown_render_tag {
+typedef enum sd_render_tag {
 	UPSKIRT_RENDER_TAG_NONE = 0,
 	UPSKIRT_RENDER_TAG_OPEN,
 	UPSKIRT_RENDER_TAG_CLOSE
-} scidown_render_tag;
+} sd_render_tag;
 
 
 /*********

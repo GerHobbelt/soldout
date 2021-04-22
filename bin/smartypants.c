@@ -27,7 +27,7 @@ print_help(const char *basename)
 	print_option('i', "input-unit=N", "Reading block size. Default is " str(DEF_IUNIT) ".");
 	print_option('o', "output-unit=N", "Writing block size. Default is " str(DEF_OUNIT) ".");
 	print_option('h', "help", "Print this help text.");
-	print_option('v', "version", "Print Hoedown version.");
+	print_option('v', "version", "Print Upskirt version.");
 	printf("\n");
 
 	/* ending */

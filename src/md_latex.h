@@ -11,7 +11,7 @@
 extern "C" {
 #endif
 
-struct scidown_latex_renderer_state {
+struct sd_latex_renderer_state {
 	void *opaque;
 
 	struct {
@@ -21,14 +21,14 @@ struct scidown_latex_renderer_state {
 		int nesting_level;
 	} toc_data;
 
-	scidown_render_flags flags;
+	sd_render_flags flags;
 	html_counter counter;
 	localization localization;
 
 	/* extra callbacks */
 	void (*link_attributes)(sd_buffer *ob, const sd_buffer *url, const sd_renderer_data *data);
 };
-typedef struct scidown_latex_renderer_state scidown_latex_renderer_state;
+typedef struct sd_latex_renderer_state sd_latex_renderer_state;
 
 
 /*************
@@ -36,21 +36,21 @@ typedef struct scidown_latex_renderer_state scidown_latex_renderer_state;
  *************/
 
 /* sd_html_smartypants: process an HTML snippet using SmartyPants for smart punctuation */
-void scidown_latex_smartypants(sd_buffer *ob, const uint8_t *data, size_t size);
+void sd_latex_smartypants(sd_buffer *ob, const uint8_t *data, size_t size);
 
 /* sd_html_is_tag: checks if data starts with a specific tag, returns the tag type or NONE */
-scidown_render_tag scidown_latex_is_tag(const uint8_t *data, size_t size, const char *tagname);
+sd_render_tag sd_latex_is_tag(const uint8_t *data, size_t size, const char *tagname);
 
 
 /* sd_html_renderer_new: allocates a regular HTML renderer */
-sd_renderer *scidown_latex_renderer_new(
-	scidown_render_flags render_flags,
+sd_renderer *sd_latex_renderer_new(
+	sd_render_flags render_flags,
 	int nesting_level,
 	localization local
 ) __attribute__ ((malloc));
 
 /* sd_html_renderer_free: deallocate an HTML renderer */
-void scidown_latex_renderer_free(sd_renderer *renderer);
+void sd_latex_renderer_free(sd_renderer *renderer);
 
 
 #ifdef __cplusplus

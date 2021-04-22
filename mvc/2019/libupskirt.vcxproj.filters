@@ -166,19 +166,16 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\upskirt.def">
-      <Filter>Extra</Filter>
-    </None>
     <None Include="..\..\src\charter\src\tinyexpr\Makefile">
       <Filter>Source Files\Charter\TinyExpr</Filter>
     </None>
     <None Include="..\..\src\charter\src\tinyexpr\README.md">
       <Filter>Source Files\Charter\TinyExpr</Filter>
     </None>
-    <None Include="..\..\hoedown.def">
+    <None Include="..\..\upskirt.def">
       <Filter>Extra</Filter>
     </None>
-    <None Include="..\..\hoedown.pro">
+    <None Include="..\..\upskirt.pro">
       <Filter>Extra</Filter>
     </None>
     <None Include="..\..\html_block_names.gperf">

@@ -1,8 +1,8 @@
 Scidown
 =======
 
-`Scidown` is a fork of [Hoedown](https://github.com/hoedown/hoedown),
-a c Markdown parser and *HTML* and *LaTeX* generator. `Scidown` however it parse not only Markdown but also Scidown (yep same name) that support many features useful for scientific and scholar publishing.
+`Scidown` is a fork of [Upskirt](https://github.com/upskirt/upskirt),
+a C Markdown parser and *HTML* and *LaTeX* generator. `Scidown` however it parse not only Markdown but also Scidown (yep same name) that support many features useful for scientific and scholar publishing.
 
 For more information on the syntax and example look at the **[wiki](https://github.com/Mandarancio/scidown/wiki)**.
 
@@ -19,7 +19,7 @@ Features
 
 Markdown Differences
 --------------------
-A part of the extension added to the language there is only one difference in the output generated from `scidown` and `hoedown` of a standard `markdown` document:
+A part of the extension added to the language there is only one difference in the output generated from `scidown` and `upskirt` of a standard `markdown` document:
 
  * `# title` becomes `<h2>title</h2>` instead of `<h1>`
  * `## subtitle` becomes `<h3>subtitle</h3>` instead of `<h2>`

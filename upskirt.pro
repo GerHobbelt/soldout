@@ -5,7 +5,7 @@
 #-------------------------------------------------
 
 TEMPLATE = lib
-TARGET = hoedown
+TARGET = upskirt
 
 # Use common project definitions
 include(../../common.pri)

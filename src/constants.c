@@ -577,7 +577,7 @@ paper_to_gtkstr (scidow_paper_size size)
 }
 
 
-scidown_doc_class
+sd_doc_class
   string_to_class(char *str) {
   if(!str)
     return CLASS_ARTICLE;
@@ -603,7 +603,7 @@ scidown_doc_class
 }
 
 const char *
-class_to_string(scidown_doc_class cls) {
+class_to_string(sd_doc_class cls) {
   switch(cls) {
   case CLASS_PROC:
     return C_PRO_STRING;

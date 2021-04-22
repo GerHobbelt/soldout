@@ -10,7 +10,7 @@ import unittest
 
 TEST_ROOT = os.path.dirname(__file__)
 PROJECT_ROOT = os.path.dirname(TEST_ROOT)
-HOEDOWN = [os.path.abspath(os.path.join(PROJECT_ROOT, 'hoedown'))]
+UPSKIRT = [os.path.abspath(os.path.join(PROJECT_ROOT, 'upskirt'))]
 TIDY = ['tidy', '--show-body-only', '1', '--show-warnings', '0',
         '--quiet', '1']
 CONFIG_PATH = os.path.join(TEST_ROOT, 'config.json')
@@ -46,7 +46,7 @@ class TestFailed(AssertionError):
 def _test_func(test_case):
     flags = test_case.get('flags') or []
     sd_proc = subprocess.Popen(
-        HOEDOWN + flags + [os.path.join(TEST_ROOT, test_case['input'])],
+        UPSKIRT + flags + [os.path.join(TEST_ROOT, test_case['input'])],
         stdout=subprocess.PIPE,
     )
     stdoutdata = sd_proc.communicate()[0]

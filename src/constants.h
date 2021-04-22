@@ -125,7 +125,7 @@
 #define C_BEA_STRING "beamer"
 
 
-typedef enum scidown_paper_size {
+typedef enum sd_paper_size {
 	A0PAPER,
 	A1PAPER,
 	A2PAPER,
@@ -166,7 +166,7 @@ typedef enum scidown_paper_size {
 	LEGALPAPER
 } scidow_paper_size;
 
-typedef enum scidown_doc_class {
+typedef enum sd_doc_class {
     CLASS_PROC,
     CLASS_ARTICLE,
     CLASS_BOOK,
@@ -175,7 +175,7 @@ typedef enum scidown_doc_class {
     CLASS_SLIDES,
     CLASS_MEMOIR,
     CLASS_BEAMER
-} scidown_doc_class;
+} sd_doc_class;
 
 scidow_paper_size latex_to_paper  (char *            str);
 const char*             paper_to_latex  (scidow_paper_size size);
@@ -185,7 +185,7 @@ scidow_paper_size gtkstr_to_paper (char *            str);
 const char*             paper_to_gtkstr (scidow_paper_size size);
 
 
-scidown_doc_class string_to_class (char *            str);
-const char*             class_to_string (scidown_doc_class cls);
+sd_doc_class string_to_class (char *            str);
+const char*             class_to_string (sd_doc_class cls);
 
 #endif

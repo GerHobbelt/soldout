@@ -1,18 +1,18 @@
 {
-  "name": "hoedown",
+  "name": "upskirt",
   "version": "3.1.0",
   "summary": "Standards compliant, fast, secure markdown processing library in C. A fork of sundown.",
-  "homepage": "https://github.com/rschiang/hoedown",
+  "homepage": "https://github.com/rschiang/upskirt",
   "license": "MIT",
   "authors": {
     "Natacha Porte": "",
     "Vincent Marti": "",
-    "Devin Torres and the hoedown authors": "devin@devintorr.es",
+    "Devin Torres and the upskirt authors": "devin@devintorr.es",
     "Tzu-ping Chung (podspec)": "uranusjr@gmail.com",
     "Poren Chiang (extensions)": "ren.chiang@gmail.com"
   },
   "source": {
-    "git": "https://github.com/rschiang/hoedown.git",
+    "git": "https://github.com/rschiang/upskirt.git",
     "branch": "dev"
   },
   "requires_arc": false,

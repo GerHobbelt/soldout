@@ -100,7 +100,7 @@ print_help(const char *basename)
 	printf("Usage: %s [OPTION]... [FILE]\n\n", basename);
 
 	/* description */
-	printf("Process the Markdown in FILE (or standard input) and render it to standard output, using the Hoedown library. "
+	printf("Process the Markdown in FILE (or standard input) and render it to standard output, using the Upskirt library. "
 	       "Parsing and rendering can be customized through the options below. The default is to parse pure markdown and output HTML.\n\n");
 
 	/* main options */
@@ -116,7 +116,7 @@ print_help(const char *basename)
 	print_option('i', "input-unit=N", "Reading block size. Default is " str(DEF_IUNIT) ".");
 	print_option('o', "output-unit=N", "Writing block size. Default is " str(DEF_OUNIT) ".");
 	print_option('h', "help", "Print this help text.");
-	print_option('v', "version", "Print Hoedown version.");
+	print_option('v', "version", "Print Upskirt version.");
 	printf("\n");
 
 	/* extensions */
@@ -166,7 +166,7 @@ struct option_data {
 	/* renderer */
 	enum renderer_type renderer;
 	int toc_level;
-	scidown_render_flags render_flags;
+	sd_render_flags render_flags;
 
 	/* parsing */
 	sd_extensions extensions;
@@ -435,7 +435,7 @@ int main(int argc, char* argv[])
 	else if (data.renderer == RENDERER_HTML_TOC)
 		renderer = sd_html_toc_renderer_new(data.toc_level, get_local());
 	else if (data.renderer == RENDERER_LATEX)
-		renderer = scidown_latex_renderer_new(data.render_flags, data.toc_level, get_local());
+		renderer = sd_latex_renderer_new(data.render_flags, data.toc_level, get_local());
 	renderer_free = sd_html_renderer_free;
 
 	/* Perform Markdown rendering */

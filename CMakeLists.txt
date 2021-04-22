@@ -5,10 +5,10 @@ if(${CMAKE_VERSION} VERSION_LESS 3.12)
 endif()
 
 # Define project
-project(hoedown VERSION 3.0.7 LANGUAGES C)
+project(upskirt VERSION 3.0.7 LANGUAGES C)
 
 # Export library
-add_library(hoedown STATIC
+add_library(upskirt STATIC
     # Sources
     src/autolink.c
     src/buffer.c
@@ -29,7 +29,7 @@ add_library(hoedown STATIC
     src/stack.h
     src/version.h
 )
-target_include_directories(hoedown INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src")
+target_include_directories(upskirt INTERFACE "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 # Alias to namespaced variant
-add_library(Hoedown::Hoedown ALIAS hoedown)
+add_library(Upskirt::Upskirt ALIAS upskirt)

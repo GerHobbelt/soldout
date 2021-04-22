@@ -1,4 +1,4 @@
-/* version.h - holds Hoedown's version */
+/* version.h - holds Upskirt's version */
 
 #ifndef UPSKIRT_VERSION_H
 #define UPSKIRT_VERSION_H
@@ -22,7 +22,7 @@ extern "C" {
  * FUNCTIONS *
  *************/
 
-/* sd_version: retrieve Hoedown's version numbers */
+/* sd_version: retrieve Upskirt's version numbers */
 void sd_version(int *major, int *minor, int *revision);
 
 

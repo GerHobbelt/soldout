@@ -25,7 +25,7 @@ struct sd_html_renderer_state {
 		int nesting_level;
 	} toc_data;
 
-	scidown_render_flags flags;
+	sd_render_flags flags;
 	html_counter counter;
 	localization localization;
 
@@ -46,12 +46,12 @@ int parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag);
 void sd_html_smartypants(sd_buffer *ob, const uint8_t *data, size_t size);
 
 /* sd_html_is_tag: checks if data starts with a specific tag, returns the tag type or NONE */
-scidown_render_tag sd_html_is_tag(const uint8_t *data, size_t size, const char *tagname);
+sd_render_tag sd_html_is_tag(const uint8_t *data, size_t size, const char *tagname);
 
 
 /* sd_html_renderer_new: allocates a regular HTML renderer */
 sd_renderer *sd_html_renderer_new(
-	scidown_render_flags render_flags,
+	sd_render_flags render_flags,
 	int nesting_level,
 	localization local
 ) __attribute__ ((malloc));

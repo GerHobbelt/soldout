@@ -4,7 +4,6 @@ EXPORTS
 	sd_autolink__url
 	sd_autolink__www
 	sd_autolink_is_safe
-	sd_bufcstr
 	sd_buffer_cstr
 	sd_buffer_eq
 	sd_buffer_eqs
@@ -21,17 +20,6 @@ EXPORTS
 	sd_buffer_set
 	sd_buffer_sets
 	sd_buffer_slurp
-	sd_bufgrow
-	sd_bufnew
-	sd_bufnewcb
-	sd_bufprefix
-	sd_bufprintf
-	sd_bufput 
-	sd_bufputc
-	sd_bufputs
-	sd_bufrelease
-	sd_bufreset
-	sd_bufslurp
 	sd_document_free
 	sd_document_new
 	sd_document_render
@@ -43,9 +31,6 @@ EXPORTS
 	sd_html_renderer_new
 	sd_html_smartypants
 	sd_html_toc_renderer_new
-	sd_markdown_free
-	sd_markdown_new
-	sd_markdown_render
 	sd_stack_grow
 	sd_stack_init
 	sd_stack_pop
@@ -53,7 +38,3 @@ EXPORTS
 	sd_stack_top
 	sd_stack_uninit
 	sd_version
-	sdhtml_renderer
-	sdhtml_smartypants
-	sdhtml_toc_renderer
-	

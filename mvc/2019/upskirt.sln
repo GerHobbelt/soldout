@@ -7,50 +7,40 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "upskirt", "upskirt.vcxproj"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libupskirt", "libupskirt.vcxproj", "{BEF78878-99B5-47FC-AE1B-210EDF9643F8}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libupskirtDLL", "libupskirtDLL.vcxproj", "{F099715B-7AF7-499F-BE80-4DFD234E0C12}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
 		Debug|x64 = Debug|x64
-		DebugDll|Win32 = DebugDll|Win32
-		DebugDll|x64 = DebugDll|x64
 		Release|Win32 = Release|Win32
 		Release|x64 = Release|x64
-		ReleaseDll|Win32 = ReleaseDll|Win32
-		ReleaseDll|x64 = ReleaseDll|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Debug|Win32.ActiveCfg = Debug|Win32
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Debug|Win32.Build.0 = Debug|Win32
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Debug|x64.ActiveCfg = Debug|x64
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Debug|x64.Build.0 = Debug|x64
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.DebugDll|Win32.ActiveCfg = Debug|Win32
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.DebugDll|Win32.Build.0 = Debug|Win32
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.DebugDll|x64.ActiveCfg = Debug|x64
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.DebugDll|x64.Build.0 = Debug|x64
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Release|Win32.ActiveCfg = Release|Win32
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Release|Win32.Build.0 = Release|Win32
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Release|x64.ActiveCfg = Release|x64
 		{17794A55-DE45-431F-BAEE-B92226BF831E}.Release|x64.Build.0 = Release|x64
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.ReleaseDll|Win32.ActiveCfg = Release|Win32
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.ReleaseDll|Win32.Build.0 = Release|Win32
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.ReleaseDll|x64.ActiveCfg = Release|x64
-		{17794A55-DE45-431F-BAEE-B92226BF831E}.ReleaseDll|x64.Build.0 = Release|x64
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Debug|Win32.ActiveCfg = Debug|Win32
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Debug|Win32.Build.0 = Debug|Win32
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Debug|x64.ActiveCfg = Debug|x64
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Debug|x64.Build.0 = Debug|x64
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.DebugDll|Win32.ActiveCfg = DebugDll|Win32
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.DebugDll|Win32.Build.0 = DebugDll|Win32
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.DebugDll|x64.ActiveCfg = DebugDll|x64
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.DebugDll|x64.Build.0 = DebugDll|x64
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Release|Win32.ActiveCfg = Release|Win32
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Release|Win32.Build.0 = Release|Win32
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Release|x64.ActiveCfg = Release|x64
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Release|x64.Build.0 = Release|x64
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.ReleaseDll|Win32.ActiveCfg = ReleaseDll|Win32
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.ReleaseDll|Win32.Build.0 = ReleaseDll|Win32
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.ReleaseDll|x64.ActiveCfg = ReleaseDll|x64
-		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.ReleaseDll|x64.Build.0 = ReleaseDll|x64
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Debug|Win32.ActiveCfg = Debug|Win32
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Debug|Win32.Build.0 = Debug|Win32
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Debug|x64.ActiveCfg = Debug|x64
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Debug|x64.Build.0 = Debug|x64
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Release|Win32.ActiveCfg = Release|Win32
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Release|Win32.Build.0 = Release|Win32
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Release|x64.ActiveCfg = Release|x64
+		{F099715B-7AF7-499F-BE80-4DFD234E0C12}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

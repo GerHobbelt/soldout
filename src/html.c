@@ -176,7 +176,7 @@ parse_at_size(const uint8_t *data, int *out_w, int *out_h, const char *tag)
 	}
 }
 
-scidown_render_tag
+sd_render_tag
 sd_html_is_tag(const uint8_t *data, size_t size, const char *tagname)
 {
 	size_t i;
@@ -944,7 +944,7 @@ rndr_keywords(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *d
 }
 
 static void
-rndr_begin(sd_buffer *ob,  const sd_renderer_data *data)
+rndr_begin(sd_buffer *ob, const sd_renderer_data *data)
 {
 	if (data->meta->doc_class == CLASS_BEAMER) {
 		if (data->meta->title || data->meta->authors || data->meta->affiliation) {
@@ -1252,8 +1252,8 @@ sd_html_toc_renderer_new(int nesting_level, localization local)
 		rndr_superscript,
 		NULL,
 		NULL,
-		rndr_ruby,
 		NULL,
+		rndr_ruby,
 		NULL,
 		NULL,
 
@@ -1288,7 +1288,7 @@ sd_html_toc_renderer_new(int nesting_level, localization local)
 }
 
 sd_renderer *
-sd_html_renderer_new(scidown_render_flags render_flags, int nesting_level, localization local)
+sd_html_renderer_new(sd_render_flags render_flags, int nesting_level, localization local)
 {
 	static const sd_renderer cb_default = {
 		NULL,
@@ -1323,7 +1323,7 @@ sd_html_renderer_new(scidown_render_flags render_flags, int nesting_level, local
 		rndr_tablecell,
 		rndr_footnotes,
 		rndr_footnote_def,
-		rndr_raw_block,
+		rndr_raw_block, /* html */
 		rndr_toc,
 
 		rndr_autolink,
@@ -1342,9 +1342,9 @@ sd_html_renderer_new(scidown_render_flags render_flags, int nesting_level, local
 		rndr_superscript,
 		rndr_footnote_ref,
 		rndr_math,
-		rndr_math,
-		rndr_ref,
+		rndr_math, /* eq_math */
 		rndr_ruby,
+		rndr_ref,
 		rndr_raw_html,
 
 		NULL,
@@ -1369,7 +1369,6 @@ sd_html_renderer_new(scidown_render_flags render_flags, int nesting_level, local
 	state->counter.table = 0;
 
 	state->localization = local;
-
 
 	state->toc_data.nesting_level = nesting_level;
 

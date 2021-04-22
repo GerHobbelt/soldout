@@ -106,7 +106,7 @@ typedef struct metadata {
 	char              *style;
 	char              *affiliation;
 	scidow_paper_size  paper_size;
-	scidown_doc_class  doc_class;
+	sd_doc_class  doc_class;
 	int                font_size;
 	int                numbering;
 } metadata;

@@ -12,8 +12,8 @@
 
 #define MAX_FILE_SIZE 1000000
 
-scidown_render_tag
-scidown_latex_is_tag(const uint8_t *data, size_t size, const char *tagname)
+sd_render_tag
+sd_latex_is_tag(const uint8_t *data, size_t size, const char *tagname)
 {
 	size_t i;
 	int closed = 0;
@@ -57,7 +57,7 @@ static void escape_href(sd_buffer *ob, const uint8_t *source, size_t length)
 static int
 rndr_autolink(sd_buffer *ob, const sd_buffer *link, sd_autolink_type type, const sd_renderer_data *data)
 {
-	scidown_latex_renderer_state *state = data->opaque;
+	sd_latex_renderer_state *state = data->opaque;
 
 	if (!link || !link->size)
 		return 0;
@@ -96,8 +96,7 @@ rndr_blockcode(sd_buffer *ob, const sd_buffer *text, const sd_buffer *lang, cons
 {
 	if (ob->size) sd_buffer_putc(ob, '\n');
 
-
-    scidown_latex_renderer_state *state = data->opaque;
+    sd_latex_renderer_state *state = data->opaque;
 	if (lang && (state->flags & UPSKIRT_RENDER_CHARTER) != 0 && sd_buffer_eqs(lang, "charter") != 0){
 		if (text){
 
@@ -225,6 +224,18 @@ rndr_quote(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data
 }
 
 static int
+rndr_cite(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
+{
+	if (!content || !content->size)
+		return 0;
+
+	/* TODO implement */
+	sd_buffer_put(ob, content->data, content->size);
+
+	return 1;
+}
+
+static int
 rndr_linebreak(sd_buffer *ob, const sd_renderer_data *data)
 {
 	sd_buffer_puts(ob, "\n");
@@ -269,7 +280,7 @@ rndr_header(sd_buffer *ob, const sd_buffer *content, int level, const sd_rendere
 static int
 rndr_link(sd_buffer *ob, const sd_buffer *content, const sd_buffer *link, const sd_buffer *title, const sd_renderer_data *data)
 {
-	scidown_latex_renderer_state *state = data->opaque;
+	sd_latex_renderer_state *state = data->opaque;
 
 	UPSKIRT_BUFPUTSL(ob, "\\href{");
 
@@ -319,7 +330,7 @@ rndr_listitem(sd_buffer *ob, const sd_buffer *content, sd_list_flags flags, cons
 static void
 rndr_paragraph(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
-	scidown_latex_renderer_state *state = data->opaque;
+	sd_latex_renderer_state *state = data->opaque;
 	size_t i = 0;
 
 	if (ob->size) sd_buffer_puts(ob, "\n");
@@ -411,9 +422,7 @@ rndr_hrule(sd_buffer *ob, const sd_renderer_data *data)
 static int
 rndr_image(sd_buffer *ob, const sd_buffer *link, const sd_buffer *title, const sd_buffer *alt, const sd_renderer_data *data)
 {
-	/*scidown_latex_renderer_state *state = data->opaque;*/
 	if (!link || !link->size) return 0;
-
 
 	UPSKIRT_BUFPUTSL(ob, "\\includegraphics[width=\\linewidth]{");
 	escape_href(ob, link->data, link->size);
@@ -425,7 +434,7 @@ rndr_image(sd_buffer *ob, const sd_buffer *link, const sd_buffer *title, const s
 static int
 rndr_raw_html(sd_buffer *ob, const sd_buffer *text, const sd_renderer_data *data)
 {
-	scidown_latex_renderer_state *state = data->opaque;
+	sd_latex_renderer_state *state = data->opaque;
 
 	/* ESCAPE overrides SKIP_HTML. It doesn't look to see if
 	 * there are any valid tags, just escapes all of them. */
@@ -442,9 +451,9 @@ rndr_raw_html(sd_buffer *ob, const sd_buffer *text, const sd_renderer_data *data
 }
 
 static void
-rndr_table(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data,  sd_table_flags *flags, int cols)
+rndr_table(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data, sd_table_flags *flags, int cols)
 {
-	if (ob->size) sd_buffer_putc(ob, '\n');
+    if (ob->size) sd_buffer_putc(ob, '\n');
 	UPSKIRT_BUFPUTSL(ob, "\\begin{tabular}{");
 	int i;
 	for (i = 0;i < cols;i++)
@@ -466,7 +475,6 @@ rndr_table(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data
 	sd_buffer_puts(ob, " | }\n\\hline\n");
     sd_buffer_put(ob, content->data, content->size);
     UPSKIRT_BUFPUTSL(ob, "\\hline\n\\end{tabular}\n");
-
 }
 
 static void
@@ -532,7 +540,7 @@ static void
 rndr_footnotes(sd_buffer *ob, const sd_buffer *content, const sd_renderer_data *data)
 {
 	/*TOOD fix that*/
-	/*scidown_latex_renderer_state *state = data->opaque;*/
+	/*sd_latex_renderer_state *state = data->opaque;*/
 	sd_buffer_puts(ob, "\\begin{thebibliography}{00}\n");
 	if (content) sd_buffer_put(ob, content->data, content->size);
 	sd_buffer_puts(ob, "\\end{thebibliography}\n");
@@ -553,7 +561,7 @@ rndr_footnote_def(sd_buffer *ob, const sd_buffer *content, unsigned int num, con
 }
 
 static int
-rndr_footnote_ref(sd_buffer *ob, int num, const sd_renderer_data *data)
+rndr_footnote_ref(sd_buffer *ob, int num, int is_crossref, const sd_renderer_data *data)
 {
 	if (num > 0)
 		sd_buffer_printf(ob, "\\cite{fnref:%d}", num);
@@ -575,6 +583,16 @@ static int
 rndr_eq_math(sd_buffer *ob, const sd_buffer *text, int displaymode, const sd_renderer_data *data)
 {
 	sd_buffer_put(ob, text->data+1, text->size-1);
+	return 1;
+}
+
+static int
+rndr_ruby(sd_buffer *ob, const sd_buffer *content, const sd_buffer *ruby, const sd_renderer_data *data)
+{
+	if (!content || !content->size) return 0;
+
+	/* TODO implement */
+	sd_buffer_put(ob, content->data, content->size);
 	return 1;
 }
 
@@ -664,7 +682,7 @@ rndr_begin(sd_buffer *ob, const sd_renderer_data *data)
 }
 
 static void
-rndr_inner(sd_buffer *ob , const sd_renderer_data *data)
+rndr_inner(sd_buffer *ob, const sd_renderer_data *data)
 {
 	if (data->meta->doc_class == CLASS_BEAMER)
 		sd_buffer_puts(ob, "\\begin{frame}\n");
@@ -721,7 +739,7 @@ static void rndr_open_equation(sd_buffer *ob, const char * ref, const sd_rendere
 
 static void rndr_close_equation(sd_buffer *ob, const sd_renderer_data *data)
 {
-	/* scidown_latex_renderer_state *state = data->opaque; */
+	/* sd_latex_renderer_state *state = data->opaque; */
 	sd_buffer_puts(ob, "\n\\end{equation}");
 }
 
@@ -787,7 +805,7 @@ rndr_toc(sd_buffer *ob, toc * tree, int numbering)
 }
 
 sd_renderer *
-scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level, localization local)
+sd_latex_renderer_new(sd_render_flags render_flags, int nesting_level, localization local)
 {
 	static const sd_renderer cb_default = {
 		NULL,
@@ -822,7 +840,7 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 		rndr_tablecell,
 		rndr_footnotes,
 		rndr_footnote_def,
-		rndr_raw_block,
+		rndr_raw_block, /* html */
 		rndr_toc,
 
 		rndr_autolink,
@@ -832,6 +850,7 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 		rndr_underline,
 		rndr_highlight,
 		rndr_quote,
+		rndr_cite,
 		rndr_image,
 		rndr_linebreak,
 		rndr_link,
@@ -840,7 +859,8 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 		rndr_superscript,
 		rndr_footnote_ref,
 		rndr_math,
-		rndr_eq_math,
+		rndr_math, /* eq_math */
+		rndr_ruby,
 		rndr_ref,
 		rndr_raw_html,
 
@@ -852,12 +872,12 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 		NULL,
 	};
 
-	scidown_latex_renderer_state *state;
+	sd_latex_renderer_state *state;
 	sd_renderer *renderer;
 
 	/* Prepare the state pointer */
-	state = sd_malloc(sizeof(scidown_latex_renderer_state));
-	memset(state, 0x0, sizeof(scidown_latex_renderer_state));
+	state = sd_malloc(sizeof(sd_latex_renderer_state));
+	memset(state, 0x0, sizeof(sd_latex_renderer_state));
 
 	state->flags = render_flags;
 	state->counter.figure = 0;
@@ -867,7 +887,7 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 
 	state->localization = local;
 
-  state->toc_data.nesting_level = nesting_level;
+	state->toc_data.nesting_level = nesting_level;
 
 	/* Prepare the renderer */
 	renderer = sd_malloc(sizeof(sd_renderer));
@@ -878,7 +898,7 @@ scidown_latex_renderer_new(scidown_render_flags render_flags, int nesting_level,
 }
 
 void
-scidown_latex_renderer_free(sd_renderer *renderer)
+sd_latex_renderer_free(sd_renderer *renderer)
 {
 	free(renderer->opaque);
 	free(renderer);

@@ -137,6 +137,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -150,6 +151,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -180,6 +182,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -199,6 +202,7 @@
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -226,37 +230,27 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\html\houdini.h" />
-    <ClInclude Include="..\..\html\html.h" />
+    <ClInclude Include="..\..\bin\common.h" />
     <ClInclude Include="..\..\src\autolink.h" />
     <ClInclude Include="..\..\src\buffer.h" />
-    <ClInclude Include="..\..\src\html_blocks.h" />
-    <ClInclude Include="..\..\src\markdown.h" />
     <ClInclude Include="..\..\src\stack.h" />
     <ClInclude Include="..\..\src\upskirt_dll_exports.h" />
     <ClInclude Include="..\upskirt_win32.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\bin\scidown.c" />
+    <ClCompile Include="..\..\bin\smartypants.c" />
     <ClCompile Include="..\..\examples\upskirt.c" />
-    <ClCompile Include="..\..\html\houdini_href_e.c" />
-    <ClCompile Include="..\..\html\houdini_html_e.c" />
-    <ClCompile Include="..\..\html\html.c" />
-    <ClCompile Include="..\..\src\autolink.c" />
-    <ClCompile Include="..\..\src\buffer.c" />
-    <ClCompile Include="..\..\src\markdown.c" />
-    <ClCompile Include="..\..\src\stack.c" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\html_block_names.txt" />
-    <None Include="..\..\README.markdown" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="libupskirt.vcxproj">
       <Project>{bef78878-99b5-47fc-ae1b-210edf9643f8}</Project>
     </ProjectReference>
-    <ProjectReference Include="smartypants.vcxproj">
-      <Project>{b682a9fc-8c10-ce85-1083-3c42ca82502d}</Project>
-    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\meson.build" />
+    <None Include="..\..\test\config.json" />
+    <None Include="..\..\test\runner.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

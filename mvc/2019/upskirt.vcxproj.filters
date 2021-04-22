@@ -12,28 +12,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\src\buffer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\markdown.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\html\html.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\autolink.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\stack.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\html\houdini_html_e.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\html\houdini_href_e.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\examples\upskirt.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bin\scidown.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\bin\smartypants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,22 +26,10 @@
     <ClInclude Include="..\..\src\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\markdown.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\html\html.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\autolink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\html_blocks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\html\houdini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\upskirt_dll_exports.h">
@@ -65,13 +38,19 @@
     <ClInclude Include="..\upskirt_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\bin\common.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\html_block_names.txt">
-      <Filter>Extra</Filter>
+    <None Include="..\..\test\config.json">
+      <Filter>Source Files</Filter>
     </None>
-    <None Include="..\..\README.markdown">
-      <Filter>Extra</Filter>
+    <None Include="..\..\test\runner.py">
+      <Filter>Source Files</Filter>
+    </None>
+    <None Include="..\..\meson.build">
+      <Filter>Source Files</Filter>
     </None>
   </ItemGroup>
 </Project>

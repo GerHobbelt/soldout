@@ -1,6 +1,6 @@
 #include "document.h"
 #include "html.h"
-#include "latex.h"
+#include "md_latex.h"
 
 #include "common.h"
 #include "utils.h"
@@ -78,7 +78,7 @@ static const char *negative_prefix = "no-";
 #define DEF_MAX_NESTING 16
 
 /* Get local info */
-localization get_local()
+static localization get_local()
 {
   localization local;
   local.figure = "Figure";
@@ -90,7 +90,7 @@ localization get_local()
 
 /* PRINT HELP */
 
-void
+static void
 print_help(const char *basename)
 {
 	size_t i;
@@ -173,7 +173,7 @@ struct option_data {
 	size_t max_nesting;
 };
 
-int
+static int
 parse_short_option(char opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
@@ -224,7 +224,7 @@ parse_short_option(char opt, char *next, void *opaque)
 	return 0;
 }
 
-int
+static int
 parse_category_option(char *opt, struct option_data *data)
 {
 	size_t i;
@@ -242,7 +242,7 @@ parse_category_option(char *opt, struct option_data *data)
 	return 0;
 }
 
-int
+static int
 parse_flag_option(char *opt, struct option_data *data)
 {
 	size_t i;
@@ -266,7 +266,7 @@ parse_flag_option(char *opt, struct option_data *data)
 	return 0;
 }
 
-int
+static int
 parse_negative_option(char *opt, struct option_data *data)
 {
 	size_t i;
@@ -300,7 +300,7 @@ parse_negative_option(char *opt, struct option_data *data)
 	return 0;
 }
 
-int
+static int
 parse_long_option(char *opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
@@ -361,7 +361,7 @@ parse_long_option(char *opt, char *next, void *opaque)
 	return 0;
 }
 
-int
+static int
 parse_argument(int argn, char *arg, int is_forced, void *opaque)
 {
 	struct option_data *data = opaque;
@@ -379,8 +379,11 @@ parse_argument(int argn, char *arg, int is_forced, void *opaque)
 
 /* MAIN LOGIC */
 
-int
-main(int argc, char **argv)
+#if defined(MONOLITHIC)
+int upskirt_main(int argc, char* argv[])
+#else
+int main(int argc, char* argv[])
+#endif
 {
 	struct option_data data;
 	clock_t t1, t2;

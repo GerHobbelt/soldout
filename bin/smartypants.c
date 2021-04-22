@@ -12,7 +12,7 @@
 
 /* PRINT HELP */
 
-void
+static void
 print_help(const char *basename)
 {
 	/* usage */
@@ -53,7 +53,7 @@ struct option_data {
 	const char *filename;
 };
 
-int
+static int
 parse_short_option(char opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
@@ -94,7 +94,7 @@ parse_short_option(char opt, char *next, void *opaque)
 	return 0;
 }
 
-int
+static int
 parse_long_option(char *opt, char *next, void *opaque)
 {
 	struct option_data *data = opaque;
@@ -133,7 +133,7 @@ parse_long_option(char *opt, char *next, void *opaque)
 	return 0;
 }
 
-int
+static int
 parse_argument(int argn, char *arg, int is_forced, void *opaque)
 {
 	struct option_data *data = opaque;
@@ -151,8 +151,11 @@ parse_argument(int argn, char *arg, int is_forced, void *opaque)
 
 /* MAIN LOGIC */
 
-int
-main(int argc, char **argv)
+#if defined(MONOLITHIC)
+int smartypants_main(int argc, char* argv[])
+#else
+int main(int argc, char* argv[])
+#endif
 {
 	struct option_data data;
 	/*struct timespec start, end;*/

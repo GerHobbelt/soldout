@@ -10,7 +10,7 @@
 
 #define count_of(arr) (sizeof(arr)/sizeof(0[arr]))
 
-int
+static int
 parseint(const char *string, long *result)
 {
 	char *end;
@@ -19,7 +19,7 @@ parseint(const char *string, long *result)
 	return !(*end || errno);
 }
 
-const char *
+static const char *
 strprefix(const char *str, const char *prefix)
 {
 	while (*prefix) {
@@ -29,7 +29,7 @@ strprefix(const char *str, const char *prefix)
 	return str;
 }
 
-void
+static void
 print_option(char short_opt, const char *long_opt, const char *description)
 {
 	if (short_opt)
@@ -40,13 +40,13 @@ print_option(char short_opt, const char *long_opt, const char *description)
 	printf("--%-13s  %s\n", long_opt, description);
 }
 
-void
+static void
 print_version()
 {
 	printf("Built with Hoedown " HOEDOWN_VERSION ".\n");
 }
 
-int
+static int
 parse_options(
 	int argc, char **argv,
 	int(*parse_short_option)(char opt, char *next, void *opaque),

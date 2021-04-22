@@ -6,14 +6,16 @@
 #include <stdio.h>
 #include <sys/types.h>
 #include <sys/stat.h>
-#include <unistd.h>
 
 #include "stack.h"
 
 #ifndef _MSC_VER
+#include <unistd.h>
 #include <strings.h>
 #else
+#include <direct.h>
 #define strncasecmp	_strnicmp
+#define S_ISREG(m)  (((m) & S_IFMT) == S_IFREG)
 #endif
 
 #define REF_TABLE_SIZE 8
@@ -1360,7 +1362,7 @@ char_link(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t offse
 			if (doc->md.footnote_ref)
 				ret = doc->md.footnote_ref(ob, fr->num, is_used, &doc->data);
 		} else if (doc->md.footnote_ref) {
-			ret = doc->md.footnote_ref(ob, -1, FALSE, &doc->data);
+			ret = doc->md.footnote_ref(ob, -1, 0, &doc->data);
 		}
 
 		goto cleanup;
@@ -2177,7 +2179,6 @@ parse_listitem(hoedown_buffer *ob, hoedown_document *doc, uint8_t *data, size_t 
 	if (doc->ext_flags & HOEDOWN_EXT_FENCED_CODE) {
 		if (is_codefence(data + beg, end - beg, NULL, NULL)) {
 			in_fence = 1;
-			fence_pre = beg;
 		}
 	}
 
@@ -2882,7 +2883,7 @@ parse_fl(
 {
 	size_t begin = 0;
 	size_t skip = 0;
-	float_args args = {};
+	float_args args = {0};
 	args.type = type;
 	args.caption = NULL;
 
@@ -2932,7 +2933,7 @@ parse_eq(
 {
 	size_t begin = 0;
 	size_t skip = 0;
-	float_args args = {};
+	float_args args = {0};
 	args.type = EQUATION;
 
 	if (data[0] == '(')
@@ -3670,7 +3671,7 @@ parse_yaml(const uint8_t *data, size_t size)
 			int j;
 			for (j = 0 ; j+i+1 < size && data[i+j+1] != ':' && data[i+j+1] != '\n'; j++){}
 			if (data[j+i+1] == ':'){
-				char type[j+3];
+				char type[1024];
 				memset(type, 0, j+3);
 				memcpy(type, data+i, j+1);
 				j += parse_keyword(type, meta, data+i+j+2, size - i - j - 2);

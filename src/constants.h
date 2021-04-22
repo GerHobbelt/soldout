@@ -178,14 +178,14 @@ typedef enum scidown_doc_class {
 } scidown_doc_class;
 
 scidow_paper_size latex_to_paper  (char *            str);
-char*             paper_to_latex  (scidow_paper_size size);
+const char*             paper_to_latex  (scidow_paper_size size);
 scidow_paper_size string_to_paper (char *            str);
-char*             paper_to_string (scidow_paper_size size);
+const char*             paper_to_string (scidow_paper_size size);
 scidow_paper_size gtkstr_to_paper (char *            str);
-char*             paper_to_gtkstr (scidow_paper_size size);
+const char*             paper_to_gtkstr (scidow_paper_size size);
 
 
 scidown_doc_class string_to_class (char *            str);
-char*             class_to_string (scidown_doc_class cls);
+const char*             class_to_string (scidown_doc_class cls);
 
 #endif

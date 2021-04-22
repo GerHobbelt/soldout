@@ -342,7 +342,7 @@ gtkstr_to_paper (char *            str)
   return A4PAPER;
 }
 
-char *
+const char *
 paper_to_latex(scidow_paper_size size) {
   switch(size) {
   case A0PAPER:
@@ -415,9 +415,10 @@ paper_to_latex(scidow_paper_size size) {
     // B43 and B169
     return A5_STRING;
   }
+  return NULL;
 }
 
-char*
+const char*
 paper_to_string (scidow_paper_size size)
 {
   switch(size) {
@@ -493,10 +494,11 @@ paper_to_string (scidow_paper_size size)
   case B169:
     return B169_STR;
   }
+  return NULL;
 }
 
 
-char*
+const char*
 paper_to_gtkstr (scidow_paper_size size)
 {
   switch(size) {
@@ -572,6 +574,7 @@ paper_to_gtkstr (scidow_paper_size size)
   case B169:
     return B169_STR;
   }
+  return NULL;
 }
 
 
@@ -600,7 +603,7 @@ scidown_doc_class
   return CLASS_ARTICLE;
 }
 
-char *
+const char *
 class_to_string(scidown_doc_class cls) {
   switch(cls) {
   case CLASS_PROC:

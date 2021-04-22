@@ -296,6 +296,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -317,6 +318,7 @@
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <MinimalRebuild>false</MinimalRebuild>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -356,6 +358,7 @@
       <AdditionalIncludeDirectories>..\src;..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>Default</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -371,6 +374,7 @@
       <AdditionalIncludeDirectories>..\src;..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAs>Default</CompileAs>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -401,6 +405,7 @@
       <AdditionalIncludeDirectories>..\src;..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -416,6 +421,7 @@
       <AdditionalIncludeDirectories>..\src;..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -453,6 +459,7 @@
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -480,6 +487,7 @@
       <EnableFiberSafeOptimizations>false</EnableFiberSafeOptimizations>
       <MinimalRebuild>false</MinimalRebuild>
       <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_MBCS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -529,6 +537,7 @@
       <AdditionalIncludeDirectories>..\src;..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -548,6 +557,7 @@
       <AdditionalIncludeDirectories>..\src;..\html;.;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
       <CompileAs>Default</CompileAs>
+      <PreprocessorDefinitions>MONOLITHIC;_CRT_SECURE_NO_WARNINGS;_WINDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>false</GenerateDebugInformation>
@@ -578,32 +588,74 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\html\houdini.h" />
-    <ClInclude Include="..\..\html\html.h" />
     <ClInclude Include="..\..\src\autolink.h" />
     <ClInclude Include="..\..\src\buffer.h" />
-    <ClInclude Include="..\..\src\html_blocks.h" />
-    <ClInclude Include="..\..\src\markdown.h" />
+    <ClInclude Include="..\..\src\charter\src\charter.h" />
+    <ClInclude Include="..\..\src\charter\src\charter_string.h" />
+    <ClInclude Include="..\..\src\charter\src\clist.h" />
+    <ClInclude Include="..\..\src\charter\src\csv_parser\csvparser.h" />
+    <ClInclude Include="..\..\src\charter\src\parser.h" />
+    <ClInclude Include="..\..\src\charter\src\renderer.h" />
+    <ClInclude Include="..\..\src\charter\src\svg_utils.h" />
+    <ClInclude Include="..\..\src\charter\src\tinyexpr\tinyexpr.h" />
+    <ClInclude Include="..\..\src\constants.h" />
+    <ClInclude Include="..\..\src\document.h" />
+    <ClInclude Include="..\..\src\escape.h" />
+    <ClInclude Include="..\..\src\html.h" />
+    <ClInclude Include="..\..\src\latex.h" />
+    <ClInclude Include="..\..\src\md_latex.h" />
     <ClInclude Include="..\..\src\stack.h" />
     <ClInclude Include="..\..\src\upskirt_dll_exports.h" />
+    <ClInclude Include="..\..\src\utils.h" />
+    <ClInclude Include="..\..\src\version.h" />
     <ClInclude Include="..\upskirt_win32.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\html\houdini_href_e.c" />
-    <ClCompile Include="..\..\html\houdini_html_e.c" />
-    <ClCompile Include="..\..\html\html.c" />
-    <ClCompile Include="..\..\html\html_smartypants.c" />
     <ClCompile Include="..\..\src\autolink.c" />
     <ClCompile Include="..\..\src\buffer.c" />
-    <ClCompile Include="..\..\src\markdown.c" />
+    <ClCompile Include="..\..\src\charter\src\charter.c" />
+    <ClCompile Include="..\..\src\charter\src\charter_string.c" />
+    <ClCompile Include="..\..\src\charter\src\clist.c" />
+    <ClCompile Include="..\..\src\charter\src\csv_parser\csvparser.c" />
+    <ClCompile Include="..\..\src\charter\src\latex.c" />
+    <ClCompile Include="..\..\src\charter\src\main_svg.c" />
+    <ClCompile Include="..\..\src\charter\src\main_tex.c" />
+    <ClCompile Include="..\..\src\charter\src\parser.c" />
+    <ClCompile Include="..\..\src\charter\src\svg.c" />
+    <ClCompile Include="..\..\src\charter\src\svg_utils.c" />
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\benchmark.c" />
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\repl.c" />
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\smoke.c" />
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\tinyexpr.c" />
+    <ClCompile Include="..\..\src\constants.c" />
+    <ClCompile Include="..\..\src\document.c" />
+    <ClCompile Include="..\..\src\escape.c" />
+    <ClCompile Include="..\..\src\html.c" />
+    <ClCompile Include="..\..\src\html_blocks.c" />
+    <ClCompile Include="..\..\src\html_smartypants.c" />
+    <ClCompile Include="..\..\src\md_latex.c" />
     <ClCompile Include="..\..\src\stack.c" />
+    <ClCompile Include="..\..\src\utils.c" />
+    <ClCompile Include="..\..\src\version.c" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\html_block_names.txt" />
-    <None Include="..\..\Makefile" />
-    <None Include="..\..\Makefile.win" />
-    <None Include="..\..\README.markdown" />
+    <None Include="..\..\hoedown.def" />
+    <None Include="..\..\hoedown.pro" />
+    <None Include="..\..\html_block_names.gperf" />
+    <None Include="..\..\LICENSE" />
+    <None Include="..\..\MANIFESTO.md" />
+    <None Include="..\..\meson.build" />
+    <None Include="..\..\README.md" />
+    <None Include="..\..\src\charter\src\tinyexpr\Makefile" />
+    <None Include="..\..\src\charter\src\tinyexpr\README.md" />
     <None Include="..\..\upskirt.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\html_article.png" />
+    <Image Include="..\..\html_report.png" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

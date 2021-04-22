@@ -1,13 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2013
-VisualStudioVersion = 12.0.31101.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31205.134
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "upskirt", "upskirt.vcxproj", "{17794A55-DE45-431F-BAEE-B92226BF831E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libupskirt", "libupskirt.vcxproj", "{BEF78878-99B5-47FC-AE1B-210EDF9643F8}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "smartypants", "smartypants.vcxproj", "{B682A9FC-8C10-CE85-1083-3C42CA82502D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -78,33 +76,11 @@ Global
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Upskirt|Win32.Build.0 = Upskirt|Win32
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Upskirt|x64.ActiveCfg = Upskirt|x64
 		{BEF78878-99B5-47FC-AE1B-210EDF9643F8}.Upskirt|x64.Build.0 = Upskirt|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Debug|Itanium.ActiveCfg = Debug|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Debug|Win32.ActiveCfg = Debug|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Debug|Win32.Build.0 = Debug|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Debug|x64.ActiveCfg = Debug|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Debug|x64.Build.0 = Debug|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.DebugDll|Itanium.ActiveCfg = Debug|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.DebugDll|Win32.ActiveCfg = Debug|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.DebugDll|Win32.Build.0 = Debug|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.DebugDll|x64.ActiveCfg = Debug|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.DebugDll|x64.Build.0 = Debug|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Release|Itanium.ActiveCfg = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Release|Win32.ActiveCfg = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Release|Win32.Build.0 = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Release|x64.ActiveCfg = Release|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Release|x64.Build.0 = Release|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.ReleaseDll|Itanium.ActiveCfg = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.ReleaseDll|Win32.ActiveCfg = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.ReleaseDll|Win32.Build.0 = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.ReleaseDll|x64.ActiveCfg = Release|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.ReleaseDll|x64.Build.0 = Release|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Upskirt|Itanium.ActiveCfg = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Upskirt|Win32.ActiveCfg = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Upskirt|Win32.Build.0 = Release|Win32
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Upskirt|x64.ActiveCfg = Release|x64
-		{B682A9FC-8C10-CE85-1083-3C42CA82502D}.Upskirt|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {22D40C18-DC04-4A9C-96D7-0C31821C2484}
 	EndGlobalSection
 EndGlobal

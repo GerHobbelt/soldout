@@ -10,18 +10,18 @@
     <Filter Include="Extra">
       <UniqueIdentifier>{85421aa8-c0a2-4772-9362-8ba3e101b2ae}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Charter">
+      <UniqueIdentifier>{c9ae783d-c1f3-4c44-b32b-416f369a3adc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Charter\TinyExpr">
+      <UniqueIdentifier>{0ae8c7de-3158-48dd-9439-63697fe8ec6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\CSV-parser">
+      <UniqueIdentifier>{0295fc2c-f01d-429a-abbb-8e418236d294}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\buffer.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\markdown.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\html\html.c">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\html\html_smartypants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\autolink.c">
@@ -30,33 +30,84 @@
     <ClCompile Include="..\..\src\stack.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\html\houdini_html_e.c">
+    <ClCompile Include="..\..\src\constants.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\html\houdini_href_e.c">
+    <ClCompile Include="..\..\src\document.c">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\escape.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\html.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\html_blocks.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\html_smartypants.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\utils.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\version.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\charter.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\charter_string.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\clist.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\latex.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\main_svg.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\main_tex.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\parser.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\svg.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\svg_utils.c">
+      <Filter>Source Files\Charter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\tinyexpr.c">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\csv_parser\csvparser.c">
+      <Filter>Source Files\CSV-parser</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\md_latex.c">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\benchmark.c">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\repl.c">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\charter\src\tinyexpr\smoke.c">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\buffer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\markdown.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\html\html.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\autolink.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\html_blocks.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\stack.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\html\houdini.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\upskirt_dll_exports.h">
@@ -65,22 +116,98 @@
     <ClInclude Include="..\upskirt_win32.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\constants.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\document.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\escape.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\html.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\latex.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\utils.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\version.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\charter.h">
+      <Filter>Source Files\Charter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\charter_string.h">
+      <Filter>Source Files\Charter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\clist.h">
+      <Filter>Source Files\Charter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\parser.h">
+      <Filter>Source Files\Charter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\renderer.h">
+      <Filter>Source Files\Charter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\svg_utils.h">
+      <Filter>Source Files\Charter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\tinyexpr\tinyexpr.h">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\charter\src\csv_parser\csvparser.h">
+      <Filter>Source Files\CSV-parser</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\md_latex.h">
+      <Filter>Source Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\html_block_names.txt">
-      <Filter>Extra</Filter>
-    </None>
-    <None Include="..\..\Makefile">
-      <Filter>Extra</Filter>
-    </None>
-    <None Include="..\..\Makefile.win">
-      <Filter>Extra</Filter>
-    </None>
-    <None Include="..\..\README.markdown">
-      <Filter>Extra</Filter>
-    </None>
     <None Include="..\..\upskirt.def">
       <Filter>Extra</Filter>
     </None>
+    <None Include="..\..\src\charter\src\tinyexpr\Makefile">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
+    </None>
+    <None Include="..\..\src\charter\src\tinyexpr\README.md">
+      <Filter>Source Files\Charter\TinyExpr</Filter>
+    </None>
+    <None Include="..\..\hoedown.def">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\..\hoedown.pro">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\..\html_block_names.gperf">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\..\LICENSE">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\..\MANIFESTO.md">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\..\meson.build">
+      <Filter>Extra</Filter>
+    </None>
+    <None Include="..\..\README.md">
+      <Filter>Extra</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="..\..\CMakeLists.txt">
+      <Filter>Extra</Filter>
+    </Text>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\html_article.png">
+      <Filter>Extra</Filter>
+    </Image>
+    <Image Include="..\..\html_report.png">
+      <Filter>Extra</Filter>
+    </Image>
   </ItemGroup>
 </Project>

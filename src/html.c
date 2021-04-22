@@ -10,6 +10,10 @@
 #include "charter/src/parser.h"
 #include "charter/src/renderer.h"
 
+#if defined(_MSC_VER)
+#define popen _popen
+#endif
+
 #define USE_XHTML(opt) (opt->flags & SCIDOWN_RENDER_USE_XHTML)
 #define MAX_FILE_SIZE 1000000
 

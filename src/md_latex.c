@@ -1,4 +1,4 @@
-#include "latex.h"
+#include "md_latex.h"
 
 #include <string.h>
 #include <stdlib.h>

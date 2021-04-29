@@ -443,9 +443,9 @@ int main(int argc, char* argv[])
 
 	ext_definition ext = {NULL, NULL};
 	if (data.renderer == RENDERER_HTML) {
-		ext.extra_header = "<link rel=\"stylesheet\" href=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.css\" crossorigin=\"anonymous\">\n"
-							"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/katex.min.js\" crossorigin=\"anonymous\"></script>\n"
-							"<script src=\"https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.9.0-alpha2/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>\n";
+		ext.extra_header = "<link rel=\"stylesheet\" href=\"https://cdn.jsdelivr.net/npm/katex@0.13.2/dist/katex.min.css\" crossorigin=\"anonymous\">\n"
+							"<script src=\"https://cdn.jsdelivr.net/npm/katex@0.13.2/dist/katex.min.js\" crossorigin=\"anonymous\"></script>\n"
+							"<script src=\"https://cdn.jsdelivr.net/npm/katex@0.13.2/dist/contrib/auto-render.min.js\" crossorigin=\"anonymous\"></script>\n";
 		ext.extra_closing = "<script>renderMathInElement(document.body);</script>\n";
 	}
 	document = sd_document_new(renderer, data.extensions,&ext, NULL, data.max_nesting);
@@ -462,6 +462,7 @@ int main(int argc, char* argv[])
 	/* Write the result to stdout */
 	(void)fwrite(ob->data, 1, ob->size, stdout);
 	sd_buffer_free(ob);
+	ob = NULL;
 
 	if (ferror(stdout)) {
 		fprintf(stderr, "I/O errors found while writing output.\n");

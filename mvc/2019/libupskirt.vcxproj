@@ -229,9 +229,7 @@
     <ClCompile Include="..\..\src\charter\src\parser.c" />
     <ClCompile Include="..\..\src\charter\src\svg.c" />
     <ClCompile Include="..\..\src\charter\src\svg_utils.c" />
-    <ClCompile Include="..\..\src\charter\src\tinyexpr\benchmark.c" />
     <ClCompile Include="..\..\src\charter\src\tinyexpr\repl.c" />
-    <ClCompile Include="..\..\src\charter\src\tinyexpr\smoke.c" />
     <ClCompile Include="..\..\src\charter\src\tinyexpr\tinyexpr.c" />
     <ClCompile Include="..\..\src\constants.c" />
     <ClCompile Include="..\..\src\document.c" />

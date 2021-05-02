@@ -152,7 +152,7 @@ print_help(const char *basename)
 /* OPTION PARSING */
 
 struct option_data {
-	char *basename;
+	const char *basename;
 	int done;
 
 	/* time reporting */
@@ -174,7 +174,7 @@ struct option_data {
 };
 
 static int
-parse_short_option(char opt, char *next, void *opaque)
+parse_short_option(char opt, const char *next, void *opaque)
 {
 	struct option_data *data = opaque;
 	long int num = 0;
@@ -225,7 +225,7 @@ parse_short_option(char opt, char *next, void *opaque)
 }
 
 static int
-parse_category_option(char *opt, struct option_data *data)
+parse_category_option(const char *opt, struct option_data *data)
 {
 	size_t i;
 	const char *name = strprefix(opt, category_prefix);
@@ -243,7 +243,7 @@ parse_category_option(char *opt, struct option_data *data)
 }
 
 static int
-parse_flag_option(char *opt, struct option_data *data)
+parse_flag_option(const char *opt, struct option_data *data)
 {
 	size_t i;
 
@@ -267,7 +267,7 @@ parse_flag_option(char *opt, struct option_data *data)
 }
 
 static int
-parse_negative_option(char *opt, struct option_data *data)
+parse_negative_option(const char *opt, struct option_data *data)
 {
 	size_t i;
 	const char *name = strprefix(opt, negative_prefix);
@@ -301,7 +301,7 @@ parse_negative_option(char *opt, struct option_data *data)
 }
 
 static int
-parse_long_option(char *opt, char *next, void *opaque)
+parse_long_option(const char *opt, const char *next, void *opaque)
 {
 	struct option_data *data = opaque;
 	long int num = 0;
@@ -362,7 +362,7 @@ parse_long_option(char *opt, char *next, void *opaque)
 }
 
 static int
-parse_argument(int argn, char *arg, int is_forced, void *opaque)
+parse_argument(int argn, const char *arg, int is_forced, void *opaque)
 {
 	struct option_data *data = opaque;
 
@@ -380,9 +380,9 @@ parse_argument(int argn, char *arg, int is_forced, void *opaque)
 /* MAIN LOGIC */
 
 #if defined(MONOLITHIC)
-int upskirt_main(int argc, char* argv[])
+int upskirt_main(int argc, const char* argv[])
 #else
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 #endif
 {
 	struct option_data data;
@@ -407,8 +407,8 @@ int main(int argc, char* argv[])
 	data.max_nesting = DEF_MAX_NESTING;
 
 	argc = parse_options(argc, argv, parse_short_option, parse_long_option, parse_argument, &data);
-	if (data.done) return 0;
-	if (!argc) return 1;
+	if (data.done) return EXIT_SUCCESS;
+	if (!argc) return EXIT_FAILURE;
 
 	/* Open input file, if needed */
 	if (data.filename) {
@@ -475,7 +475,7 @@ int main(int argc, char* argv[])
 
 		if (t1 == ((clock_t) -1) || t2 == ((clock_t) -1)) {
 			fprintf(stderr, "Failed to get the time.\n");
-			return 1;
+			return EXIT_FAILURE;
 		}
 
 		elapsed = (double)(t2 - t1) / CLOCKS_PER_SEC;
@@ -485,5 +485,5 @@ int main(int argc, char* argv[])
 			fprintf(stderr, "Time spent on rendering: %6.3f s.\n", elapsed);
 	}
 
-	return 0;
+	return EXIT_SUCCESS;
 }

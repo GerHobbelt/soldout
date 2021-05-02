@@ -41,17 +41,17 @@ print_option(char short_opt, const char *long_opt, const char *description)
 }
 
 static void
-print_version()
+print_version(void)
 {
 	printf("Built with Upskirt " UPSKIRT_VERSION ".\n");
 }
 
 static int
 parse_options(
-	int argc, char **argv,
-	int(*parse_short_option)(char opt, char *next, void *opaque),
-	int(*parse_long_option)(char *opt, char *next, void *opaque),
-	int(*parse_argument)(int argn, char *arg, int is_forced, void *opaque),
+	int argc, const char **argv,
+	int(*parse_short_option)(char opt, const char *next, void *opaque),
+	int(*parse_long_option)(const char *opt, const char *next, void *opaque),
+	int(*parse_argument)(int argn, const char *arg, int is_forced, void *opaque),
 	void *opaque)
 {
 	int result;
@@ -59,10 +59,10 @@ parse_options(
 
 	/* Parse options mixed with arguments */
 	while (i < argc) {
-		char *arg = argv[i];
+		const char *arg = argv[i];
 
 		if (arg[0] == '-' && arg[1]) {
-			char *next_arg = (i+1 < argc) ? argv[i+1] : NULL;
+			const char *next_arg = (i+1 < argc) ? argv[i+1] : NULL;
 
 			if (arg[1] == '-' && !arg[2]) {
 				/* '--' signals end of options */
@@ -79,7 +79,7 @@ parse_options(
 				/* Sequence of short options */
 				size_t pos;
 				for (pos = 1; arg[pos]; pos++) {
-					char *next = (arg[pos+1]) ? arg + pos+1 : next_arg;
+					const char *next = (arg[pos+1]) ? arg + pos+1 : next_arg;
 					result = parse_short_option(arg[pos], next, opaque);
 					if (!result) return 0;
 					if (result == 2) {

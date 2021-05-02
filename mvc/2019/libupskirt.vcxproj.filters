@@ -90,13 +90,7 @@
     <ClCompile Include="..\..\src\md_latex.c">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\src\charter\src\tinyexpr\benchmark.c">
-      <Filter>Source Files\Charter\TinyExpr</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\charter\src\tinyexpr\repl.c">
-      <Filter>Source Files\Charter\TinyExpr</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\charter\src\tinyexpr\smoke.c">
       <Filter>Source Files\Charter\TinyExpr</Filter>
     </ClCompile>
   </ItemGroup>

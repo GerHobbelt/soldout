@@ -41,7 +41,7 @@ print_help(const char *basename)
 /* OPTION PARSING */
 
 struct option_data {
-	char *basename;
+	const char *basename;
 	int done;
 
 	/* time reporting */
@@ -54,7 +54,7 @@ struct option_data {
 };
 
 static int
-parse_short_option(char opt, char *next, void *opaque)
+parse_short_option(char opt, const char *next, void *opaque)
 {
 	struct option_data *data = opaque;
 	long int num = 0;
@@ -95,7 +95,7 @@ parse_short_option(char opt, char *next, void *opaque)
 }
 
 static int
-parse_long_option(char *opt, char *next, void *opaque)
+parse_long_option(const char *opt, const char *next, void *opaque)
 {
 	struct option_data *data = opaque;
 	long int num = 0;
@@ -134,7 +134,7 @@ parse_long_option(char *opt, char *next, void *opaque)
 }
 
 static int
-parse_argument(int argn, char *arg, int is_forced, void *opaque)
+parse_argument(int argn, const char *arg, int is_forced, void *opaque)
 {
 	struct option_data *data = opaque;
 
@@ -152,9 +152,9 @@ parse_argument(int argn, char *arg, int is_forced, void *opaque)
 /* MAIN LOGIC */
 
 #if defined(MONOLITHIC)
-int smartypants_main(int argc, char* argv[])
+int smartypants_main(int argc, const char* argv[])
 #else
-int main(int argc, char* argv[])
+int main(int argc, const char* argv[])
 #endif
 {
 	struct option_data data;

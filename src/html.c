@@ -266,7 +266,6 @@ rndr_blockcode(sd_buffer *ob, const sd_buffer *text, const sd_buffer *lang, cons
 	sd_html_renderer_state *state = data->opaque;
 	if (lang && (state->flags & UPSKIRT_RENDER_CHARTER) != 0 && sd_buffer_eqs(lang, "charter") != 0){
 		if (text){
-
 			char * copy = malloc((text->size + 1)*sizeof(char));
 			memset(copy, 0, text->size+1);
 			memcpy(copy, text->data, text->size);
@@ -274,13 +273,11 @@ rndr_blockcode(sd_buffer *ob, const sd_buffer *text, const sd_buffer *lang, cons
 			chart * c =  parse_chart(copy);
 			char * svg = chart_to_svg(c);
 
-			int n = strlen(svg);
-			sd_buffer_printf(ob, svg, n);
+			sd_buffer_puts(ob, svg);
 
 			free(copy);
 			chart_free(c);
 			free(svg);
-
 		}
 		return;
 	}

@@ -151,7 +151,7 @@ parse_argument(int argn, const char *arg, int is_forced, void *opaque)
 
 /* MAIN LOGIC */
 
-#if defined(MONOLITHIC)
+#if defined(BUILD_MONOLITHIC)
 int smartypants_main(int argc, const char* argv[])
 #else
 int main(int argc, const char* argv[])

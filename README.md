@@ -1,7 +1,7 @@
 Scidown
 =======
 
-`Scidown` is a fork of [Upskirt](https://github.com/upskirt/upskirt),
+`Scidown` is a fork of [libsoldout (T.L.F.K.A.Upskirt)](http://fossil.instinctive.eu/libsoldout/),
 a C Markdown parser and *HTML* and *LaTeX* generator. `Scidown` however it parse not only Markdown but also Scidown (yep same name) that support many features useful for scientific and scholar publishing.
 
 For more information on the syntax and example look at the **[wiki](https://github.com/Mandarancio/scidown/wiki)**.

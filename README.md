@@ -1,7 +1,7 @@
 Scidown
 =======
 
-`Scidown` is a fork of [libsoldout (T.L.F.K.A.Upskirt)](http://fossil.instinctive.eu/libsoldout/), the original written by Natasha Porté (Natasha Kerensikova),
+`Scidown` is a fork of [libsoldout (T.L.F.K.A.Upskirt)](http://fossil.instinctive.eu/libsoldout/), the original written by [Natasha Porté](http://fossil.instinctive.eu/index.html),
 a C Markdown parser and *HTML* and *LaTeX* generator. `Scidown` however parses not only Markdown but also Scidown (yep same name) that support many features useful for scientific and scholar publishing.
 
 For more information on the syntax and example look at the **[wiki](https://github.com/Mandarancio/scidown/wiki)**.

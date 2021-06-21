@@ -3,6 +3,8 @@
 #include "common.h"
 /*#include <time.h>*/
 
+#include "monolithic_examples.h"
+
 
 /* FEATURES INFO / DEFAULTS */
 
@@ -152,10 +154,10 @@ parse_argument(int argn, const char *arg, int is_forced, void *opaque)
 /* MAIN LOGIC */
 
 #if defined(BUILD_MONOLITHIC)
-int smartypants_main(int argc, const char* argv[])
-#else
-int main(int argc, const char* argv[])
+#define main(cnt, arr)      smartypants_main(cnt, arr)
 #endif
+
+int main(int argc, const char** argv)
 {
 	struct option_data data;
 	/*struct timespec start, end;*/

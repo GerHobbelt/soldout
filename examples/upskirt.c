@@ -21,12 +21,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-extern int charter_svg_main(int argc, const char* argv[]);
-extern int charter_tex_main(int argc, const char* argv[]);
-extern int tiny_expr_repl_main(int argc, const char* argv[]);
+#include "monolithic_examples.h"
 
-extern int smartypants_main(int argc, const char* argv[]);
-extern int upskirt_main(int argc, const char* argv[]);
 
 typedef int main_f(int argc, const char* argv[]);
 

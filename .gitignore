@@ -70,3 +70,4 @@ libscidown.a
 *~
 *.sublime-project
 *.sublime-workspace
+/*.tgz

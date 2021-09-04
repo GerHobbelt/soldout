@@ -24,7 +24,7 @@
 #include "monolithic_examples.h"
 
 
-typedef int main_f(int argc, const char* argv[]);
+typedef int main_f(int argc, const char** argv);
 
 struct dispatch_table_rec
 {
@@ -53,7 +53,7 @@ static void print_command_list(void)
 
 /* main • main function, interfacing STDIO with the parser */
 int
-main(int argc, char **argv)
+main(int argc, const char** argv)
 {
     if (argc < 2)
     {

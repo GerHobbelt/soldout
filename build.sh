@@ -15,23 +15,18 @@ emcc snudown.c src/autolink.c src/buffer.c src/markdown.c src/stack.c html/houdi
 --pre-js header.js --post-js footer.js \
 -o build/snudown_emscripten.js \
 -Oz -flto=full --closure 2 -DNDEBUG \
--s EXPORTED_FUNCTIONS=[\'_default_renderer\',\'_wiki_renderer\'] \
--s DEFAULT_LIBRARY_FUNCS_TO_INCLUDE=[] \
--s LIBRARY_DEPS_TO_AUTOEXPORT=[] \
+-s WASM=0 \
+-s SINGLE_FILE=1 \
+-s EXPORTED_FUNCTIONS=['_default_renderer','_wiki_renderer','_malloc','_free'] \
 -s MALLOC=emmalloc \
--s ABORTING_MALLOC=0 \
 -s ALLOW_MEMORY_GROWTH=1 \
 -s TOTAL_STACK=8192 \
 -s INITIAL_MEMORY=65536 \
 -s MAXIMUM_MEMORY=16777216 \
 -s ENVIRONMENT=web \
 -s TEXTDECODER=0 \
--s SUPPORT_ERRNO=0 \
--s FAST_UNROLLED_MEMCPY_AND_MEMSET=0 \
 -s DYNAMIC_EXECUTION=0 \
--s WASM=0 \
 -s MINIMAL_RUNTIME=2 \
--s SINGLE_FILE=1 \
 -s STRICT=1 \
 -Wno-tautological-compare \
 -Wno-logical-op-parentheses \
@@ -47,7 +42,7 @@ sed -r 's/\(function\(\)\{// ; s/\}\)\(\);//' ./build/snudown_oneline.js > ./bui
 ./node_modules/uglify-js/bin/uglifyjs ./build/snudown_nowrapper.js -o ./build/snudown_uglify.js \
 --comments \
 --toplevel \
--c negate_iife=false,keep_fargs=false,passes=100,pure_getters,unsafe \
+-c negate_iife=false,passes=100,pure_getters,unsafe \
 -m \
 --mangle-props reserved=['markdown','markdownWiki','nofollow','target','tocIdPrefix','enableToc'] \
 -b beautify=false,wrap_iife \

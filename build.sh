@@ -15,6 +15,8 @@ emcc snudown.c src/autolink.c src/buffer.c src/markdown.c src/stack.c html/houdi
 --pre-js header.js --post-js footer.js \
 -o build/snudown_emscripten.js \
 -Oz -flto=full --closure 2 -DNDEBUG \
+-s WASM=0 \
+-s SINGLE_FILE=1 \
 -s EXPORTED_FUNCTIONS=['_default_renderer','_wiki_renderer','_malloc','_free'] \
 -s MALLOC=emmalloc \
 -s ALLOW_MEMORY_GROWTH=1 \
@@ -24,9 +26,7 @@ emcc snudown.c src/autolink.c src/buffer.c src/markdown.c src/stack.c html/houdi
 -s ENVIRONMENT=web \
 -s TEXTDECODER=0 \
 -s DYNAMIC_EXECUTION=0 \
--s WASM=0 \
 -s MINIMAL_RUNTIME=2 \
--s SINGLE_FILE=1 \
 -s STRICT=1 \
 -Wno-tautological-compare \
 -Wno-logical-op-parentheses \

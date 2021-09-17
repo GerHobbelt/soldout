@@ -42,7 +42,7 @@ sed -r 's/\(function\(\)\{// ; s/\}\)\(\);//' ./build/snudown_oneline.js > ./bui
 ./node_modules/uglify-js/bin/uglifyjs ./build/snudown_nowrapper.js -o ./build/snudown_uglify.js \
 --comments \
 --toplevel \
--c negate_iife=false,keep_fargs=false,passes=100,pure_getters,unsafe \
+-c negate_iife=false,passes=100,pure_getters,unsafe \
 -m \
 --mangle-props reserved=['markdown','markdownWiki','nofollow','target','tocIdPrefix','enableToc'] \
 -b beautify=false,wrap_iife \

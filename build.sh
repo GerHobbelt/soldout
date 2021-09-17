@@ -23,7 +23,6 @@ emcc snudown.c src/autolink.c src/buffer.c src/markdown.c src/stack.c html/houdi
 -s MAXIMUM_MEMORY=16777216 \
 -s ENVIRONMENT=web \
 -s TEXTDECODER=0 \
--s SUPPORT_ERRNO=0 \
 -s DYNAMIC_EXECUTION=0 \
 -s WASM=0 \
 -s MINIMAL_RUNTIME=2 \

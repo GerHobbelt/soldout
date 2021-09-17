@@ -17,7 +17,6 @@ emcc snudown.c src/autolink.c src/buffer.c src/markdown.c src/stack.c html/houdi
 -Oz -flto=full --closure 2 -DNDEBUG \
 -s EXPORTED_FUNCTIONS=['_default_renderer','_wiki_renderer','_malloc','_free'] \
 -s MALLOC=emmalloc \
--s ABORTING_MALLOC=0 \
 -s ALLOW_MEMORY_GROWTH=1 \
 -s TOTAL_STACK=8192 \
 -s INITIAL_MEMORY=65536 \

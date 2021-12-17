@@ -1,4 +1,4 @@
 
 [submodule "src/charter"]
 	path = src/charter
-	url = https://github.com/GerHobbelt/charter.git
+	url = git@github.com:GerHobbelt/charter.git

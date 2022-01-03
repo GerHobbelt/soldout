@@ -1,6 +1,6 @@
 {
   "name": "snudown-js",
-  "version": "3.2.1",
+  "version": "3.2.2",
   "description": "a 'native' port of Snudown to JavaScript",
   "main": "dist/snudown.js",
   "module": "dist/snudown_es.js",
@@ -9,7 +9,7 @@
     "url": "https://github.com/erikdesjardins/snudown-js.git"
   },
   "devDependencies": {
-    "uglify-js": "3.14.2"
+    "uglify-js": "3.14.5"
   },
   "license": "MIT",
   "dependencies": {

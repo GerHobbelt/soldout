@@ -4,6 +4,7 @@
   "description": "a 'native' port of Snudown to JavaScript",
   "main": "dist/snudown.js",
   "module": "dist/snudown_es.js",
+  "types": "dist/snudown.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/erikdesjardins/snudown-js.git"

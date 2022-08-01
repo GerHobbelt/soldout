@@ -56,4 +56,7 @@ mkdir -p "dist"
 echo "module.exports = require('esm')(module, { mode: 'all' })('./snudown_es.js');" > ./dist/snudown.js
 cp ./build/snudown_exports.js ./dist/snudown_es.js
 
+# Copy TypeScript definitions
+cp ./snudown.d.ts ./dist/snudown.d.ts
+
 rm -r "build"

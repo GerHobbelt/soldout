@@ -2,9 +2,10 @@
   "name": "snudown-js",
   "version": "3.3.0",
   "description": "a 'native' port of Snudown to JavaScript",
-  "main": "dist/snudown.js",
-  "module": "dist/snudown_es.js",
-  "types": "dist/snudown.d.ts",
+  "type": "module",
+  "module": "./dist/snudown.js",
+  "exports": "./dist/snudown.js",
+  "types": "./dist/snudown.d.ts",
   "repository": {
     "type": "git",
     "url": "https://github.com/erikdesjardins/snudown-js.git"
@@ -14,6 +15,5 @@
   },
   "license": "MIT",
   "dependencies": {
-    "esm": "^3.0.28"
   }
 }

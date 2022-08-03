@@ -51,12 +51,9 @@ sed -r 's/\(function\(\)\{// ; s/\}\)\(\);//' ./build/snudown_oneline.js > ./bui
 # Convert window exports to ES exports
 sed -r 's/,window\.(\w+)=function/;export function \1/g' ./build/snudown_uglify.js > ./build/snudown_exports.js
 
-# Generate modules
+# Generate dist files
 mkdir -p "dist"
-echo "module.exports = require('esm')(module, { mode: 'all' })('./snudown_es.js');" > ./dist/snudown.js
-cp ./build/snudown_exports.js ./dist/snudown_es.js
-
-# Copy TypeScript definitions
+cp ./build/snudown_exports.js ./dist/snudown.js
 cp ./snudown.d.ts ./dist/snudown.d.ts
 
 rm -r "build"

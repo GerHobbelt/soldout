@@ -9,7 +9,6 @@ extern "C" {
 
 extern int charter_svg_main(int argc, const char* argv[]);
 extern int charter_tex_main(int argc, const char* argv[]);
-extern int tiny_expr_repl_main(int argc, const char* argv[]);
 
 extern int smartypants_main(int argc, const char* argv[]);
 extern int upskirt_main(int argc, const char* argv[]);

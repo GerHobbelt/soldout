@@ -36,8 +36,7 @@ static const struct dispatch_table_rec dispatch_table[] =
 {
 	{ "svg", charter_svg_main },
 	{ "tex", charter_tex_main },
-	{ "repl", tiny_expr_repl_main },
-	{ "smarty", smartypants_main },
+	{ "smartypants", smartypants_main },
 	{ "md", upskirt_main },
 };
 

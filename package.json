@@ -11,7 +11,7 @@
     "url": "https://github.com/erikdesjardins/snudown-js.git"
   },
   "devDependencies": {
-    "uglify-js": "3.16.3"
+    "uglify-js": "3.17.4"
   },
   "license": "MIT",
   "dependencies": {}

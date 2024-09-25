@@ -79,7 +79,7 @@ static const char *negative_prefix = "no-";
 #define DEF_MAX_NESTING 16
 
 /* Get local info */
-static localization get_local()
+static localization get_local(void)
 {
   localization local;
   local.figure = "Figure";

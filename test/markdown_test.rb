@@ -481,6 +481,13 @@ class MarkdownTest < Redcarpet::TestCase
 </blockquote>', output
   end
 
+  def test_newline_between_closing_tags
+    result = "<div><div></div>\n\nbar</div>"
+    output = render("<div><div></div>\nbar</div>")
+
+    assert_equal result, output
+  end
+
   def test_double_space_inserts_linebreak
     result = %(<p>here comes a break:<br>\nThere it was.</p>)
     output = render("here comes a break:  \nThere it was.")

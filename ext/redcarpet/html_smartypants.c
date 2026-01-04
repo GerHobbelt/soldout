@@ -151,6 +151,12 @@ smartypants_squote(struct buf *ob, struct smartypants_data *smrt, uint8_t previo
 				return next_squote_len;
 		}
 
+		// U.S.'s
+		if (t1 == 's' && previous_char == '.') {
+			BUFPUTSL(ob, "&rsquo;");
+			return 0;
+		}
+
 		if (smartypants_quotes(ob, previous_char, size > 0 ? text[1] : 0, 's', &smrt->in_squote))
 			return 0;
 

@@ -55,4 +55,23 @@ class SmartyPantsTest < Redcarpet::TestCase
     rd = @pants.render(%(<p>'First' and 'second' and 'third'</p>))
     assert_equal %(<p>&lsquo;First&rsquo; and &lsquo;second&rsquo; and &lsquo;third&rsquo;</p>), rd
   end
+
+  def test_that_smart_leaves_c_parens_joined_with_word_alone
+  def test_that_smart_gives_copyright
+    rd = @pants.render(%(<p>501(c)</p>))
+    assert_equal %(<p>501(c)</p>), rd
+  end
+
+  def test_that_smart_gives_copyright_for_lone_c_parens
+    rd = @pants.render(%(<p>copyright (c) 2025 John Doe Inc.</p>))
+    assert_equal %(<p>copyright &copy; 2025 John Doe Inc.</p>), rd
+
+    rd = @pants.render(%(<p>(c) copyright</p>))
+    assert_equal %(<p>&copy; copyright</p>), rd
+  end
+
+  def test_that_smart_gives_period_prefix_a_rsquo
+    markdown = @pants.render("the U.S.'s war crimes are numerous")
+    assert_equal "the U.S.&rsquo;s war crimes are numerous", markdown
+  end
 end

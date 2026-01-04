@@ -651,6 +651,8 @@ parse_emph2(struct buf *ob, struct sd_markdown *rndr, uint8_t *data, size_t size
 
 			if (c == '~')
 				r = rndr->cb.strikethrough(ob, work, rndr->opaque);
+			else if (c == '+')
+				r = rndr->cb.underline(ob, work, rndr->opaque);
 			else if (c == '=')
 				r = rndr->cb.highlight(ob, work, rndr->opaque);
 			else
@@ -2849,6 +2851,7 @@ sd_markdown_new(
 	if (md->cb.emphasis || md->cb.double_emphasis || md->cb.triple_emphasis) {
 		md->active_char['*'] = MD_CHAR_EMPHASIS;
 		md->active_char['_'] = MD_CHAR_EMPHASIS;
+		md->active_char['+'] = MD_CHAR_EMPHASIS;
 
 		if (extensions & MKDEXT_STRIKETHROUGH)
 			md->active_char['~'] = MD_CHAR_EMPHASIS;
